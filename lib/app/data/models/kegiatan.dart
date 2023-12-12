@@ -1,9 +1,9 @@
 class Kegiatan {
-  final int id;
-  final List<Object> sk;
-  final List<Object> berita_acara;
-  final List<Object> pbj;
-  final List<List<Object>> amprahan;
+  final int? id;
+  final List<Object?> sk;
+  final List<Object?> berita_acara;
+  final List<Object?> pbj;
+  final List<List<Object?>> amprahan;
 
   Kegiatan({
     required this.id,

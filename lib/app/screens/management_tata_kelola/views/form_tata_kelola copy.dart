@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/constants/font.dart';
 import 'package:todo_app/app/core/constants/value.dart';
 import 'package:todo_app/app/widgets/widget.dart';
 
-class FormTataKelola extends ConsumerStatefulWidget {
+class FormTataKelola extends StatefulWidget {
   const FormTataKelola({
     super.key,
   });
 
   @override
-  ConsumerState<FormTataKelola> createState() => _FormTataKelolaState();
+  State<FormTataKelola> createState() => _FormTataKelolaState();
 }
 
-class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
+class _FormTataKelolaState extends State<FormTataKelola> {
   List<Widget> formAmprahan = [];
   @override
   Widget build(BuildContext context) {
