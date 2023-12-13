@@ -161,9 +161,6 @@ class HomePage extends ConsumerWidget {
               pages[notifier.page]['title'],
               style: Gfont.bold.fsize(18),
             ),
-            // pages[notifier.page]['title'] != 'Home'
-            //     ? Text(pages[notifier.page]['title'])
-            //     : const SizedBox()
           ],
         ),
         // backgroundColor: Colors.blueGrey,

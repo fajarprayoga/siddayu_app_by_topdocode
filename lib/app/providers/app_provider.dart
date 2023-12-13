@@ -1,4 +1,5 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:todo_app/app/providers/user/user_provider.dart';
 
 // import 'todo/todo_provider.dart';
 
@@ -13,8 +14,11 @@ class AppStateNotifier extends StateNotifier<AppState> {
 
     switch (index) {
       case 1:
+        if (!visited.contains(index)) {}
+      case 2:
         if (!visited.contains(index)) {
-          // r
+          // ;
+          ref.read(userProvider.notifier).getUserStaff();
         }
         break;
       default:

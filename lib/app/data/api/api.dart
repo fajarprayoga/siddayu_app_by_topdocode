@@ -3,6 +3,8 @@ library api;
 import 'package:dio/dio.dart';
 
 part 'auth_api.dart';
+part 'user_api.dart';
+part 'kegiatan_api.dart';
 
 BaseOptions dioOptions({String? baseUrl}) => BaseOptions(
     followRedirects: false,
@@ -17,4 +19,5 @@ Dio dio = Dio(dioOptions());
 
 mixin UseApi {
   AuthApi authApi = AuthApi();
+  UserApi userApi = UserApi();
 }

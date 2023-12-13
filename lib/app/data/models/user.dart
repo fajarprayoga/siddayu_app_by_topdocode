@@ -3,10 +3,10 @@ class User {
   final String username;
   final String email;
   final String firstName;
+  final String maidenName;
   final String lastName;
   final String gender;
   final String image;
-  final String position;
 
   User({
     required this.id,
@@ -16,7 +16,7 @@ class User {
     required this.lastName,
     required this.gender,
     required this.image,
-    required this.position,
+    required this.maidenName,
   });
 
   // Factory method untuk membuat instance User dari JSON
@@ -29,7 +29,7 @@ class User {
         lastName: json['lastName'],
         gender: json['gender'],
         image: json['image'],
-        position: json['position']);
+        maidenName: json['maidenName']);
   }
 
   Map<String, dynamic> toJson() => {
@@ -40,6 +40,6 @@ class User {
         'lastName': lastName,
         'gender': gender,
         'image': image,
-        'position': position,
+        'maidenName': maidenName,
       };
 }

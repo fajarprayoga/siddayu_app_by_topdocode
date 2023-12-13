@@ -6,7 +6,9 @@ class KegiatanDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>>
     with UseApi {
   KegiatanDetailNotifier() : super(const AsyncValue.loading());
 
-  // final title = TextEditingController(), description = TextEditingController();
+  Future getKegiatan() async {
+    try {} catch (e) {}
+  }
 }
 
 final kegiatanDetailProvider = StateNotifierProvider.autoDispose<
