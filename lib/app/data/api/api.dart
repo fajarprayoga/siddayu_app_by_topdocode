@@ -20,4 +20,5 @@ Dio dio = Dio(dioOptions());
 mixin UseApi {
   AuthApi authApi = AuthApi();
   UserApi userApi = UserApi();
+  KegiatanApi kegiatanApi = KegiatanApi();
 }

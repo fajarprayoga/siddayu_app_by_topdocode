@@ -15,6 +15,7 @@ class FormTataKelola extends ConsumerStatefulWidget {
 
 class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
   List<Widget> formAmprahan = [];
+  List<Widget> formSubKegiatan = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,6 +55,25 @@ class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
                 placeholder: 'Masukan deskripsi kegiatan',
                 isMultiLine: true,
               ),
+
+              ListView.builder(
+                itemCount: formSubKegiatan.length,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return formSubKegiatan[index];
+                },
+              ),
+              ElevatedButton.icon(
+                onPressed: () {
+                  setState(() {
+                    formSubKegiatan.add(subKegiatan(null));
+                  });
+                },
+                icon: const Icon(Icons.add),
+                label: Text('Tambah Sub Kegiatan'),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white, onPrimary: Colors.black),
+              ),
               ButtonIcon(
                   label: 'SK',
                   placeholder: 'Silahkan upload format PDF',
@@ -76,7 +96,7 @@ class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
                 shrinkWrap: true,
                 itemCount: formAmprahan.length,
                 itemBuilder: (context, index) {
-                  return AmprahanWidget();
+                  return formAmprahan[index];
                 },
               ),
               const SizedBox(
@@ -118,6 +138,40 @@ class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
           ),
         ),
       ),
+    );
+  }
+
+  Row subKegiatan(int? index) {
+    return Row(
+      // mainAxisAlignment: MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Expanded(
+          child: FormFieldCustom(
+            title: 'Sub Kegiatan dan total anggaran',
+            placeholder: 'Sub Kegiatan',
+          ),
+        ),
+        SizedBox(
+          width: gap,
+        ),
+        FormFieldCustom(
+          width: 100,
+          title: '',
+          placeholder: '0',
+        ),
+        Center(
+            child: InkWell(
+                onTap: () {
+                  print('Inkwell');
+                },
+                child: Icon(
+                  Icons.delete,
+                  size: 32,
+                  color: Colors.red[800],
+                )))
+      ],
     );
   }
 
@@ -242,6 +296,7 @@ class AmprahanWidget extends StatelessWidget {
 class FormFieldCustom extends StatelessWidget {
   final String title;
   final String placeholder;
+  final double? width;
   final IconData? icon;
   final bool? isMultiLine;
   const FormFieldCustom(
@@ -249,11 +304,13 @@ class FormFieldCustom extends StatelessWidget {
       required this.placeholder,
       required this.title,
       this.icon,
+      this.width,
       this.isMultiLine});
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: width ?? double.infinity,
       margin: EdgeInsets.symmetric(vertical: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

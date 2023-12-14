@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:skeletons/skeletons.dart';
 import 'package:todo_app/app/core/constants/value.dart';
+import 'package:todo_app/app/providers/kegiatan/kegiatan_detail_provider.dart';
 import 'package:todo_app/app/providers/user/user_provider.dart';
 import 'package:todo_app/app/routes/paths.dart';
 import 'package:todo_app/app/widgets/widget.dart';
@@ -12,14 +14,15 @@ class ManagementTataKelola extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userProviderData = ref.watch(userProvider);
+    final kegiatanProviderData = ref.watch(kegiatanDetailProvider);
 
     return Scaffold(
         backgroundColor: Colors.white,
-        body: userProviderData.when(
-            data: (userData) {
-              return Column(
-                children: [
-                  Wrap(
+        body: Column(
+          children: [
+            userProviderData.when(
+                data: (userData) {
+                  return Wrap(
                     spacing: 10,
                     runSpacing: 10,
                     alignment: WrapAlignment.center,
@@ -31,9 +34,14 @@ class ManagementTataKelola extends ConsumerWidget {
                         image: userData[index].image,
                       ),
                     ),
-                  ),
-                  SizedBox(height: 20),
-                  Expanded(
+                  );
+                },
+                error: (error, stackTrace) => Text('Error: $error'),
+                loading: () => BoxStaffPlaceholder()),
+            SizedBox(height: 20),
+            kegiatanProviderData.when(
+                data: (kegiatanData) {
+                  return Expanded(
                     child: Container(
                       padding: EdgeInsets.all(padding),
                       decoration: BoxDecoration(
@@ -76,10 +84,10 @@ class ManagementTataKelola extends ConsumerWidget {
                           SizedBox(height: gap),
                           Expanded(
                             child: ListView.builder(
-                              itemCount: 20,
+                              itemCount: kegiatanData.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return KegiatanProgress(
-                                  name: "Kegiatan $index",
+                                  name: kegiatanData[index].todo,
                                 );
                               },
                             ),
@@ -87,12 +95,12 @@ class ManagementTataKelola extends ConsumerWidget {
                         ],
                       ),
                     ),
-                  ),
-                ],
-              );
-            },
-            error: (error, stackTrace) => Text('Errorzz: $error'),
-            loading: () => Loading(isLoading: true)));
+                  );
+                },
+                error: (error, stackTrace) => Text('Error: $error'),
+                loading: () => CircularProgressIndicator())
+          ],
+        ));
   }
 }
 
@@ -113,7 +121,7 @@ class _KegiatanProgressState extends State<KegiatanProgress> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       // Memanggil setState setelah frame saat ini selesai diproses
       setState(() {
         _width = MediaQuery.of(context).size.width * (70 / 100);
