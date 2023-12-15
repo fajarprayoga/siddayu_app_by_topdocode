@@ -12,4 +12,5 @@ class Paths {
   }
 
   static const String formManagementTataKelola = '/form-management-tata-kelola';
+  static const String formPertanggungJawaban = '/form-pertanggung-jawaban';
 }

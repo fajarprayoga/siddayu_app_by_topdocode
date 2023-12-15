@@ -43,6 +43,7 @@ class ManagementTataKelola extends ConsumerWidget {
                 data: (kegiatanData) {
                   return Expanded(
                     child: Container(
+                      width: MediaQuery.of(context).size.width * 0.8,
                       padding: EdgeInsets.all(padding),
                       decoration: BoxDecoration(
                         color: Colors.white,

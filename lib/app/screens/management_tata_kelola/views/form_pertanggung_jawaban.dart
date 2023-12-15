@@ -1,31 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/constants/font.dart';
 import 'package:todo_app/app/core/constants/value.dart';
-import 'package:todo_app/app/providers/kegiatan/kegiatan_detail_provider.dart';
-import 'package:todo_app/app/routes/paths.dart';
 import 'package:todo_app/app/widgets/widget.dart';
 
-class FormTataKelola extends ConsumerStatefulWidget {
-  const FormTataKelola({
+class FormPertanggungJawaban extends ConsumerStatefulWidget {
+  const FormPertanggungJawaban({
     super.key,
   });
 
   @override
-  ConsumerState<FormTataKelola> createState() => _FormTataKelolaState();
+  ConsumerState<FormPertanggungJawaban> createState() =>
+      _FormPertanggungJawabanState();
 }
 
-class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
+class _FormPertanggungJawabanState
+    extends ConsumerState<FormPertanggungJawaban> {
   List<Widget> formAmprahan = [];
   List<Widget> formSubKegiatan = [];
-
   @override
   Widget build(BuildContext context) {
-    final notifier = ref.read(kegiatanDetailProvider.notifier);
-    notifier.deskripsi.clear();
-    notifier.namaKegiatan.clear();
-    notifier.tanggalKegiatan.clear();
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -50,56 +44,42 @@ class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                alignment: Alignment.centerRight,
-                child: InkWell(
-                  onTap: () {
-                    // _showFullModal(context);
-                    context.push(Paths.formPertanggungJawaban);
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(radius - 10),
-                      color: primary,
-                    ),
-                    padding: EdgeInsets.all(padding),
-                    child: Text(
-                      'Pertanggung Jawaban',
-                      style: Gfont.fs14.white,
-                    ),
-                  ),
-                ),
-              ),
-              FormFieldCustom(
-                title: 'Nama Kegiatan',
-                placeholder: 'Masukan nama kegiatan',
-                controller: notifier.namaKegiatan,
-              ),
-              FormFieldCustom(
-                  title: 'Tanggal Kegiatan',
-                  placeholder: 'Masukan tanggal kegiatan',
-                  icon: Icons.date_range),
-              FormFieldCustom(
-                title: 'Deskripsi Kegiatan',
-                placeholder: 'Masukan deskripsi kegiatan',
-                isMultiLine: true,
-              ),
-
+              ButtonIcon(
+                  label: 'SK',
+                  placeholder: 'Silahkan upload format PDF',
+                  icon: Icons.upload_file,
+                  title: 'Upload file SK',
+                  onTapFunction: () {}),
+              ButtonIcon(
+                  label: 'Berita Acara',
+                  placeholder: 'Silahkan upload format PDF',
+                  icon: Icons.upload_file,
+                  title: 'Upload file Berita Acara',
+                  onTapFunction: () {}),
+              ButtonIcon(
+                  label: 'Optional (PBJ)',
+                  placeholder: 'Silahkan upload format PDF',
+                  icon: Icons.upload_file,
+                  title: 'Upload file PBJ',
+                  onTapFunction: () {}),
               ListView.builder(
-                itemCount: formSubKegiatan.length,
                 shrinkWrap: true,
+                itemCount: formAmprahan.length,
                 itemBuilder: (context, index) {
-                  return formSubKegiatan[index];
+                  return formAmprahan[index];
                 },
+              ),
+              const SizedBox(
+                height: gap,
               ),
               ElevatedButton.icon(
                 onPressed: () {
                   setState(() {
-                    formSubKegiatan.add(subKegiatan(null));
+                    formAmprahan.add(AmprahanWidget());
                   });
                 },
                 icon: const Icon(Icons.add),
-                label: Text('Tambah Sub Kegiatan'),
+                label: Text('Tambah Amprahan'),
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white, onPrimary: Colors.black),
               ),
@@ -107,10 +87,8 @@ class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
                 height: gap + 10,
               ),
               InkWell(
-                onTap: () async {
-                  // _showFullModal(context);
-                  await notifier.createKegiatan();
-                  // context.pop();
+                onTap: () {
+                  _showFullModal(context);
                 },
                 child: Container(
                   decoration: BoxDecoration(
@@ -134,8 +112,8 @@ class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
 
   Row subKegiatan(int? index) {
     return Row(
-      // mainAxisAlignment: MainAxisAlignment.end,
-      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(
@@ -290,16 +268,13 @@ class FormFieldCustom extends StatelessWidget {
   final double? width;
   final IconData? icon;
   final bool? isMultiLine;
-  final TextEditingController? controller;
-
   const FormFieldCustom(
       {super.key,
       required this.placeholder,
       required this.title,
       this.icon,
       this.width,
-      this.isMultiLine,
-      this.controller});
+      this.isMultiLine});
 
   @override
   Widget build(BuildContext context) {
@@ -320,7 +295,7 @@ class FormFieldCustom extends StatelessWidget {
               }
               return null;
             },
-            controller: controller,
+            controller: null,
             decoration: InputDecoration(
                 hintText: placeholder,
                 enabledBorder: OutlineInputBorder(

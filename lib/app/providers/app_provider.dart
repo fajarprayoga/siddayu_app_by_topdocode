@@ -17,11 +17,11 @@ class AppStateNotifier extends StateNotifier<AppState> {
       case 1:
         if (!visited.contains(index)) {}
       case 2:
-        if (!visited.contains(index)) {
-          // ;
-          ref.read(userProvider.notifier).getUserStaff();
-          ref.read(kegiatanDetailProvider.notifier).getKegiatan();
-        }
+        // if (!visited.contains(index)) {
+        // ;
+        ref.read(userProvider.notifier).getUserStaff();
+        ref.read(kegiatanDetailProvider.notifier).getKegiatan();
+        // }
         break;
       default:
     }

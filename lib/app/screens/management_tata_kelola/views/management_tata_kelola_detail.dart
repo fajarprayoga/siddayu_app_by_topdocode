@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/constants/font.dart';
 import 'package:todo_app/app/core/constants/value.dart';
+import 'package:todo_app/app/providers/kegiatan/kegiatan_detail_provider.dart';
 import 'package:todo_app/app/routes/paths.dart';
 
-class ManagementTataKelolaDetail extends StatelessWidget {
+class ManagementTataKelolaDetail extends ConsumerWidget {
   final params;
   const ManagementTataKelolaDetail({
     Key? key,
@@ -12,8 +14,8 @@ class ManagementTataKelolaDetail extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    print((params));
+  Widget build(BuildContext context, WidgetRef ref) {
+    final kegiatanProvider = ref.read(kegiatanDetailProvider);
     return Scaffold(
       appBar: AppBar(
           title: Column(
@@ -33,13 +35,13 @@ class ManagementTataKelolaDetail extends StatelessWidget {
       body: RefreshIndicator(
         onRefresh: () async {
           // Menunggu beberapa saat, misalnya, menggunakan Future.delayed
-          await Future.delayed(Duration(seconds: 2));
+          // await Future.delayed(Duration(seconds: 2));
 
-          // Setelah menunggu, lakukan aksi yang diinginkan di sini
-          print('Aksi refresh telah selesai');
+          // // Setelah menunggu, lakukan aksi yang diinginkan di sini
+          // print('Aksi refresh telah selesai');
 
-          // Return value jika diperlukan
-          return;
+          // // Return value jika diperlukan
+          // return;
         },
         child: Padding(
           padding: const EdgeInsets.all(padding),
@@ -51,15 +53,24 @@ class ManagementTataKelolaDetail extends StatelessWidget {
                 height: gap,
               ),
               Expanded(
-                child: ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (BuildContext context, int index) {
-                    return ListKegiatan(
-                      name: 'Kegiatan ' + (++index).toString(),
-                    );
-                  },
-                ),
-              )
+                  child: kegiatanProvider.when(
+                      data: (data) {
+                        if (data.length < 0) {
+                          return Text('data is empty');
+                        }
+                        return ListView.builder(
+                          itemCount: data.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return ListKegiatan(
+                              name: data[index].todo,
+                            );
+                          },
+                        );
+                      },
+                      error: (e, s) => Text('errorr $e'),
+                      loading: () => Center(
+                            child: CircularProgressIndicator(),
+                          )))
             ],
           ),
         ),
@@ -91,14 +102,21 @@ class ListKegiatan extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Icon(Icons.list),
-              SizedBox(
-                width: gap,
-              ),
-              Text(name),
-            ],
+          Expanded(
+            child: Row(
+              children: [
+                Icon(Icons.list),
+                SizedBox(
+                  width: gap,
+                ),
+                Flexible(
+                  child: Text(
+                    name,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
           ),
           Icon(
             Icons.arrow_right,
