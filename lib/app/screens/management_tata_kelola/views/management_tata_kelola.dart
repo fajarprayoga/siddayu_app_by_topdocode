@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:skeletons/skeletons.dart';
 import 'package:todo_app/app/core/constants/value.dart';
 import 'package:todo_app/app/providers/kegiatan/kegiatan_detail_provider.dart';
 import 'package:todo_app/app/providers/user/user_provider.dart';
@@ -19,87 +18,93 @@ class ManagementTataKelola extends ConsumerWidget {
     return Scaffold(
         backgroundColor: Colors.white,
         body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            userProviderData.when(
-                data: (userData) {
-                  return Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    alignment: WrapAlignment.center,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: List.generate(
-                      userData.length,
-                      (index) => BoxStaff(
-                        name: userData[index].username,
-                        image: userData[index].image,
+            Center(
+              child: userProviderData.when(
+                  data: (userData) {
+                    return Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      alignment: WrapAlignment.center,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: List.generate(
+                        userData.length,
+                        (index) => BoxStaff(
+                          name: userData[index].username,
+                          image: userData[index].image,
+                        ),
                       ),
-                    ),
-                  );
-                },
-                error: (error, stackTrace) => Text('Error: $error'),
-                loading: () => BoxStaffPlaceholder()),
+                    );
+                  },
+                  error: (error, stackTrace) => Text('Error: $error'),
+                  loading: () => BoxStaffPlaceholder()),
+            ),
             SizedBox(height: 20),
             kegiatanProviderData.when(
                 data: (kegiatanData) {
                   return Expanded(
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      padding: EdgeInsets.all(padding),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(5),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.blueGrey,
-                            blurRadius: 4,
-                            offset: Offset(0, 1), // Posisi bayangan
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Progress Kegiatan',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              InkWell(
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text("All"),
-                                    Icon(
-                                      Icons.arrow_right,
-                                      size: 36,
-                                    )
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
-                          SizedBox(height: gap),
-                          Expanded(
-                            child: ListView.builder(
-                              itemCount: kegiatanData.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                return KegiatanProgress(
-                                  name: kegiatanData[index].todo,
-                                );
-                              },
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: 20),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        padding: EdgeInsets.all(padding),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(5),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.blueGrey,
+                              blurRadius: 4,
+                              offset: Offset(0, 1), // Posisi bayangan
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Progress Kegiatan',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                InkWell(
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text("All"),
+                                      Icon(
+                                        Icons.arrow_right,
+                                        size: 36,
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                            SizedBox(height: gap),
+                            Expanded(
+                              child: ListView.builder(
+                                itemCount: kegiatanData.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return KegiatanProgress(
+                                    name: kegiatanData[index].todo,
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );
                 },
                 error: (error, stackTrace) => Text('Error: $error'),
-                loading: () => CircularProgressIndicator())
+                loading: () => ProgressKegiatanPlaceholder())
           ],
         ));
   }

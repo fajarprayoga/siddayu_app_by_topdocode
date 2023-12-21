@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/constants/font.dart';
@@ -18,6 +21,25 @@ class _FormPertanggungJawabanState
     extends ConsumerState<FormPertanggungJawaban> {
   List<Widget> formAmprahan = [];
   List<Widget> formSubKegiatan = [];
+  List<File> fileListSK = [];
+
+  void uploadFile(fileList) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+        allowMultiple: true,
+        allowedExtensions: ['pdf', 'doc'],
+        type: FileType.custom);
+    if (result != null) {
+      // File file = File(result.files.single.path!);
+      // print(file);
+      setState(() {
+        fileListSK.addAll(result.paths.map((path) => File(path!)).toList());
+      });
+    } else {
+      print('cancel');
+      // User canceled the picker
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,13 +71,28 @@ class _FormPertanggungJawabanState
                   placeholder: 'Silahkan upload format PDF',
                   icon: Icons.upload_file,
                   title: 'Upload file SK',
-                  onTapFunction: () {}),
+                  onTapFunction: () {
+                    uploadFile(fileListSK);
+                  }),
+              ListView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: fileListSK.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      alignment: Alignment.centerLeft,
+                      color: Colors.amber,
+                      child: Icon(Icons.picture_as_pdf_sharp),
+                    );
+                  }),
               ButtonIcon(
                   label: 'Berita Acara',
                   placeholder: 'Silahkan upload format PDF',
                   icon: Icons.upload_file,
                   title: 'Upload file Berita Acara',
-                  onTapFunction: () {}),
+                  onTapFunction: () {
+                    print(fileListSK.length);
+                  }),
               ButtonIcon(
                   label: 'Optional (PBJ)',
                   placeholder: 'Silahkan upload format PDF',
@@ -63,6 +100,7 @@ class _FormPertanggungJawabanState
                   title: 'Upload file PBJ',
                   onTapFunction: () {}),
               ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemCount: formAmprahan.length,
                 itemBuilder: (context, index) {
@@ -88,7 +126,8 @@ class _FormPertanggungJawabanState
               ),
               InkWell(
                 onTap: () {
-                  _showFullModal(context);
+                  // _showFullModal(context);
+                  print(fileListSK);
                 },
                 child: Container(
                   decoration: BoxDecoration(

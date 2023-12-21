@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/constants/font.dart';
 import 'package:todo_app/app/core/constants/pages.dart';
+import 'package:todo_app/app/core/constants/value.dart';
 import 'package:todo_app/app/data/models/auth.dart';
 import 'package:todo_app/app/data/service/local/storage.dart';
 // import 'package:todo_app/app/data/service/local/storage.dart';
@@ -102,7 +103,9 @@ class HomePage extends ConsumerWidget {
                   ),
                 ),
               ),
-
+              SizedBox(
+                height: gap * 3,
+              ),
               // List Generate Menu
               ...List.generate(pages.length, (i) {
                 return ListTile(

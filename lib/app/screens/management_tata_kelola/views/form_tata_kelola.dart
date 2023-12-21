@@ -26,106 +26,115 @@ class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
     notifier.deskripsi.clear();
     notifier.namaKegiatan.clear();
     notifier.tanggalKegiatan.clear();
-    return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Management Tata Kelola ",
-              style: Gfont.bold,
-            ),
-            Text(
-              "Kegiatan / Detail / Create",
-              style: Gfont.fs14,
-            )
-          ],
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          margin: EdgeInsets.only(top: gap + 20),
-          padding: EdgeInsets.symmetric(horizontal: padding + 10),
-          child: Column(
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                alignment: Alignment.centerRight,
-                child: InkWell(
-                  onTap: () {
-                    // _showFullModal(context);
-                    context.push(Paths.formPertanggungJawaban);
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(radius - 10),
-                      color: primary,
-                    ),
-                    padding: EdgeInsets.all(padding),
-                    child: Text(
-                      'Pertanggung Jawaban',
-                      style: Gfont.fs14.white,
-                    ),
-                  ),
-                ),
+              Text(
+                "Management Tata Kelola ",
+                style: Gfont.bold,
               ),
-              FormFieldCustom(
-                title: 'Nama Kegiatan',
-                placeholder: 'Masukan nama kegiatan',
-                controller: notifier.namaKegiatan,
-              ),
-              FormFieldCustom(
-                  title: 'Tanggal Kegiatan',
-                  placeholder: 'Masukan tanggal kegiatan',
-                  icon: Icons.date_range),
-              FormFieldCustom(
-                title: 'Deskripsi Kegiatan',
-                placeholder: 'Masukan deskripsi kegiatan',
-                isMultiLine: true,
-              ),
-
-              ListView.builder(
-                itemCount: formSubKegiatan.length,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return formSubKegiatan[index];
-                },
-              ),
-              ElevatedButton.icon(
-                onPressed: () {
-                  setState(() {
-                    formSubKegiatan.add(subKegiatan(null));
-                  });
-                },
-                icon: const Icon(Icons.add),
-                label: Text('Tambah Sub Kegiatan'),
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white, onPrimary: Colors.black),
-              ),
-              SizedBox(
-                height: gap + 10,
-              ),
-              InkWell(
-                onTap: () async {
-                  // _showFullModal(context);
-                  await notifier.createKegiatan();
-                  // context.pop();
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(radius - 10),
-                    color: primary,
-                  ),
-                  padding: EdgeInsets.all(padding),
-                  child: Text(
-                    'Simpan',
-                    style: Gfont.fs14.white,
-                  ),
-                ),
+              Text(
+                "Kegiatan / Detail / Create",
+                style: Gfont.fs14,
               )
-              // Checkbox(value: true, onChanged: (){})
             ],
+          ),
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.only(bottom: padding),
+            child: Container(
+              margin: EdgeInsets.only(top: gap + 20),
+              padding: EdgeInsets.symmetric(horizontal: padding + 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    alignment: Alignment.centerRight,
+                    child: InkWell(
+                      onTap: () {
+                        // _showFullModal(context);
+                        context.push(Paths.formPertanggungJawaban);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(radius - 10),
+                          color: primary,
+                        ),
+                        padding: EdgeInsets.all(padding),
+                        child: Text(
+                          'Pertanggung Jawaban',
+                          style: Gfont.fs14.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                  FormFieldCustom(
+                    title: 'Nama Kegiatan',
+                    placeholder: 'Masukan nama kegiatan',
+                    controller: notifier.namaKegiatan,
+                  ),
+                  FormFieldCustom(
+                      title: 'Tanggal Kegiatan',
+                      placeholder: 'Masukan tanggal kegiatan',
+                      icon: Icons.date_range),
+                  FormFieldCustom(
+                    title: 'Deskripsi Kegiatan',
+                    placeholder: 'Masukan deskripsi kegiatan',
+                    isMultiLine: true,
+                  ),
+
+                  ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: formSubKegiatan.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      return formSubKegiatan[index];
+                    },
+                  ),
+                  Column(
+                    children: [],
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        formSubKegiatan.add(subKegiatan(null));
+                      });
+                    },
+                    icon: const Icon(Icons.add),
+                    label: Text('Tambah Sub Kegiatan'),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white, onPrimary: Colors.black),
+                  ),
+                  SizedBox(
+                    height: gap + 10,
+                  ),
+                  InkWell(
+                    onTap: () async {
+                      // _showFullModal(context);
+                      await notifier.createKegiatan();
+                      // context.pop();
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(radius - 10),
+                        color: primary,
+                      ),
+                      padding: EdgeInsets.all(padding),
+                      child: Text(
+                        'Simpan',
+                        style: Gfont.fs14.white,
+                      ),
+                    ),
+                  )
+                  // Checkbox(value: true, onChanged: (){})
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -140,7 +149,7 @@ class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
       children: [
         Expanded(
           child: FormFieldCustom(
-            title: 'Sub Kegiatan dan total anggaran',
+            title: '',
             placeholder: 'Sub Kegiatan',
           ),
         ),
