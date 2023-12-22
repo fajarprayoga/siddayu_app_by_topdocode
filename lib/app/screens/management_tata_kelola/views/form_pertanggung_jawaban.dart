@@ -20,10 +20,9 @@ class FormPertanggungJawaban extends ConsumerStatefulWidget {
 class _FormPertanggungJawabanState
     extends ConsumerState<FormPertanggungJawaban> {
   List<Widget> formAmprahan = [];
-  List<Widget> formSubKegiatan = [];
-  List<File> fileListSK = [];
+  List fileListSK = [];
 
-  void uploadFile(fileList) async {
+  void uploadFile(List fileList) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
         allowMultiple: true,
         allowedExtensions: ['pdf', 'doc'],
@@ -32,12 +31,26 @@ class _FormPertanggungJawabanState
       // File file = File(result.files.single.path!);
       // print(file);
       setState(() {
-        fileListSK.addAll(result.paths.map((path) => File(path!)).toList());
+        fileList.addAll(result.files.map((file) {
+          return {'name': file.name, 'path': File(file.path!)};
+        }));
       });
     } else {
       print('cancel');
       // User canceled the picker
     }
+  }
+
+  void removeFile(List fileList, int index) {
+    setState(() {
+      fileList.removeAt(index);
+    });
+  }
+
+  void removeAmprahan(List fileList, int index) {
+    setState(() {
+      formAmprahan.removeAt(index);
+    });
   }
 
   @override
@@ -79,11 +92,46 @@ class _FormPertanggungJawabanState
                   itemCount: fileListSK.length,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
-                    return Container(
+                    print(fileListSK[index]);
+                    return Expanded(
+                        child: Container(
                       alignment: Alignment.centerLeft,
-                      color: Colors.amber,
-                      child: Icon(Icons.picture_as_pdf_sharp),
-                    );
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.picture_as_pdf_sharp,
+                            size: 36,
+                          ),
+                          InkWell(
+                            onTap: () => _showFullModal(context),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: gap,
+                                ),
+                                Text(
+                                  fileListSK[index]['name'],
+                                  style: TextStyle(
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            width: gap,
+                          ),
+                          InkWell(
+                            onTap: () => removeFile(fileListSK, index),
+                            child: Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                              size: 24,
+                            ),
+                          )
+                        ],
+                      ),
+                    ));
                   }),
               ButtonIcon(
                   label: 'Berita Acara',
@@ -104,7 +152,9 @@ class _FormPertanggungJawabanState
                 shrinkWrap: true,
                 itemCount: formAmprahan.length,
                 itemBuilder: (context, index) {
-                  return formAmprahan[index];
+                  return AmprahanWidget(remove: () {
+                    print('Remove button tapped for item $index');
+                  });
                 },
               ),
               const SizedBox(
@@ -140,46 +190,15 @@ class _FormPertanggungJawabanState
                     style: Gfont.fs14.white,
                   ),
                 ),
+              ),
+              SizedBox(
+                height: gap,
               )
               // Checkbox(value: true, onChanged: (){})
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Row subKegiatan(int? index) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Expanded(
-          child: FormFieldCustom(
-            title: 'Sub Kegiatan dan total anggaran',
-            placeholder: 'Sub Kegiatan',
-          ),
-        ),
-        SizedBox(
-          width: gap,
-        ),
-        FormFieldCustom(
-          width: 100,
-          title: '',
-          placeholder: '0',
-        ),
-        Center(
-            child: InkWell(
-                onTap: () {
-                  print('Inkwell');
-                },
-                child: Icon(
-                  Icons.delete,
-                  size: 32,
-                  color: Colors.red[800],
-                )))
-      ],
     );
   }
 
@@ -191,7 +210,7 @@ class _FormPertanggungJawabanState
       barrierLabel: "Modal", // label for barrier
       transitionDuration: Duration(
           milliseconds:
-              500), // how long it takes to popup dialog after button click
+              200), // how long it takes to popup dialog after button click
       pageBuilder: (_, __, ___) {
         // your widget implementation
         return Scaffold(
@@ -225,27 +244,7 @@ class _FormPertanggungJawabanState
                 ),
               ),
             ),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  RichText(
-                    textAlign: TextAlign.justify,
-                    text: TextSpan(
-                        text:
-                            "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 14,
-                            color: Colors.black,
-                            wordSpacing: 1)),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                ],
-              ),
-            ),
+            // child: Pdf,
           ),
         );
       },
@@ -254,47 +253,74 @@ class _FormPertanggungJawabanState
 }
 
 class AmprahanWidget extends StatelessWidget {
-  const AmprahanWidget({
-    super.key,
-  });
+  const AmprahanWidget({Key? key, void Function()? remove}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: gap),
-      padding: EdgeInsets.all(padding + 5),
+      // padding: EdgeInsets.all(padding + 5),
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(radius - 15),
-          color: Colors.white,
-          border: Border.all(width: 1, color: Colors.grey),
-          boxShadow: [
-            // BoxShadow(
-            //   color: Colors.blueGrey,
-            //   blurRadius: 4,
-            //   offset: Offset(0, 1), // Posisi bayangan
-            // ),
-          ]),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        borderRadius: BorderRadius.circular(radius - 15),
+        color: Colors.white,
+        border: Border.all(width: 1, color: Colors.grey),
+      ),
+      child: Stack(
         children: [
-          FormFieldCustom(placeholder: '0525515518', title: 'No Amprahan'),
-          ButtonIcon(
-            icon: Icons.upload_file,
-            title: 'Upload file Doku,emtasi Kegiatan',
-            label: 'Dokumentasi Kegiatan',
-            onTapFunction: () {},
-            placeholder: 'Silahkan upload format PDF',
+          Padding(
+            padding: const EdgeInsets.all(padding + 5),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                FormFieldCustom(
+                    placeholder: '0525515518', title: 'No Amprahan'),
+                ButtonIcon(
+                  icon: Icons.upload_file,
+                  title: 'Upload file Doku,emtasi Kegiatan',
+                  label: 'Dokumentasi Kegiatan',
+                  onTapFunction: () {},
+                  placeholder: 'Silahkan upload format PDF',
+                ),
+                FormFieldCustom(
+                    placeholder: 'Masukan Total Realisasi Anggaran',
+                    title: 'Total Realisasi Anggaran'),
+                const FormFieldCustom(
+                    placeholder: 'Masukan Sumber Dana', title: 'Sumber Dana'),
+                Row(
+                  children: [
+                    Text('PAJAK'),
+                    SizedBox(
+                      width: gap,
+                    ),
+                    Checkbox(
+                      value: true,
+                      onChanged: (value) {},
+                    )
+                  ],
+                )
+              ],
+            ),
           ),
-          FormFieldCustom(
-              placeholder: 'Masukan Total Realisasi Anggaran',
-              title: 'Total Realisasi Anggaran'),
-          const FormFieldCustom(
-              placeholder: 'Masukan Sumber Dana', title: 'Sumber Dana'),
-          // Checkbox(
-          //   value: true,
-          //   onChanged: (value) {},
-          // )
+          Positioned(
+            top: 5,
+            right: 5,
+            child: GestureDetector(
+              onTap: () {},
+              child: Container(
+                padding: EdgeInsets.all(8),
+                // decoration: BoxDecoration(
+                //   shape: BoxShape.circle,
+                //   color: Colors.grey,
+                // ),
+                child: Icon(
+                  Icons.close,
+                  color: Colors.red,
+                  size: 24,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
