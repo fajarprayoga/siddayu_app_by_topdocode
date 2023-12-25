@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:go_router/go_router.dart';
+import 'package:todo_app/app/core/helpers/toast.dart';
 import 'package:todo_app/app/data/api/api.dart';
 import 'package:todo_app/app/data/service/local/storage.dart';
 import 'package:todo_app/app/screens/home/views/home_page.dart';
@@ -35,9 +36,11 @@ Future<String> _redirect() async {
   } else {
     GetAuh getAuth = GetAuh();
     final res = await getAuth.getAuth(token);
+    print(res);
     if (res) {
       return Paths.home;
     } else {
+      // Toasts.show('Authentication failed');
       // Handle the case where getAuth returned false
       print('Authentication failed');
       return Paths.login;
@@ -48,16 +51,18 @@ Future<String> _redirect() async {
 class GetAuh with UseApi {
   Future getAuth(String token) async {
     try {
-      String? auth = (prefs.getString('auth') ?? '');
-      if (auth != '') {
-        final authJson = json.decode(auth);
+      String? authString = (prefs.getString('auth') ?? '');
+      // final auth = json.decode(authString);
+      if (authString != '') {
+        final authJson = json.decode(authString);
         final res = await authApi.getAuth(authJson['id']);
-        prefs.setString('auth', res.data);
+        final userString = json.decode(res.data);
+        prefs.setString('auth', json.encode(userString['data']));
+        return true;
       } else {
         print('User id not found');
+        return false;
       }
-
-      return true;
     } catch (e, s) {
       print('Error: $e, StackTrace: $s');
       return false;

@@ -87,7 +87,7 @@ class HomePage extends ConsumerWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(auth.firstName),
+                                  Text(auth.name),
                                   Text(
                                     auth.email,
                                     overflow: TextOverflow.ellipsis,

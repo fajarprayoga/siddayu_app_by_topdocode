@@ -1,41 +1,41 @@
 class Auth {
-  final int id;
-  final String username;
+  final String id;
+  final String name;
   final String email;
-  final String firstName;
-  final String lastName;
-  final String gender;
-  final String image;
+  final role;
+  final position;
+  final String created_at;
+  final String updated_at;
 
   Auth({
     required this.id,
-    required this.username,
+    required this.name,
     required this.email,
-    required this.firstName,
-    required this.lastName,
-    required this.gender,
-    required this.image,
+    required this.role,
+    required this.position,
+    required this.created_at,
+    required this.updated_at,
   });
 
   // Factory method untuk membuat instance User dari JSON
   factory Auth.fromJson(Map<String, dynamic> json) {
     return Auth(
         id: json['id'],
-        username: json['username'],
+        name: json['name'],
         email: json['email'],
-        firstName: json['firstName'],
-        lastName: json['lastName'],
-        gender: json['gender'],
-        image: json['image']);
+        role: json['role'],
+        position: json['position'],
+        created_at: json['created_at'],
+        updated_at: json['updated_at']);
   }
 
   Map<String, dynamic> toJson() => {
         'id': id,
-        'username': username,
+        'name': name,
         'email': email,
-        'firstName': firstName,
-        'lastName': lastName,
-        'gender': gender,
-        'image': image,
+        'role': role,
+        'position': position,
+        'created_at': created_at,
+        'updated_at': updated_at,
       };
 }

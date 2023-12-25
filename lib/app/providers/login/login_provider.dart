@@ -14,47 +14,36 @@ import 'package:todo_app/app/data/service/local/storage.dart';
 import '../../routes/paths.dart';
 
 class Auth with ChangeNotifier, UseApi {
-  final username = TextEditingController(text: 'kminchelle'),
-      password = TextEditingController(text: '0lelplR');
+  final username = TextEditingController(text: 'kades@example.org'),
+      password = TextEditingController(text: 'password');
   bool loading = false;
   Future login(BuildContext context) async {
     try {
       loading = true;
       notifyListeners();
       final res = await authApi.login({
-        'username': username.text,
+        'email': username.text,
         'password': password.text,
       });
-
       final map = json.decode(res.data);
+      final data = map['data'];
 
-      // sesuaikan errornya
-
-      // option 1
-      // if (map['status'] == false) {
-      //   return Toasts.show(map['message']);
-      // }
-
-      // option 2
-      if (map['message'] != null && map['message'] != '') {
-        return Toasts.show(map['message']);
-      }
       loading = false;
       notifyListeners();
-      Toasts.show('Login Successful');
-      String? token = map['token'];
+      print(map['access_token']);
+      String? token = map['access_token'];
 
       if (token != null) {
         if (!context.mounted) return;
+        Toasts.show('Login Successful');
 
         // set token to dio
         dio.setToken(token);
 
         // save token to shared preferences
         prefs.setString('token', token);
-
         // save user
-        prefs.setString('auth', res.data);
+        prefs.setString('auth', json.encode(data));
         // go to home
         // await Future.delayed(const Duration(seconds: 2));
 
