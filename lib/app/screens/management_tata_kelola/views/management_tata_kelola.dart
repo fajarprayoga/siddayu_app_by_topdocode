@@ -17,104 +17,116 @@ class ManagementTataKelola extends ConsumerWidget {
 
     return Scaffold(
         backgroundColor: Colors.white,
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Center(
-              child: userProviderData.when(
-                  data: (userData) {
-                    return Wrap(
-                      spacing: 10,
-                      runSpacing: 10,
-                      alignment: WrapAlignment.center,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: List.generate(
-                        userData.length,
-                        (index) => BoxStaff(
-                          name: userData[index].username,
-                          image: userData[index].image,
+        body: RefreshIndicator(
+          onRefresh: () async {
+            await ref.read(userProvider.notifier).getUserStaff();
+            await ref.read(kegiatanDetailProvider.notifier).getKegiatan();
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Center(
+                child: userProviderData.when(
+                    data: (userData) {
+                      return Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        alignment: WrapAlignment.center,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: List.generate(
+                          userData.length,
+                          (index) => BoxStaff(
+                            name: userData[index].name,
+                            image: userData[index].profile_picture ?? '',
+                          ),
+                        ),
+                      );
+                    },
+                    error: (error, stackTrace) => Text('Error: $error'),
+                    loading: () => BoxStaffPlaceholder()),
+              ),
+              SizedBox(height: 20),
+              kegiatanProviderData.when(
+                  data: (kegiatanData) {
+                    return Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(bottom: 20),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.9,
+                          padding: EdgeInsets.all(padding),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(5),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.blueGrey,
+                                blurRadius: 4,
+                                offset: Offset(0, 1), // Posisi bayangan
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Progress Kegiatan',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  InkWell(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("All"),
+                                        Icon(
+                                          Icons.arrow_right,
+                                          size: 36,
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                              SizedBox(height: gap),
+                              Expanded(
+                                child: ListView.builder(
+                                  itemCount: kegiatanData.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return KegiatanProgress(
+                                        name: kegiatanData[index].name,
+                                        progress:
+                                            (kegiatanData[index].progress));
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );
                   },
                   error: (error, stackTrace) => Text('Error: $error'),
-                  loading: () => BoxStaffPlaceholder()),
-            ),
-            SizedBox(height: 20),
-            kegiatanProviderData.when(
-                data: (kegiatanData) {
-                  return Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(bottom: 20),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.9,
-                        padding: EdgeInsets.all(padding),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(5),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.blueGrey,
-                              blurRadius: 4,
-                              offset: Offset(0, 1), // Posisi bayangan
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Progress Kegiatan',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                InkWell(
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("All"),
-                                      Icon(
-                                        Icons.arrow_right,
-                                        size: 36,
-                                      )
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                            SizedBox(height: gap),
-                            Expanded(
-                              child: ListView.builder(
-                                itemCount: kegiatanData.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return KegiatanProgress(
-                                    name: kegiatanData[index].todo,
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-                error: (error, stackTrace) => Text('Error: $error'),
-                loading: () => ProgressKegiatanPlaceholder())
-          ],
+                  loading: () => ProgressKegiatanPlaceholder())
+            ],
+          ),
         ));
   }
 }
 
 class KegiatanProgress extends StatefulWidget {
   final String name;
+  final int progress;
   const KegiatanProgress({
     Key? key,
     required this.name,
+    required this.progress,
   }) : super(key: key);
 
   @override
@@ -130,7 +142,7 @@ class _KegiatanProgressState extends State<KegiatanProgress> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Memanggil setState setelah frame saat ini selesai diproses
       setState(() {
-        _width = MediaQuery.of(context).size.width * (70 / 100);
+        _width = MediaQuery.of(context).size.width * (widget.progress / 100);
       });
     });
   }
@@ -219,9 +231,13 @@ class _BoxStaffState extends State<BoxStaff> {
               SizedBox(
                 width: 5,
               ),
-              Text(
-                widget.name,
-                style: TextStyle(fontWeight: FontWeight.bold),
+              Expanded(
+                child: Text(
+                  widget.name,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      overflow: TextOverflow.ellipsis),
+                ),
               )
             ],
           ),

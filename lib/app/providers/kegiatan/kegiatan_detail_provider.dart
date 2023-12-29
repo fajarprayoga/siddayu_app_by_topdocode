@@ -10,18 +10,17 @@ class KegiatanDetailNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>>
     with UseApi {
   KegiatanDetailNotifier() : super(const AsyncValue.loading());
 
-  final namaKegiatan = TextEditingController();
-  final tanggalKegiatan = TextEditingController();
-  final deskripsi = TextEditingController();
-
+  final name = TextEditingController();
+  final activity_date = TextEditingController();
+  final description = TextEditingController();
+  final List<TextEditingController> sub_activities = [];
   Future getKegiatan() async {
     try {
       state = const AsyncValue.loading();
       final res = await kegiatanApi.getKegiatan();
-
       if (res.statusCode == 200) {
         final map = json.decode(res.data);
-        List data = map['todos'] ?? [];
+        List data = map['data']['data'] ?? [];
         state = AsyncValue.data(data.map((e) => Kegiatan.fromJson(e)).toList());
       }
     } catch (e, s) {
@@ -38,18 +37,18 @@ class KegiatanDetailNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>>
       //   return Toasts.show('Please fill all the fields');
       // }
 
-      final res = await kegiatanApi.addKegiatan(
-          {'todo': namaKegiatan.value.text, 'userId': 5, 'completed': false});
+      // final res = await kegiatanApi.addKegiatan(
+      //     {'todo': namaKegiatan.value.text, 'userId': 5, 'completed': false});
 
-      if (res.statusCode == 200) {
-        final map = json.decode(res.data);
-        final data = map ?? {};
-        final kegiatan = Kegiatan.fromJson(data);
-        state.whenData((value) {
-          state = AsyncValue.data([...value, kegiatan]);
-        });
-        Toasts.show('Kegiatan berhasil dibuat');
-      }
+      // if (res.statusCode == 200) {
+      //   final map = json.decode(res.data);
+      //   final data = map ?? {};
+      //   final kegiatan = Kegiatan.fromJson(data);
+      //   state.whenData((value) {
+      //     state = AsyncValue.data([...value, kegiatan]);
+      //   });
+      //   Toasts.show('Kegiatan berhasil dibuat');
+      // }
     } catch (e, s) {
       print('Error: $e, $s');
       state = AsyncValue.error(e, s);

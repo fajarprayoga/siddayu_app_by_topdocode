@@ -11,10 +11,10 @@ class UserNotifier extends StateNotifier<AsyncValue<List<User>>> with UseApi {
     try {
       state = const AsyncValue.loading();
       final res = await userApi.getUsers();
-
       if (res.statusCode == 200) {
         final map = json.decode(res.data);
-        List data = map['users'] ?? [];
+        List data = map['data']['data'] ?? [];
+        print(data);
         state = AsyncValue.data(data.map((e) => User.fromJson(e)).toList());
       }
     } catch (e, s) {

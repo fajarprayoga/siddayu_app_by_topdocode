@@ -1,30 +1,117 @@
 class Kegiatan {
-  final int? id;
-  final String todo;
-  final bool completed;
-  final int userId;
+  final String id;
+  final String activityNumber;
+  final DateTime activityDate;
+  final String name;
+  final String description;
+  final String location;
+  final String status;
+  final int totalBudget;
+  final List subActivities;
+  // final List<SubActivity> subActivities;
+  // final List<Document> documents;
+  final List documents;
+  final int progress;
 
   Kegiatan({
     required this.id,
-    required this.todo,
-    required this.completed,
-    required this.userId,
+    required this.activityNumber,
+    required this.activityDate,
+    required this.name,
+    required this.description,
+    required this.location,
+    required this.status,
+    required this.totalBudget,
+    required this.subActivities,
+    required this.documents,
+    required this.progress,
   });
 
-  // Factory method untuk membuat instance User dari JSON
+  // Factory method to create an instance of Kegiatan from JSON
   factory Kegiatan.fromJson(Map<String, dynamic> json) {
     return Kegiatan(
       id: json['id'],
-      todo: json['todo'],
-      completed: json['completed'],
-      userId: json['userId'],
+      activityNumber: json['activity_number'],
+      activityDate: DateTime.parse(json['activity_date']),
+      name: json['name'],
+      description: json['description'],
+      location: json['location'],
+      status: json['status'],
+      totalBudget: json['total_budget'],
+      subActivities: (json['sub_activities'] as List)
+          .map((subActivity) => SubActivity.fromJson(subActivity))
+          .toList(),
+      documents: (json['documents'] as List)
+          .map((document) => Document.fromJson(document))
+          .toList(),
+      progress: json['progress'],
     );
   }
 
   Map<String, dynamic> toJson() => {
         'id': id,
-        'todo': todo,
-        'completed': completed,
-        'userId': userId,
+        'activity_number': activityNumber,
+        'activity_date': activityDate.toIso8601String(),
+        'name': name,
+        'description': description,
+        'location': location,
+        'status': status,
+        'total_budget': totalBudget,
+        'sub_activities':
+            subActivities.map((subActivity) => subActivity.toJson()).toList(),
+        'documents': documents.map((document) => document.toJson()).toList(),
+        'progress': progress,
+      };
+}
+
+class SubActivity {
+  final String name;
+  final int totalBudget;
+
+  SubActivity({
+    required this.name,
+    required this.totalBudget,
+  });
+
+  factory SubActivity.fromJson(Map<String, dynamic> json) {
+    return SubActivity(
+      name: json['name'],
+      totalBudget: json['total_budget'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'total_budget': totalBudget,
+      };
+}
+
+class Document {
+  final String id;
+  final String title;
+  final String url;
+  final String type;
+
+  Document({
+    required this.id,
+    required this.title,
+    required this.url,
+    required this.type,
+  });
+
+  factory Document.fromJson(Map<String, dynamic> json) {
+    return Document(
+      id: json['id'],
+      title: json['title'],
+      url: json['url'],
+      type: json['type'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'url': url,
+        'type': type,
       };
 }

@@ -23,9 +23,9 @@ class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
   @override
   Widget build(BuildContext context) {
     final notifier = ref.read(kegiatanDetailProvider.notifier);
-    notifier.deskripsi.clear();
-    notifier.namaKegiatan.clear();
-    notifier.tanggalKegiatan.clear();
+    notifier.name.clear();
+    notifier.activity_date.clear();
+    notifier.description.clear();
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -76,12 +76,13 @@ class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
                   FormFieldCustom(
                     title: 'Nama Kegiatan',
                     placeholder: 'Masukan nama kegiatan',
-                    controller: notifier.namaKegiatan,
+                    controller: notifier.name,
                   ),
                   FormFieldCustom(
                       title: 'Tanggal Kegiatan',
                       placeholder: 'Masukan tanggal kegiatan',
-                      icon: Icons.date_range),
+                      icon: Icons.date_range,
+                      type: 'TEXT'),
                   FormFieldCustom(
                     title: 'Deskripsi Kegiatan',
                     placeholder: 'Masukan deskripsi kegiatan',
@@ -293,12 +294,15 @@ class AmprahanWidget extends StatelessWidget {
   }
 }
 
+enum Type { DATE, TEXT }
+
 class FormFieldCustom extends StatelessWidget {
   final String title;
   final String placeholder;
   final double? width;
   final IconData? icon;
   final bool? isMultiLine;
+  final String? type;
   final TextEditingController? controller;
 
   const FormFieldCustom(
@@ -308,6 +312,7 @@ class FormFieldCustom extends StatelessWidget {
       this.icon,
       this.width,
       this.isMultiLine,
+      this.type = 'TEXT',
       this.controller});
 
   @override
@@ -322,6 +327,8 @@ class FormFieldCustom extends StatelessWidget {
           SizedBox(
             height: gap - 2,
           ),
+          // if(type=='TEXT')
+          // else if(type=='DATE')
           TextFormField(
             validator: (String? arg) {
               if (arg!.length < 3) {

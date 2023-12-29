@@ -1,45 +1,37 @@
 class User {
-  final int id;
-  final String username;
+  final String id;
+  final String name;
   final String email;
-  final String firstName;
-  final String maidenName;
-  final String lastName;
-  final String gender;
-  final String image;
+  final role;
+  final position;
+  final String? profile_picture;
 
   User({
     required this.id,
-    required this.username,
+    required this.name,
     required this.email,
-    required this.firstName,
-    required this.lastName,
-    required this.gender,
-    required this.image,
-    required this.maidenName,
+    required this.role,
+    required this.position,
+    required this.profile_picture,
   });
 
   // Factory method untuk membuat instance User dari JSON
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
         id: json['id'],
-        username: json['username'],
+        name: json['name'],
         email: json['email'],
-        firstName: json['firstName'],
-        lastName: json['lastName'],
-        gender: json['gender'],
-        image: json['image'],
-        maidenName: json['maidenName']);
+        role: json['role'],
+        position: json['position'],
+        profile_picture: json['profile_picture']);
   }
 
   Map<String, dynamic> toJson() => {
         'id': id,
-        'username': username,
+        'name': name,
         'email': email,
-        'firstName': firstName,
-        'lastName': lastName,
-        'gender': gender,
-        'image': image,
-        'maidenName': maidenName,
+        'role': role,
+        'profile_picture': profile_picture,
+        'position': position,
       };
 }
