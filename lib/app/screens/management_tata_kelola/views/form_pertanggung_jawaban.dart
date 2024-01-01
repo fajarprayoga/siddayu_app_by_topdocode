@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/constants/font.dart';
 import 'package:todo_app/app/core/constants/value.dart';
+import 'package:todo_app/app/providers/kegiatan/kegiatan_detail_provider.dart';
 import 'package:todo_app/app/widgets/widget.dart';
 
 class FormPertanggungJawaban extends ConsumerStatefulWidget {
@@ -20,7 +21,6 @@ class FormPertanggungJawaban extends ConsumerStatefulWidget {
 class _FormPertanggungJawabanState
     extends ConsumerState<FormPertanggungJawaban> {
   List<Widget> formAmprahan = [];
-  List fileListSK = [];
 
   void uploadFile(List fileList) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -55,6 +55,7 @@ class _FormPertanggungJawabanState
 
   @override
   Widget build(BuildContext context) {
+    final notifier = ref.read(kegiatanDetailProvider.notifier);
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -85,14 +86,14 @@ class _FormPertanggungJawabanState
                   icon: Icons.upload_file,
                   title: 'Upload file SK',
                   onTapFunction: () {
-                    uploadFile(fileListSK);
+                    uploadFile(notifier.fileListSK);
                   }),
               ListView.builder(
                   physics: NeverScrollableScrollPhysics(),
-                  itemCount: fileListSK.length,
+                  itemCount: notifier.fileListSK.length,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
-                    print(fileListSK[index]);
+                    print(notifier.fileListSK[index]);
                     return Expanded(
                         child: Container(
                       alignment: Alignment.centerLeft,
@@ -110,7 +111,7 @@ class _FormPertanggungJawabanState
                                   width: gap,
                                 ),
                                 Text(
-                                  fileListSK[index]['name'],
+                                  notifier.fileListSK[index]['name'],
                                   style: TextStyle(
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -122,7 +123,7 @@ class _FormPertanggungJawabanState
                             width: gap,
                           ),
                           InkWell(
-                            onTap: () => removeFile(fileListSK, index),
+                            onTap: () => removeFile(notifier.fileListSK, index),
                             child: Icon(
                               Icons.delete,
                               color: Colors.red,
@@ -139,7 +140,7 @@ class _FormPertanggungJawabanState
                   icon: Icons.upload_file,
                   title: 'Upload file Berita Acara',
                   onTapFunction: () {
-                    print(fileListSK.length);
+                    print(notifier.fileListSK.length);
                   }),
               ButtonIcon(
                   label: 'Optional (PBJ)',
@@ -177,7 +178,8 @@ class _FormPertanggungJawabanState
               InkWell(
                 onTap: () {
                   // _showFullModal(context);
-                  print(fileListSK);
+                  // print(notifier.fileListSK);
+                  notifier.uploadDoc(context);
                 },
                 child: Container(
                   decoration: BoxDecoration(

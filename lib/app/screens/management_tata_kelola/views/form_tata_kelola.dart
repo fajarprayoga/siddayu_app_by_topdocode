@@ -5,7 +5,6 @@ import 'package:todo_app/app/core/constants/font.dart';
 import 'package:todo_app/app/core/constants/value.dart';
 import 'package:todo_app/app/providers/kegiatan/kegiatan_detail_provider.dart';
 import 'package:todo_app/app/routes/paths.dart';
-import 'package:todo_app/app/widgets/widget.dart';
 
 class FormTataKelola extends ConsumerStatefulWidget {
   const FormTataKelola({
@@ -19,13 +18,14 @@ class FormTataKelola extends ConsumerStatefulWidget {
 class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
   List<Widget> formAmprahan = [];
   List<Widget> formSubKegiatan = [];
-
   @override
   Widget build(BuildContext context) {
     final notifier = ref.read(kegiatanDetailProvider.notifier);
-    notifier.name.clear();
-    notifier.activity_date.clear();
-    notifier.description.clear();
+    // notifier.name.clear();
+    // notifier.activity_date.clear();
+    // notifier.description.clear();
+    // List<Widget> formSubKegiatan = [];
+    // formSubKegiatan.clear();
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -82,28 +82,34 @@ class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
                       title: 'Tanggal Kegiatan',
                       placeholder: 'Masukan tanggal kegiatan',
                       icon: Icons.date_range,
-                      type: 'TEXT'),
+                      controller: notifier.activity_date,
+                      type: 'DATE'),
                   FormFieldCustom(
                     title: 'Deskripsi Kegiatan',
                     placeholder: 'Masukan deskripsi kegiatan',
                     isMultiLine: true,
+                    controller: notifier.description,
                   ),
-
-                  ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: formSubKegiatan.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return formSubKegiatan[index];
-                    },
-                  ),
+                  if (formSubKegiatan.length > 0)
+                    ListView.builder(
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: formSubKegiatan.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return formSubKegiatan[index];
+                      },
+                    ),
                   Column(
                     children: [],
                   ),
                   ElevatedButton.icon(
                     onPressed: () {
                       setState(() {
-                        formSubKegiatan.add(subKegiatan(null));
+                        // formSubKegiatan.add(subKegiatan(null));
+                        formSubKegiatan.add(subKegiatan(
+                            (formSubKegiatan.length), notifier.sub_activities));
+
+                        print(formSubKegiatan.length);
                       });
                     },
                     icon: const Icon(Icons.add),
@@ -117,7 +123,7 @@ class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
                   InkWell(
                     onTap: () async {
                       // _showFullModal(context);
-                      await notifier.createKegiatan();
+                      await notifier.createKegiatan(context);
                       // context.pop();
                     },
                     child: Container(
@@ -142,7 +148,9 @@ class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
     );
   }
 
-  Row subKegiatan(int? index) {
+  Row subKegiatan(int index, List _sub_activities) {
+    final name = TextEditingController();
+    final total = TextEditingController();
     return Row(
       // mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -152,6 +160,17 @@ class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
           child: FormFieldCustom(
             title: '',
             placeholder: 'Sub Kegiatan',
+            controller: name,
+            onChanged: (value) {
+              if (index < _sub_activities.length) {
+                _sub_activities[index] = {
+                  ..._sub_activities[index],
+                  "name": value
+                };
+              } else {
+                _sub_activities.add({"name": value});
+              }
+            },
           ),
         ),
         SizedBox(
@@ -161,6 +180,19 @@ class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
           width: 100,
           title: '',
           placeholder: '0',
+          keyboardType: TextInputType.number,
+          controller: total,
+          onChanged: (value) {
+            // print(index);
+            if (index < _sub_activities.length) {
+              _sub_activities[index] = {
+                ..._sub_activities[index],
+                "total_budget": value
+              };
+            } else {
+              _sub_activities.add({"total_budget": value});
+            }
+          },
         ),
         Center(
             child: InkWell(
@@ -246,54 +278,6 @@ class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
   }
 }
 
-class AmprahanWidget extends StatelessWidget {
-  const AmprahanWidget({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: gap),
-      padding: EdgeInsets.all(padding + 5),
-      width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(radius - 15),
-          color: Colors.white,
-          border: Border.all(width: 1, color: Colors.grey),
-          boxShadow: [
-            // BoxShadow(
-            //   color: Colors.blueGrey,
-            //   blurRadius: 4,
-            //   offset: Offset(0, 1), // Posisi bayangan
-            // ),
-          ]),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          FormFieldCustom(placeholder: '0525515518', title: 'No Amprahan'),
-          ButtonIcon(
-            icon: Icons.upload_file,
-            title: 'Upload file Doku,emtasi Kegiatan',
-            label: 'Dokumentasi Kegiatan',
-            onTapFunction: () {},
-            placeholder: 'Silahkan upload format PDF',
-          ),
-          FormFieldCustom(
-              placeholder: 'Masukan Total Realisasi Anggaran',
-              title: 'Total Realisasi Anggaran'),
-          const FormFieldCustom(
-              placeholder: 'Masukan Sumber Dana', title: 'Sumber Dana'),
-          // Checkbox(
-          //   value: true,
-          //   onChanged: (value) {},
-          // )
-        ],
-      ),
-    );
-  }
-}
-
 enum Type { DATE, TEXT }
 
 class FormFieldCustom extends StatelessWidget {
@@ -303,7 +287,9 @@ class FormFieldCustom extends StatelessWidget {
   final IconData? icon;
   final bool? isMultiLine;
   final String? type;
+  final TextInputType? keyboardType;
   final TextEditingController? controller;
+  final void Function(String)? onChanged;
 
   const FormFieldCustom(
       {super.key,
@@ -313,7 +299,26 @@ class FormFieldCustom extends StatelessWidget {
       this.width,
       this.isMultiLine,
       this.type = 'TEXT',
-      this.controller});
+      this.controller,
+      this.keyboardType,
+      this.onChanged});
+
+  Future<void> _selectDate(BuildContext context) async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != DateTime.now()) {
+      // Handle the selected date value
+      DateTime localPicked = picked.toLocal(); // Convert to local time
+      String formattedDate =
+          localPicked.toString().split(' ')[0]; // Get only the date part
+      controller?.text =
+          formattedDate; // Update the text field with the formatted date
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -323,21 +328,20 @@ class FormFieldCustom extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title),
+          if (title != '') Text(title),
           SizedBox(
             height: gap - 2,
           ),
-          // if(type=='TEXT')
-          // else if(type=='DATE')
-          TextFormField(
-            validator: (String? arg) {
-              if (arg!.length < 3) {
-                return 'Email must be more than 2 charater';
-              }
-              return null;
-            },
-            controller: controller,
-            decoration: InputDecoration(
+          if (type == 'TEXT')
+            TextFormField(
+              validator: (String? arg) {
+                if (arg!.length < 3) {
+                  return 'Text must be more than 2 characters';
+                }
+                return null;
+              },
+              controller: controller,
+              decoration: InputDecoration(
                 hintText: placeholder,
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
@@ -353,13 +357,44 @@ class FormFieldCustom extends StatelessWidget {
                 fillColor: Colors.white,
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 15.0, horizontal: padding),
-                prefixIcon: icon != null ? Icon(icon) : null),
-            maxLines: null,
-            minLines: isMultiLine ?? false ? 4 : 1,
-            onSaved: (String? val) {
-              // username.text = val ?? '';
-            },
-          ),
+                prefixIcon: icon != null ? Icon(icon) : null,
+              ),
+              maxLines: null,
+              minLines: isMultiLine ?? false ? 4 : 1,
+              onSaved: (String? val) {
+                // Handle the saved value for text type.
+              },
+              onChanged: onChanged,
+              keyboardType: keyboardType ?? TextInputType.text,
+            )
+          else if (type == 'DATE')
+            TextFormField(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: placeholder,
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.grey,
+                  ),
+                  borderRadius: BorderRadius.circular(5.5),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: primary, width: 2),
+                  borderRadius: BorderRadius.circular(5.5),
+                ),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: 15.0,
+                  horizontal: padding,
+                ),
+                prefixIcon: icon != null ? Icon(icon) : null,
+              ),
+              maxLines: null,
+              minLines: isMultiLine ?? false ? 4 : 1,
+              onTap: () => _selectDate(context),
+              readOnly: true, // Prevent manual text input
+            ),
         ],
       ),
     );

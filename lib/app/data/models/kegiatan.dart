@@ -4,14 +4,14 @@ class Kegiatan {
   final DateTime activityDate;
   final String name;
   final String description;
-  final String location;
+  // final String location;
   final String status;
-  final int totalBudget;
-  final List subActivities;
+  final int? totalBudget;
+  // final List subActivities;
   // final List<SubActivity> subActivities;
   // final List<Document> documents;
-  final List documents;
-  final int progress;
+  // final List documents;
+  final double progress;
 
   Kegiatan({
     required this.id,
@@ -19,11 +19,11 @@ class Kegiatan {
     required this.activityDate,
     required this.name,
     required this.description,
-    required this.location,
+    // required this.location,
     required this.status,
     required this.totalBudget,
-    required this.subActivities,
-    required this.documents,
+    // required this.subActivities,
+    // required this.documents,
     required this.progress,
   });
 
@@ -35,16 +35,16 @@ class Kegiatan {
       activityDate: DateTime.parse(json['activity_date']),
       name: json['name'],
       description: json['description'],
-      location: json['location'],
-      status: json['status'],
-      totalBudget: json['total_budget'],
-      subActivities: (json['sub_activities'] as List)
-          .map((subActivity) => SubActivity.fromJson(subActivity))
-          .toList(),
-      documents: (json['documents'] as List)
-          .map((document) => Document.fromJson(document))
-          .toList(),
-      progress: json['progress'],
+      // location: json['location'],
+      status: json['status'] ?? 'progress',
+      totalBudget: json['total_budget'] == null ? 0 : json['total_budget'],
+      // subActivities: (json['sub_activities'] as List)
+      //     .map((subActivity) => SubActivity.fromJson(subActivity))
+      //     .toList(),
+      // documents: (json['documents'] as List)
+      //     .map((document) => Document.fromJson(document))
+      //     .toList(),
+      progress: json['progress'] == null ? 0 : 0,
     );
   }
 
@@ -54,12 +54,13 @@ class Kegiatan {
         'activity_date': activityDate.toIso8601String(),
         'name': name,
         'description': description,
-        'location': location,
+        // 'location': location,
         'status': status,
         'total_budget': totalBudget,
-        'sub_activities':
-            subActivities.map((subActivity) => subActivity.toJson()).toList(),
-        'documents': documents.map((document) => document.toJson()).toList(),
+        // 'sub_activities': subActivities.length > 0
+        //     ? subActivities.map((subActivity) => subActivity.toJson()).toList()
+        //     : [{}].toList(),
+        // 'documents': documents.map((document) => document.toJson()).toList(),
         'progress': progress,
       };
 }

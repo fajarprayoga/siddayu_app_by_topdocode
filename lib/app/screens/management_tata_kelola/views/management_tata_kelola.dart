@@ -122,7 +122,7 @@ class ManagementTataKelola extends ConsumerWidget {
 
 class KegiatanProgress extends StatefulWidget {
   final String name;
-  final int progress;
+  final double progress;
   const KegiatanProgress({
     Key? key,
     required this.name,

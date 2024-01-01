@@ -55,7 +55,8 @@ class GetAuh with UseApi {
       // final auth = json.decode(authString);
       if (authString != '') {
         final authJson = json.decode(authString);
-        final res = await authApi.getAuth(authJson['id']);
+        final res = await authApi.getAuth();
+
         final userString = json.decode(res.data);
         prefs.setString('auth', json.encode(userString['data']));
         return true;

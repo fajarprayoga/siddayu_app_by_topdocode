@@ -5,8 +5,8 @@ class AuthApi {
     return await dio.post('api/auth/login', data: data);
   }
 
-  Future<Response> getAuth(String id) async {
-    return await dio.get('api/login/user/$id');
+  Future<Response> getAuth() async {
+    return await dio.get('api/login/users');
   }
 
   Future<Response> getUserStaff() async {

@@ -62,7 +62,7 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
                           itemCount: data.length,
                           itemBuilder: (BuildContext context, int index) {
                             return ListKegiatan(
-                              name: data[index].name,
+                              name: data[index].name!,
                             );
                           },
                         );

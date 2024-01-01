@@ -26,7 +26,6 @@ class HomePage extends ConsumerWidget {
 
     String? authLocal = prefs.getString('auth');
     final auth = Auth.fromJson(json.decode(authLocal ?? ''));
-    print(auth);
 
     // final User user;
     return Scaffold(

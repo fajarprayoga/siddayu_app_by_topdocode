@@ -6,6 +6,10 @@ class KegiatanApi {
   }
 
   Future<Response> addKegiatan(Map<String, dynamic> data) async {
-    return await dio.post('todos/add', data: data);
+    return await dio.post('api/activities', data: data);
+  }
+
+  Future<Response> uploadDoc(data) async {
+    return await dio.post('api/upload/multiple', data: data);
   }
 }
