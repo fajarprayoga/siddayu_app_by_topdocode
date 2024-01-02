@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
@@ -79,19 +80,20 @@ class KegiatanDetailNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>>
       if (fileListSK.isNotEmpty) {
         FormData formData = FormData();
 
-        for (var fileData in fileListSK) {
-          String fileName = fileData['name'];
-          String filePath = fileData['path'];
+        for (var i = 0; i < fileListSK.length; i++) {
+          final fileName = fileListSK[i]['name'];
+          final File file =
+              fileListSK[i]['path']; // Diasumsikan ini adalah objek File
 
           formData.files.add(MapEntry(
-            'files',
-            await MultipartFile.fromFile(filePath, filename: fileName),
+            'files[]', // Menggunakan 'files[]' untuk menandai sebagai array
+            await MultipartFile.fromFile(file.path, filename: fileName),
           ));
         }
 
         // Assuming you have the Dio setup and a URL endpoint
-        final res = await kegiatanApi.uploadDoc(fileListSK);
-
+        final res = await kegiatanApi.uploadDoc(formData);
+        print(res);
         if (res.statusCode == 201) {
           print('success');
         } else {

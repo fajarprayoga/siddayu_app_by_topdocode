@@ -99,31 +99,36 @@ class ListKegiatan extends StatelessWidget {
             //   offset: Offset(0, 0.5), // Posisi bayangan
             // ),
           ]),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Row(
-              children: [
-                Icon(Icons.list),
-                SizedBox(
-                  width: gap,
-                ),
-                Flexible(
-                  child: Text(
-                    name,
-                    overflow: TextOverflow.ellipsis,
+      child: InkWell(
+        onTap: () {
+          // context.push();
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Row(
+                children: [
+                  Icon(Icons.list),
+                  SizedBox(
+                    width: gap,
                   ),
-                ),
-              ],
+                  Flexible(
+                    child: Text(
+                      name,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Icon(
-            Icons.arrow_right,
-            color: primary,
-            size: 24,
-          )
-        ],
+            Icon(
+              Icons.arrow_right,
+              color: primary,
+              size: 24,
+            )
+          ],
+        ),
       ),
     );
   }
