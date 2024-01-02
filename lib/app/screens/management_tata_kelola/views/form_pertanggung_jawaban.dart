@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/constants/font.dart';
 import 'package:todo_app/app/core/constants/value.dart';
-import 'package:todo_app/app/providers/kegiatan/kegiatan_detail_provider.dart';
+import 'package:todo_app/app/providers/kegiatan/kegiatan_provider.dart';
 import 'package:todo_app/app/widgets/widget.dart';
 
 class FormPertanggungJawaban extends ConsumerStatefulWidget {
@@ -55,7 +55,7 @@ class _FormPertanggungJawabanState
 
   @override
   Widget build(BuildContext context) {
-    final notifier = ref.read(kegiatanDetailProvider.notifier);
+    final notifier = ref.read(kegiatanProvider.notifier);
     return Scaffold(
       appBar: AppBar(
         title: Column(

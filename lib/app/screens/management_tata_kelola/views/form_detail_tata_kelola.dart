@@ -1,31 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/constants/font.dart';
 import 'package:todo_app/app/core/constants/value.dart';
-import 'package:todo_app/app/providers/kegiatan/kegiatan_provider.dart';
-import 'package:todo_app/app/routes/paths.dart';
+import 'package:todo_app/app/data/models/kegiatan.dart';
+import 'package:todo_app/app/providers/kegiatan/kegiatan_detail_provider.dart';
 
-class FormTataKelola extends ConsumerStatefulWidget {
-  const FormTataKelola({
-    super.key,
-  });
+class FormDetailTataKelola extends ConsumerStatefulWidget {
+  final Kegiatan kegiatan;
+  const FormDetailTataKelola({
+    Key? key,
+    required this.kegiatan,
+  }) : super(key: key);
 
   @override
-  ConsumerState<FormTataKelola> createState() => _FormTataKelolaState();
+  ConsumerState<FormDetailTataKelola> createState() =>
+      _FormDetailTataKelolaState();
 }
 
-class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
+class _FormDetailTataKelolaState extends ConsumerState<FormDetailTataKelola> {
   List<Widget> formAmprahan = [];
   List<Widget> formSubKegiatan = [];
   @override
   Widget build(BuildContext context) {
-    final notifier = ref.read(kegiatanProvider.notifier);
-    // notifier.name.clear();
-    // notifier.activity_date.clear();
-    // notifier.description.clear();
-    // List<Widget> formSubKegiatan = [];
-    // formSubKegiatan.clear();
+    final KegiatanDetailProvider =
+        ref.watch(kegiatanDetailProvider(widget.kegiatan.id));
+    final notifier =
+        ref.read(kegiatanDetailProvider(widget.kegiatan.id).notifier);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -38,112 +38,127 @@ class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
                 style: Gfont.bold,
               ),
               Text(
-                "Kegiatan / Detail / Create",
+                "Kegiatan / Detail ",
                 style: Gfont.fs14,
               )
             ],
           ),
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.only(bottom: padding),
-            child: Container(
-              margin: EdgeInsets.only(top: gap + 20),
-              padding: EdgeInsets.symmetric(horizontal: padding + 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    alignment: Alignment.centerRight,
-                    child: InkWell(
-                      onTap: () {
-                        // _showFullModal(context);
-                        context.push(Paths.formPertanggungJawaban);
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(radius - 10),
-                          color: primary,
-                        ),
-                        padding: EdgeInsets.all(padding),
-                        child: Text(
-                          'Pertanggung Jawaban',
-                          style: Gfont.fs14.white,
+        body: KegiatanDetailProvider.when(
+            data: (data) {
+              return SingleChildScrollView(
+                  child: Padding(
+                padding: EdgeInsets.only(bottom: padding),
+                child: Container(
+                  margin: EdgeInsets.only(top: gap + 20),
+                  padding: EdgeInsets.symmetric(horizontal: padding + 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        alignment: Alignment.centerRight,
+                        child: InkWell(
+                          onTap: () {
+                            // _showFullModal(context);
+                            // context.push(Paths.formPertanggungJawaban);
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(radius - 10),
+                              color: primary,
+                            ),
+                            padding: EdgeInsets.all(padding),
+                            child: Text(
+                              'Pertanggung Jawaban',
+                              style: Gfont.fs14.white,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                  FormFieldCustom(
-                    title: 'Nama Kegiatan',
-                    placeholder: 'Masukan nama kegiatan',
-                    controller: notifier.name,
-                  ),
-                  FormFieldCustom(
-                      title: 'Tanggal Kegiatan',
-                      placeholder: 'Masukan tanggal kegiatan',
-                      icon: Icons.date_range,
-                      controller: notifier.activity_date,
-                      type: 'DATE'),
-                  FormFieldCustom(
-                    title: 'Deskripsi Kegiatan',
-                    placeholder: 'Masukan deskripsi kegiatan',
-                    isMultiLine: true,
-                    controller: notifier.description,
-                  ),
-                  if (formSubKegiatan.length > 0)
-                    ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: formSubKegiatan.length,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        return formSubKegiatan[index];
-                      },
-                    ),
-                  Column(
-                    children: [],
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        // formSubKegiatan.add(subKegiatan(null));
-                        formSubKegiatan.add(subKegiatan(
-                            (formSubKegiatan.length), notifier.sub_activities));
+                      FormFieldCustom(
+                        title: 'Nama Kegiatan',
+                        placeholder: 'Masukan nama kegiatan',
+                        controller: notifier.name,
+                      ),
+                      FormFieldCustom(
+                          title: 'Tanggal Kegiatan',
+                          placeholder: 'Masukan tanggal kegiatan',
+                          icon: Icons.date_range,
+                          controller: notifier.activity_date,
+                          type: 'DATE'),
+                      FormFieldCustom(
+                        title: 'Deskripsi Kegiatan',
+                        placeholder: 'Masukan deskripsi kegiatan',
+                        isMultiLine: true,
+                        controller: notifier.description,
+                      ),
+                      if (data.subActivities.length > 0)
+                        ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: data.subActivities.length,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            // return Text('jalo');
+                            return subKegiatan(index, data.subActivities);
+                          },
+                        ),
+                      if (formSubKegiatan.length > 0)
+                        ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: formSubKegiatan.length,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            return formSubKegiatan[index];
+                          },
+                        ),
+                      Column(
+                        children: [],
+                      ),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            // formSubKegiatan.add(subKegiatan(null));
+                            formSubKegiatan.add(subKegiatan(
+                                (formSubKegiatan.length), formSubKegiatan));
 
-                        print(formSubKegiatan.length);
-                      });
-                    },
-                    icon: const Icon(Icons.add),
-                    label: Text('Tambah Sub Kegiatan'),
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white, onPrimary: Colors.black),
-                  ),
-                  SizedBox(
-                    height: gap + 10,
-                  ),
-                  InkWell(
-                    onTap: () async {
-                      // _showFullModal(context);
-                      await notifier.createKegiatan(context);
-                      // context.pop();
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(radius - 10),
-                        color: primary,
+                            // print(formSubKegiatan.length);
+                          });
+                        },
+                        icon: const Icon(Icons.add),
+                        label: Text('Tambah Sub Kegiatan'),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            onPrimary: Colors.black),
                       ),
-                      padding: EdgeInsets.all(padding),
-                      child: Text(
-                        'Simpan',
-                        style: Gfont.fs14.white,
+                      SizedBox(
+                        height: gap + 10,
                       ),
-                    ),
-                  )
-                  // Checkbox(value: true, onChanged: (){})
-                ],
-              ),
-            ),
-          ),
-        ),
+                      InkWell(
+                        onTap: () async {
+                          // _showFullModal(context);
+                          // await notifier.createKegiatan(context);
+                          // context.pop();
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(radius - 10),
+                            color: primary,
+                          ),
+                          padding: EdgeInsets.all(padding),
+                          child: Text(
+                            'Simpan',
+                            style: Gfont.fs14.white,
+                          ),
+                        ),
+                      )
+                      // Checkbox(value: true, onChanged: (){})
+                    ],
+                  ),
+                ),
+              ));
+            },
+            error: (error, stackTrace) => Text('Error: $error'),
+            loading: () => CircularProgressIndicator()),
       ),
     );
   }
@@ -151,6 +166,13 @@ class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
   Row subKegiatan(int index, List _sub_activities) {
     final name = TextEditingController();
     final total = TextEditingController();
+
+    if (_sub_activities.isNotEmpty && index < _sub_activities.length) {
+      name.text =
+          _sub_activities[index].name ?? ''; // You can use any default value
+      total.text = _sub_activities[index].totalBudget.toString() ??
+          ''; // You can use any default value
+    }
     return Row(
       // mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -289,6 +311,7 @@ class FormFieldCustom extends StatelessWidget {
   final String? type;
   final TextInputType? keyboardType;
   final TextEditingController? controller;
+  final initialValue;
   final void Function(String)? onChanged;
 
   const FormFieldCustom(
@@ -301,7 +324,8 @@ class FormFieldCustom extends StatelessWidget {
       this.type = 'TEXT',
       this.controller,
       this.keyboardType,
-      this.onChanged});
+      this.onChanged,
+      this.initialValue});
 
   Future<void> _selectDate(BuildContext context) async {
     DateTime? picked = await showDatePicker(
@@ -341,6 +365,7 @@ class FormFieldCustom extends StatelessWidget {
                 return null;
               },
               controller: controller,
+              initialValue: initialValue ?? null,
               decoration: InputDecoration(
                 hintText: placeholder,
                 enabledBorder: OutlineInputBorder(

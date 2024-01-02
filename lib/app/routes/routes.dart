@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:go_router/go_router.dart';
-import 'package:todo_app/app/core/helpers/toast.dart';
 import 'package:todo_app/app/data/api/api.dart';
+import 'package:todo_app/app/data/models/kegiatan.dart';
 import 'package:todo_app/app/data/service/local/storage.dart';
 import 'package:todo_app/app/screens/home/views/home_page.dart';
 import 'package:todo_app/app/screens/login/login_view.dart';
+import 'package:todo_app/app/screens/management_tata_kelola/views/form_detail_tata_kelola.dart';
 import 'package:todo_app/app/screens/management_tata_kelola/views/form_pertanggung_jawaban.dart';
 import 'package:todo_app/app/screens/management_tata_kelola/views/form_tata_kelola.dart';
 import 'package:todo_app/app/screens/management_tata_kelola/views/management_tata_kelola.dart';
@@ -25,6 +26,10 @@ final GoRouter router = GoRouter(
     Route.set(Paths.formManagementTataKelola, (state) => FormTataKelola()),
     Route.set(
         Paths.formPertanggungJawaban, (state) => FormPertanggungJawaban()),
+    GoRoute(
+        path: Paths.formManagementTataKelolaDetail,
+        builder: (_, GoRouterState state) =>
+            FormDetailTataKelola(kegiatan: state.extra as Kegiatan)),
   ],
 );
 
@@ -36,7 +41,6 @@ Future<String> _redirect() async {
   } else {
     GetAuh getAuth = GetAuh();
     final res = await getAuth.getAuth(token);
-    print(res);
     if (res) {
       return Paths.home;
     } else {
@@ -54,7 +58,6 @@ class GetAuh with UseApi {
       String? authString = (prefs.getString('auth') ?? '');
       // final auth = json.decode(authString);
       if (authString != '') {
-        final authJson = json.decode(authString);
         final res = await authApi.getAuth();
 
         final userString = json.decode(res.data);

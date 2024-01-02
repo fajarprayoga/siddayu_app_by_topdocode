@@ -1,5 +1,5 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:todo_app/app/providers/kegiatan/kegiatan_detail_provider.dart';
+import 'package:todo_app/app/providers/kegiatan/kegiatan_provider.dart';
 import 'package:todo_app/app/providers/user/user_provider.dart';
 
 // import 'todo/todo_provider.dart';
@@ -20,7 +20,7 @@ class AppStateNotifier extends StateNotifier<AppState> {
         // if (!visited.contains(index)) {
         // ;
         ref.read(userProvider.notifier).getUserStaff();
-        ref.read(kegiatanDetailProvider.notifier).getKegiatan();
+        ref.read(kegiatanProvider.notifier).getKegiatan();
         // }
         break;
       default:

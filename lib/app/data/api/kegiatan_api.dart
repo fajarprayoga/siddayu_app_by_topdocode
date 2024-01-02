@@ -12,4 +12,8 @@ class KegiatanApi {
   Future<Response> uploadDoc(data) async {
     return await dio.post('api/upload/multiple', data: data);
   }
+
+  Future<Response> getKegiatanById(String id) async {
+    return await dio.get('api/activities/$id');
+  }
 }

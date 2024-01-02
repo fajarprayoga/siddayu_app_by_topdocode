@@ -3,7 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/constants/font.dart';
 import 'package:todo_app/app/core/constants/value.dart';
-import 'package:todo_app/app/providers/kegiatan/kegiatan_detail_provider.dart';
+import 'package:todo_app/app/data/models/kegiatan.dart';
+import 'package:todo_app/app/providers/kegiatan/kegiatan_provider.dart';
 import 'package:todo_app/app/routes/paths.dart';
 
 class ManagementTataKelolaDetail extends ConsumerWidget {
@@ -15,7 +16,7 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final kegiatanProvider = ref.read(kegiatanDetailProvider);
+    final refKegiatanProvider = ref.read(kegiatanProvider);
     return Scaffold(
       appBar: AppBar(
           title: Column(
@@ -53,7 +54,7 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
                 height: gap,
               ),
               Expanded(
-                  child: kegiatanProvider.when(
+                  child: refKegiatanProvider.when(
                       data: (data) {
                         if (data.length < 0) {
                           return Text('data is empty');
@@ -61,9 +62,7 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
                         return ListView.builder(
                           itemCount: data.length,
                           itemBuilder: (BuildContext context, int index) {
-                            return ListKegiatan(
-                              name: data[index].name!,
-                            );
+                            return ListKegiatan(item: data[index]);
                           },
                         );
                       },
@@ -80,8 +79,8 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
 }
 
 class ListKegiatan extends StatelessWidget {
-  final String name;
-  const ListKegiatan({Key? key, required this.name}) : super(key: key);
+  final Kegiatan item;
+  const ListKegiatan({Key? key, required this.item}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +100,7 @@ class ListKegiatan extends StatelessWidget {
           ]),
       child: InkWell(
         onTap: () {
-          // context.push();
+          context.push(Paths.formManagementTataKelolaDetail, extra: item);
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -115,7 +114,7 @@ class ListKegiatan extends StatelessWidget {
                   ),
                   Flexible(
                     child: Text(
-                      name,
+                      item.name,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),

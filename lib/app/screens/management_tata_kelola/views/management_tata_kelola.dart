@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/constants/value.dart';
-import 'package:todo_app/app/providers/kegiatan/kegiatan_detail_provider.dart';
+import 'package:todo_app/app/providers/kegiatan/kegiatan_provider.dart';
 import 'package:todo_app/app/providers/user/user_provider.dart';
 import 'package:todo_app/app/routes/paths.dart';
 import 'package:todo_app/app/widgets/widget.dart';
@@ -13,14 +13,14 @@ class ManagementTataKelola extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userProviderData = ref.watch(userProvider);
-    final kegiatanProviderData = ref.watch(kegiatanDetailProvider);
+    final kegiatanProviderData = ref.watch(kegiatanProvider);
 
     return Scaffold(
         backgroundColor: Colors.white,
         body: RefreshIndicator(
           onRefresh: () async {
             await ref.read(userProvider.notifier).getUserStaff();
-            await ref.read(kegiatanDetailProvider.notifier).getKegiatan();
+            await ref.read(kegiatanProvider.notifier).getKegiatan();
           },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
