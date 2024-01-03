@@ -1,10 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/constants/font.dart';
 import 'package:todo_app/app/core/constants/value.dart';
+import 'package:todo_app/app/data/models/auth.dart';
 import 'package:todo_app/app/data/models/kegiatan.dart';
-import 'package:todo_app/app/providers/kegiatan/kegiatan_provider.dart';
+import 'package:todo_app/app/data/service/local/storage.dart';
+import 'package:todo_app/app/providers/kegiatan/kegiatan_by_user_provider.dart';
 import 'package:todo_app/app/routes/paths.dart';
 
 class ManagementTataKelolaDetail extends ConsumerWidget {
@@ -16,7 +20,9 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final refKegiatanProvider = ref.read(kegiatanProvider);
+    String? authLocal = prefs.getString('auth');
+    final auth = Auth.fromJson(json.decode(authLocal ?? ''));
+    final refKegiatanProvider = ref.watch(kegiatanByUserProvider(params['id']));
     return Scaffold(
       appBar: AppBar(
           title: Column(
@@ -49,7 +55,7 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
           child: Column(
             children: [
               SizedBox(height: gap),
-              ButtonAddKegiatan(),
+              if (auth.id == params['id']) ButtonAddKegiatan(),
               SizedBox(
                 height: gap,
               ),

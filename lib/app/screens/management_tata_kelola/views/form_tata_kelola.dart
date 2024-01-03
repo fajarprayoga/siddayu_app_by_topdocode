@@ -53,26 +53,6 @@ class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    alignment: Alignment.centerRight,
-                    child: InkWell(
-                      onTap: () {
-                        // _showFullModal(context);
-                        context.push(Paths.formPertanggungJawaban);
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(radius - 10),
-                          color: primary,
-                        ),
-                        padding: EdgeInsets.all(padding),
-                        child: Text(
-                          'Pertanggung Jawaban',
-                          style: Gfont.fs14.white,
-                        ),
-                      ),
-                    ),
-                  ),
                   FormFieldCustom(
                     title: 'Nama Kegiatan',
                     placeholder: 'Masukan nama kegiatan',
@@ -108,8 +88,6 @@ class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
                         // formSubKegiatan.add(subKegiatan(null));
                         formSubKegiatan.add(subKegiatan(
                             (formSubKegiatan.length), notifier.sub_activities));
-
-                        print(formSubKegiatan.length);
                       });
                     },
                     icon: const Icon(Icons.add),

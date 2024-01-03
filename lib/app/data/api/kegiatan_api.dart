@@ -1,6 +1,10 @@
 part of api;
 
 class KegiatanApi {
+  Future<Response> getKegiatanByUser(String userId) async {
+    return await dio.get('api/activities/?user_id=$userId');
+  }
+
   Future<Response> getKegiatan() async {
     return await dio.get('api/activities');
   }

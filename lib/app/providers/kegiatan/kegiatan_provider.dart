@@ -94,7 +94,6 @@ class KegiatanNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>>
 
         // Assuming you have the Dio setup and a URL endpoint
         final res = await kegiatanApi.uploadDoc(formData);
-        print(res);
         if (res.statusCode == 201) {
           print('success');
         } else {

@@ -38,6 +38,7 @@ class ManagementTataKelola extends ConsumerWidget {
                           (index) => BoxStaff(
                             name: userData[index].name,
                             image: userData[index].profile_picture ?? '',
+                            id: userData[index].id,
                           ),
                         ),
                       );
@@ -187,10 +188,12 @@ class _KegiatanProgressState extends State<KegiatanProgress> {
 class BoxStaff extends StatefulWidget {
   final String name;
   final String image;
+  final String id;
   const BoxStaff({
     Key? key,
     required this.name,
     required this.image,
+    required this.id,
   }) : super(key: key);
 
   @override
@@ -202,7 +205,7 @@ class _BoxStaffState extends State<BoxStaff> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () => context.push(Paths.managementTataKelolaDetail('1'),
-          extra: {'id': 1, 'name': widget.name}),
+          extra: {'id': widget.id, 'name': widget.name}),
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 800),
         opacity: 1,

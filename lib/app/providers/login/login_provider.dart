@@ -51,9 +51,9 @@ class Auth with ChangeNotifier, UseApi {
       }
     } catch (e, s) {
       print('Error: $e, StackTrace: $s');
-      return Toasts.show('error');
-    } finally {
       loading = false;
+      notifyListeners();
+      return Toasts.show('error');
     }
   }
 }

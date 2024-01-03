@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/constants/font.dart';
 import 'package:todo_app/app/core/constants/value.dart';
 import 'package:todo_app/app/data/models/kegiatan.dart';
 import 'package:todo_app/app/providers/kegiatan/kegiatan_detail_provider.dart';
+import 'package:todo_app/app/routes/paths.dart';
 
 class FormDetailTataKelola extends ConsumerStatefulWidget {
   final Kegiatan kegiatan;
@@ -61,6 +63,7 @@ class _FormDetailTataKelolaState extends ConsumerState<FormDetailTataKelola> {
                           onTap: () {
                             // _showFullModal(context);
                             // context.push(Paths.formPertanggungJawaban);
+                            context.push(Paths.formPertanggungJawaban);
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -158,7 +161,9 @@ class _FormDetailTataKelolaState extends ConsumerState<FormDetailTataKelola> {
               ));
             },
             error: (error, stackTrace) => Text('Error: $error'),
-            loading: () => CircularProgressIndicator()),
+            loading: () => Center(
+                  child: CircularProgressIndicator(),
+                )),
       ),
     );
   }
