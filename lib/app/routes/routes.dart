@@ -41,6 +41,7 @@ Future<String> _redirect() async {
   } else {
     GetAuh getAuth = GetAuh();
     final res = await getAuth.getAuth(token);
+    print(res);
     if (res) {
       return Paths.home;
     } else {

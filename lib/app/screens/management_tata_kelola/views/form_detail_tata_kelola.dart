@@ -224,7 +224,9 @@ class _FormDetailTataKelolaState extends ConsumerState<FormDetailTataKelola> {
         Center(
             child: InkWell(
                 onTap: () {
-                  print('Inkwell');
+                  setState(() {
+                    formSubKegiatan.removeAt(index);
+                  });
                 },
                 child: Icon(
                   Icons.delete,

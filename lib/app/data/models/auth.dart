@@ -4,8 +4,8 @@ class Auth {
   final String email;
   final role;
   final position;
-  final String created_at;
-  final String updated_at;
+  final String? created_at;
+  final String? updated_at;
 
   Auth({
     required this.id,

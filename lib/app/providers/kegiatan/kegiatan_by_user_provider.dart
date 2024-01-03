@@ -27,6 +27,7 @@ class KegiatanByUserNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>>
     try {
       state = const AsyncValue.loading();
       final res = await kegiatanApi.getKegiatanByUser(userId);
+      print(res);
       if (res.statusCode == 200) {
         final map = json.decode(res.data);
         List data = map['data']['data'] ?? [];
@@ -39,7 +40,8 @@ class KegiatanByUserNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>>
   }
 }
 
-final kegiatanByUserProvider = StateNotifierProvider.family<
-    KegiatanByUserNotifier, AsyncValue<List<Kegiatan>>, String>((ref, userId) {
+final kegiatanByUserProvider = StateNotifierProvider.autoDispose
+    .family<KegiatanByUserNotifier, AsyncValue<List<Kegiatan>>, String>(
+        (ref, userId) {
   return KegiatanByUserNotifier(userId: userId);
 });

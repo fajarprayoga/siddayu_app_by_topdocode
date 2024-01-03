@@ -64,8 +64,8 @@ class KegiatanNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>>
           state = AsyncValue.data([...value, kegiatan]);
         });
         // context.push(Paths.formManagementTataKelolaDetail(null));
-        context.push(Paths.formManagementTataKelolaDetail, extra: kegiatan);
-
+        context.pushReplacement(Paths.formManagementTataKelolaDetail,
+            extra: kegiatan);
         Toasts.show('Kegiatan berhasil dibuat');
       } else {
         Toasts.show(map['message']);
