@@ -20,4 +20,8 @@ class KegiatanApi {
   Future<Response> getKegiatanById(String id) async {
     return await dio.get('api/activities/$id');
   }
+
+  Future<Response> updateKegiatan(String id, Map<String, dynamic> data) async {
+    return await dio.patch('api/activities/$id', data: data);
+  }
 }
