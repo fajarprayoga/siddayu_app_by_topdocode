@@ -63,7 +63,8 @@ class _FormDetailTataKelolaState extends ConsumerState<FormDetailTataKelola> {
                           onTap: () {
                             // _showFullModal(context);
                             // context.push(Paths.formPertanggungJawaban);
-                            context.push(Paths.formPertanggungJawaban);
+                            context.push(Paths.formPertanggungJawaban,
+                                extra: widget.kegiatan);
                           },
                           child: Container(
                             decoration: BoxDecoration(

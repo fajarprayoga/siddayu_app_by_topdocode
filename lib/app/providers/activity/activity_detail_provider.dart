@@ -5,7 +5,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/helpers/toast.dart';
 import 'package:todo_app/app/data/api/api.dart';
 import 'package:todo_app/app/data/models/kegiatan.dart';
-import 'package:todo_app/app/providers/activity/activity_provider.dart';
 
 class SubActivity {
   TextEditingController nameController = TextEditingController();
@@ -20,7 +19,7 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>>
   final name = TextEditingController();
   final activity_date = TextEditingController();
   final description = TextEditingController();
-  List fileListSK = [];
+  List fileList = [];
   List sub_activities = [];
   ActivtyDetailNotifier({this.activityId}) : super(const AsyncValue.loading()) {
     if (activityId != '') {
@@ -103,6 +102,8 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>>
       print('Error: $e, $s');
     }
   }
+
+  void uploadDoc(BuildContext context) {}
 }
 
 final activityDetailProvider = StateNotifierProvider.family<

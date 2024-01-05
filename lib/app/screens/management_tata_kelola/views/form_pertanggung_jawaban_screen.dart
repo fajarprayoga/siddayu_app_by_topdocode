@@ -5,13 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/constants/font.dart';
 import 'package:todo_app/app/core/constants/value.dart';
-import 'package:todo_app/app/providers/kegiatan/kegiatan_provider.dart';
+import 'package:todo_app/app/data/models/kegiatan.dart';
+import 'package:todo_app/app/providers/activity/activity_detail_provider.dart';
+import 'package:todo_app/app/providers/activity/activity_tanggung_jawab.dart';
 import 'package:todo_app/app/widgets/widget.dart';
 
 class FormPertanggungJawaban extends ConsumerStatefulWidget {
+  final Kegiatan kegiatan;
   const FormPertanggungJawaban({
-    super.key,
-  });
+    Key? key,
+    required this.kegiatan,
+  }) : super(key: key);
 
   @override
   ConsumerState<FormPertanggungJawaban> createState() =>
@@ -21,8 +25,9 @@ class FormPertanggungJawaban extends ConsumerStatefulWidget {
 class _FormPertanggungJawabanState
     extends ConsumerState<FormPertanggungJawaban> {
   List<Widget> formAmprahan = [];
-
-  void uploadFile(List fileList) async {
+  List fileList = [];
+// type sk, operational_report,other
+  void uploadFile(String type, notifier, BuildContext context) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
         allowMultiple: true,
         allowedExtensions: ['pdf', 'doc'],
@@ -34,6 +39,9 @@ class _FormPertanggungJawabanState
         fileList.addAll(result.files.map((file) {
           return {'name': file.name, 'path': File(file.path!)};
         }));
+        final files = {"$type": fileList};
+        notifier.uploadDoc(context, files, type);
+        // fileList = [];
       });
     } else {
       print('cancel');
@@ -55,7 +63,9 @@ class _FormPertanggungJawabanState
 
   @override
   Widget build(BuildContext context) {
-    final notifier = ref.read(kegiatanProvider.notifier);
+    final notifier =
+        ref.read(activitTanggungJawabProvider(widget.kegiatan.id).notifier);
+
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -86,14 +96,14 @@ class _FormPertanggungJawabanState
                   icon: Icons.upload_file,
                   title: 'Upload file SK',
                   onTapFunction: () {
-                    uploadFile(notifier.fileListSK);
+                    uploadFile('sk', notifier, context);
                   }),
               ListView.builder(
                   physics: NeverScrollableScrollPhysics(),
-                  itemCount: notifier.fileListSK.length,
+                  itemCount: notifier.fileListPro.length,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
-                    print(notifier.fileListSK[index]);
+                    print("notifier.fileListPro");
                     return Expanded(
                         child: Container(
                       alignment: Alignment.centerLeft,
@@ -111,7 +121,8 @@ class _FormPertanggungJawabanState
                                   width: gap,
                                 ),
                                 Text(
-                                  notifier.fileListSK[index]['name'],
+                                  '',
+                                  // notifier.fileListPro[index]['sk']['name'],
                                   style: TextStyle(
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -123,7 +134,8 @@ class _FormPertanggungJawabanState
                             width: gap,
                           ),
                           InkWell(
-                            onTap: () => removeFile(notifier.fileListSK, index),
+                            onTap: () =>
+                                removeFile(notifier.fileListPro, index),
                             child: Icon(
                               Icons.delete,
                               color: Colors.red,
@@ -140,7 +152,7 @@ class _FormPertanggungJawabanState
                   icon: Icons.upload_file,
                   title: 'Upload file Berita Acara',
                   onTapFunction: () {
-                    print(notifier.fileListSK.length);
+                    print(notifier.fileListPro.length);
                   }),
               ButtonIcon(
                   label: 'Optional (PBJ)',
@@ -178,8 +190,8 @@ class _FormPertanggungJawabanState
               InkWell(
                 onTap: () {
                   // _showFullModal(context);
-                  // print(notifier.fileListSK);
-                  notifier.uploadDoc(context);
+                  // print(notifier.fileListPro);
+                  // notifier.uploadDoc(context);
                 },
                 child: Container(
                   decoration: BoxDecoration(

@@ -25,8 +25,10 @@ final GoRouter router = GoRouter(
         (state) => ManagementTataKelolaDetail(params: state.extra)),
     Route.set(
         Paths.formManagementTataKelola, (state) => const FormTataKelola()),
-    Route.set(Paths.formPertanggungJawaban,
-        (state) => const FormPertanggungJawaban()),
+    GoRoute(
+        path: Paths.formPertanggungJawaban,
+        builder: (_, GoRouterState state) =>
+            FormPertanggungJawaban(kegiatan: state.extra as Kegiatan)),
     GoRoute(
         path: Paths.formManagementTataKelolaDetail,
         builder: (_, GoRouterState state) =>

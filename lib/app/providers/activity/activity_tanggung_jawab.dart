@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/helpers/toast.dart';
@@ -12,13 +14,11 @@ class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>>
   final name = TextEditingController();
   final activity_date = TextEditingController();
   final description = TextEditingController();
-  List fileListSK = [];
+  List fileListPro = [];
   List sub_activities = [];
   ActivtyTanggungjawabNotifier({this.activityId})
       : super(const AsyncValue.loading()) {
-    if (activityId != '') {
-      getActivity();
-    }
+    if (activityId != '') getActivity();
   }
 
   Future getActivity() async {
@@ -39,48 +39,44 @@ class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>>
     }
   }
 
-  Future createKegiatan(BuildContext context) async {
+  Future uploadDoc(BuildContext context, fileList, String type) async {
     try {
-      final formField = {
-        "name": name.value.text,
-        "description": description.value.text,
-        "activity_date": activity_date.value.text,
-        "sub_activities": sub_activities,
-        // "created_by": auth.id
-      };
+      if (fileList.isNotEmpty) {
+        print(fileList);
+        // FormData formData = FormData();
 
-      final res = await kegiatanApi.addKegiatan(formField);
-      final map = json.decode(res.data);
-      if (res.statusCode == 201) {
-        final data = map['data']['data'] ?? {};
+        // for (var i = 0; i < fileList.length; i++) {
+        //   final Map<String, dynamic> fileTypeMap = fileList[i][type];
+        //   final String fileName = fileTypeMap['files']['name'];
+        //   final File file = fileTypeMap['files']['path'];
 
-        final kegiatan = Kegiatan.fromJson(data);
+        //   formData.files.add(MapEntry(
+        //     'files[]',
+        //     await MultipartFile.fromFile(file.path, filename: fileName),
+        //   ));
+        // }
 
-        // state.whenData((value) {
-        //   state = AsyncValue.data([...value, kegiatan]);
-        // });
-        // // context.push(Paths.formManagementTataKelolaDetail(null));
-        // context.pushReplacement(Paths.formManagementTataKelolaDetail,
-        //     extra: kegiatan);
-
-        Toasts.show('Kegiatan berhasil dibuat');
+        // Assuming you have the Dio setup and a URL endpoint
+        // final res = await kegiatanApi.uploadDoc(formData);
+        // if (res.statusCode == 201) {
+        //   print('success');
+        // } else {
+        //   print('nno');
+        // }
       } else {
-        Toasts.show(map['message']);
+        Toasts.show('No files to upload');
       }
+
+      print(fileList);
     } catch (e, s) {
       print('Error: $e, $s');
-      // state = AsyncValue.error(e, s);
+      // Handle the error state
+      // Example: state = AsyncValue.error(e, s);
     }
   }
 
-  Future updateActivity(String activityId) async {
+  Future updateActivity(String activityId, fields) async {
     try {
-      // state = const AsyncValue.loading();
-      final fields = {
-        "name": name.value.text,
-        "activity_date": activity_date.value.text,
-        "description": description.value.text,
-      };
       final res = await kegiatanApi.updateKegiatan(activityId, fields);
 
       if (res.statusCode == 200) {
@@ -98,7 +94,7 @@ class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>>
   }
 }
 
-final activityDetailProvider = StateNotifierProvider.family<
+final activitTanggungJawabProvider = StateNotifierProvider.family<
     ActivtyTanggungjawabNotifier,
     AsyncValue<Kegiatan>,
     String>((ref, activityId) {
