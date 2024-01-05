@@ -20,7 +20,7 @@ class AppStateNotifier extends StateNotifier<AppState> {
         // if (!visited.contains(index)) {
         // ;
         ref.read(userProvider.notifier).getUserStaff();
-        ref.read(kegiatanProvider.notifier).getKegiatan();
+        // ref.read(kegiatanProvider.notifier).getKegiatan();
         // }
         break;
       default:
