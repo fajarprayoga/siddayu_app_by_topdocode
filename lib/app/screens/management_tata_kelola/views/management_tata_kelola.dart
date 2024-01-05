@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/constants/value.dart';
-import 'package:todo_app/app/providers/activity/activity_provider.dart';
 import 'package:todo_app/app/providers/kegiatan/kegiatan_provider.dart';
 import 'package:todo_app/app/providers/user/user_provider.dart';
 import 'package:todo_app/app/routes/paths.dart';
@@ -15,13 +14,13 @@ class ManagementTataKelola extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userProviderData = ref.watch(userProvider);
     final kegiatanProviderData = ref.watch(kegiatanProvider);
-    // ref.watch(activityProvider);
+
     return Scaffold(
         backgroundColor: Colors.white,
         body: RefreshIndicator(
           onRefresh: () async {
             await ref.read(userProvider.notifier).getUserStaff();
-            // await ref.read(kegiatanProvider.notifier).getKegiatan();
+            await ref.read(kegiatanProvider.notifier).getKegiatan();
           },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -48,74 +47,74 @@ class ManagementTataKelola extends ConsumerWidget {
                     loading: () => BoxStaffPlaceholder()),
               ),
               SizedBox(height: 20),
-              // kegiatanProviderData.when(
-              //     data: (kegiatanData) {
-              //       return Expanded(
-              //         child: Padding(
-              //           padding: EdgeInsets.only(bottom: 20),
-              //           child: Container(
-              //             width: MediaQuery.of(context).size.width * 0.9,
-              //             padding: EdgeInsets.all(padding),
-              //             decoration: BoxDecoration(
-              //               color: Colors.white,
-              //               borderRadius: BorderRadius.circular(5),
-              //               boxShadow: [
-              //                 BoxShadow(
-              //                   color: Colors.blueGrey,
-              //                   blurRadius: 4,
-              //                   offset: Offset(0, 1), // Posisi bayangan
-              //                 ),
-              //               ],
-              //             ),
-              //             child: Column(
-              //               mainAxisAlignment: MainAxisAlignment.start,
-              //               crossAxisAlignment: CrossAxisAlignment.start,
-              //               children: [
-              //                 Row(
-              //                   mainAxisAlignment:
-              //                       MainAxisAlignment.spaceBetween,
-              //                   children: [
-              //                     Text(
-              //                       'Progress Kegiatan',
-              //                       style:
-              //                           TextStyle(fontWeight: FontWeight.bold),
-              //                     ),
-              //                     InkWell(
-              //                       child: Row(
-              //                         mainAxisAlignment:
-              //                             MainAxisAlignment.spaceBetween,
-              //                         children: [
-              //                           Text("All"),
-              //                           Icon(
-              //                             Icons.arrow_right,
-              //                             size: 36,
-              //                           )
-              //                         ],
-              //                       ),
-              //                     )
-              //                   ],
-              //                 ),
-              //                 SizedBox(height: gap),
-              //                 Expanded(
-              //                   child: ListView.builder(
-              //                     itemCount: kegiatanData.length,
-              //                     itemBuilder:
-              //                         (BuildContext context, int index) {
-              //                       return KegiatanProgress(
-              //                           name: kegiatanData[index].name,
-              //                           progress:
-              //                               (kegiatanData[index].progress));
-              //                     },
-              //                   ),
-              //                 ),
-              //               ],
-              //             ),
-              //           ),
-              //         ),
-              //       );
-              //     },
-              //     error: (error, stackTrace) => Text('Error: $error'),
-              //     loading: () => ProgressKegiatanPlaceholder())
+              kegiatanProviderData.when(
+                  data: (kegiatanData) {
+                    return Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(bottom: 20),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.9,
+                          padding: EdgeInsets.all(padding),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(5),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.blueGrey,
+                                blurRadius: 4,
+                                offset: Offset(0, 1), // Posisi bayangan
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Progress Kegiatan',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  InkWell(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("All"),
+                                        Icon(
+                                          Icons.arrow_right,
+                                          size: 36,
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                              SizedBox(height: gap),
+                              Expanded(
+                                child: ListView.builder(
+                                  itemCount: kegiatanData.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return KegiatanProgress(
+                                        name: kegiatanData[index].name,
+                                        progress:
+                                            (kegiatanData[index].progress));
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  error: (error, stackTrace) => Text('Error: $error'),
+                  loading: () => ProgressKegiatanPlaceholder())
             ],
           ),
         ));
