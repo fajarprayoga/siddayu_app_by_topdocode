@@ -141,7 +141,6 @@ class _FormDetailTataKelolaState extends ConsumerState<FormDetailTataKelola> {
                           // _showFullModal(context);
                           // await notifier.createKegiatan(context);
                           // context.pop();
-                          await notifier.updateActivity(widget.kegiatan.id);
                         },
                         child: Container(
                           decoration: BoxDecoration(
