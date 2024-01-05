@@ -54,22 +54,23 @@ class KegiatanNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>>
         // "created_by": auth.id
       };
 
-      final res = await kegiatanApi.addKegiatan(formField);
-      final map = json.decode(res.data);
-      if (res.statusCode == 201) {
-        final data = map['data']['data'] ?? {};
+      // final res = await kegiatanApi.addKegiatan(formField);
+      // final map = json.decode(res.data);
+      // if (res.statusCode == 201) {
+      //   final data = map['data']['data'] ?? {};
 
-        final kegiatan = Kegiatan.fromJson(data);
-        state.whenData((value) {
-          state = AsyncValue.data([...value, kegiatan]);
-        });
-        // context.push(Paths.formManagementTataKelolaDetail(null));
-        context.pushReplacement(Paths.formManagementTataKelolaDetail,
-            extra: kegiatan);
-        Toasts.show('Kegiatan berhasil dibuat');
-      } else {
-        Toasts.show(map['message']);
-      }
+      //   final kegiatan = Kegiatan.fromJson(data);
+      //   state.whenData((value) {
+      //     state = AsyncValue.data([...value, kegiatan]);
+      //   });
+      //   // context.push(Paths.formManagementTataKelolaDetail(null));
+      //   context.pushReplacement(Paths.formManagementTataKelolaDetail,
+      //       extra: kegiatan);
+      //   Toasts.show('Kegiatan berhasil dibuat');
+      // } else {
+      //   Toasts.show(map['message']);
+      // }
+      print(formField);
     } catch (e, s) {
       print('Error: $e, $s');
       // state = AsyncValue.error(e, s);

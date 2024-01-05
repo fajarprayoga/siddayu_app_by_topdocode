@@ -6,11 +6,11 @@ import 'package:todo_app/app/data/models/kegiatan.dart';
 import 'package:todo_app/app/data/service/local/storage.dart';
 import 'package:todo_app/app/screens/home/views/home_page.dart';
 import 'package:todo_app/app/screens/login/login_view.dart';
-import 'package:todo_app/app/screens/management_tata_kelola/views/form_detail_tata_kelola.dart';
-import 'package:todo_app/app/screens/management_tata_kelola/views/form_pertanggung_jawaban.dart';
-import 'package:todo_app/app/screens/management_tata_kelola/views/form_tata_kelola.dart';
-import 'package:todo_app/app/screens/management_tata_kelola/views/management_tata_kelola.dart';
-import 'package:todo_app/app/screens/management_tata_kelola/views/management_tata_kelola_detail.dart';
+import 'package:todo_app/app/screens/management_tata_kelola/views/form_detail_tata_kelola_screen.dart';
+import 'package:todo_app/app/screens/management_tata_kelola/views/form_pertanggung_jawaban_screen.dart';
+import 'package:todo_app/app/screens/management_tata_kelola/views/form_tata_kelola_screen.dart';
+import 'package:todo_app/app/screens/management_tata_kelola/views/management_tata_kelola_screen.dart';
+import 'package:todo_app/app/screens/management_tata_kelola/views/management_tata_kelola_user_screen.dart';
 
 import 'helper.dart';
 import 'paths.dart';
@@ -20,12 +20,13 @@ final GoRouter router = GoRouter(
     Route.set(Paths.home, (state) => const HomePage(),
         redirect: (_) => _redirect()),
     Route.set(Paths.login, (state) => const LoginView()),
-    Route.set(Paths.formTodo, (state) => ManagementTataKelola()),
+    Route.set(Paths.formTodo, (state) => const ManagementTataKelola()),
     Route.set(Paths.managementTataKelolaDetail(null),
         (state) => ManagementTataKelolaDetail(params: state.extra)),
-    Route.set(Paths.formManagementTataKelola, (state) => FormTataKelola()),
     Route.set(
-        Paths.formPertanggungJawaban, (state) => FormPertanggungJawaban()),
+        Paths.formManagementTataKelola, (state) => const FormTataKelola()),
+    Route.set(Paths.formPertanggungJawaban,
+        (state) => const FormPertanggungJawaban()),
     GoRoute(
         path: Paths.formManagementTataKelolaDetail,
         builder: (_, GoRouterState state) =>
@@ -41,13 +42,12 @@ Future<String> _redirect() async {
   } else {
     GetAuh getAuth = GetAuh();
     final res = await getAuth.getAuth(token);
-    print(res);
     if (res) {
       return Paths.home;
     } else {
       // Toasts.show('Authentication failed');
       // Handle the case where getAuth returned false
-      print('Authentication failed');
+      // print('Authentication failed');
       return Paths.login;
     }
   }

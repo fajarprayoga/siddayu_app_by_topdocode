@@ -1,5 +1,5 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:todo_app/app/providers/kegiatan/kegiatan_provider.dart';
+import 'package:todo_app/app/providers/activity/activity_provider.dart';
 import 'package:todo_app/app/providers/user/user_provider.dart';
 
 // import 'todo/todo_provider.dart';
@@ -19,7 +19,7 @@ class AppStateNotifier extends StateNotifier<AppState> {
       case 2:
         if (!visited.contains(index)) {
           ref.read(userProvider.notifier).getUserStaff();
-          ref.read(kegiatanProvider.notifier).getKegiatan();
+          ref.read(activityProvider.notifier).getKegiatan();
         }
         break;
       default:

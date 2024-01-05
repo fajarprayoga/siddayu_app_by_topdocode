@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/constants/value.dart';
+import 'package:todo_app/app/providers/activity/activity_provider.dart';
 import 'package:todo_app/app/providers/kegiatan/kegiatan_provider.dart';
 import 'package:todo_app/app/providers/user/user_provider.dart';
 import 'package:todo_app/app/routes/paths.dart';
@@ -13,7 +14,7 @@ class ManagementTataKelola extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userProviderData = ref.watch(userProvider);
-    final kegiatanProviderData = ref.watch(kegiatanProvider);
+    final activityProviderData = ref.watch(activityProvider);
 
     return Scaffold(
         backgroundColor: Colors.white,
@@ -47,7 +48,7 @@ class ManagementTataKelola extends ConsumerWidget {
                     loading: () => BoxStaffPlaceholder()),
               ),
               SizedBox(height: 20),
-              kegiatanProviderData.when(
+              activityProviderData.when(
                   data: (kegiatanData) {
                     return Expanded(
                       child: Padding(

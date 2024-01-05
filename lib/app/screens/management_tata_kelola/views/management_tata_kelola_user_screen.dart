@@ -8,7 +8,7 @@ import 'package:todo_app/app/core/constants/value.dart';
 import 'package:todo_app/app/data/models/auth.dart';
 import 'package:todo_app/app/data/models/kegiatan.dart';
 import 'package:todo_app/app/data/service/local/storage.dart';
-import 'package:todo_app/app/providers/kegiatan/kegiatan_by_user_provider.dart';
+import 'package:todo_app/app/providers/activity/activity_user_provider.dart';
 import 'package:todo_app/app/routes/paths.dart';
 
 class ManagementTataKelolaDetail extends ConsumerWidget {
@@ -22,7 +22,7 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     String? authLocal = prefs.getString('auth');
     final auth = Auth.fromJson(json.decode(authLocal ?? ''));
-    final refKegiatanProvider = ref.watch(kegiatanByUserProvider(params['id']));
+    final refKegiatanProvider = ref.watch(activityUserProvider(params['id']));
     return Scaffold(
       appBar: AppBar(
           title: Column(
@@ -40,30 +40,21 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
         ],
       )),
       body: RefreshIndicator(
-        onRefresh: () async {
-          // Menunggu beberapa saat, misalnya, menggunakan Future.delayed
-          // await Future.delayed(Duration(seconds: 2));
-
-          // // Setelah menunggu, lakukan aksi yang diinginkan di sini
-          // print('Aksi refresh telah selesai');
-
-          // // Return value jika diperlukan
-          // return;
-        },
+        onRefresh: () async {},
         child: Padding(
           padding: const EdgeInsets.all(padding),
           child: Column(
             children: [
-              SizedBox(height: gap),
-              if (auth.id == params['id']) ButtonAddKegiatan(),
-              SizedBox(
+              const SizedBox(height: gap),
+              if (auth.id == params['id']) const ButtonAddKegiatan(),
+              const SizedBox(
                 height: gap,
               ),
               Expanded(
                   child: refKegiatanProvider.when(
                       data: (data) {
-                        if (data.length < 0) {
-                          return Text('data is empty');
+                        if (data.isEmpty) {
+                          return const Text('data is empty');
                         }
                         return ListView.builder(
                           itemCount: data.length,
@@ -73,7 +64,7 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
                         );
                       },
                       error: (e, s) => Text('errorr $e'),
-                      loading: () => Center(
+                      loading: () => const Center(
                             child: CircularProgressIndicator(),
                           )))
             ],
@@ -92,18 +83,10 @@ class ListKegiatan extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 60,
-      margin: EdgeInsets.symmetric(vertical: marginVertical),
-      padding: EdgeInsets.all(padding),
+      margin: const EdgeInsets.symmetric(vertical: marginVertical),
+      padding: const EdgeInsets.all(padding),
       decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(5),
-          boxShadow: [
-            // BoxShadow(
-            //   color: Colors.blueGrey,
-            //   blurRadius: 4,
-            //   offset: Offset(0, 0.5), // Posisi bayangan
-            // ),
-          ]),
+          color: Colors.white, borderRadius: BorderRadius.circular(5)),
       child: InkWell(
         onTap: () {
           context.push(Paths.formManagementTataKelolaDetail, extra: item);
@@ -114,8 +97,8 @@ class ListKegiatan extends StatelessWidget {
             Expanded(
               child: Row(
                 children: [
-                  Icon(Icons.list),
-                  SizedBox(
+                  const Icon(Icons.list),
+                  const SizedBox(
                     width: gap,
                   ),
                   Flexible(
@@ -153,7 +136,8 @@ class ButtonAddKegiatan extends StatelessWidget {
           context.push(Paths.formManagementTataKelola);
         },
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: padding, vertical: padding),
+          padding: const EdgeInsets.symmetric(
+              horizontal: padding, vertical: padding),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(radius - 10),
             color: primary,
@@ -162,11 +146,11 @@ class ButtonAddKegiatan extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
+              const Icon(
                 Icons.add,
                 color: Colors.white,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 "Tambah Kegiatan",
                 style: Gfont.white,

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/constants/font.dart';
 import 'package:todo_app/app/core/constants/value.dart';
-import 'package:todo_app/app/providers/kegiatan/kegiatan_provider.dart';
-import 'package:todo_app/app/routes/paths.dart';
+import 'package:todo_app/app/providers/activity/activity_detail_provider.dart';
 
 class FormTataKelola extends ConsumerStatefulWidget {
   const FormTataKelola({
@@ -20,7 +18,7 @@ class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
   List<Widget> formSubKegiatan = [];
   @override
   Widget build(BuildContext context) {
-    final notifier = ref.read(kegiatanProvider.notifier);
+    final notifier = ref.read(activityDetailProvider('').notifier);
     // notifier.name.clear();
     // notifier.activity_date.clear();
     // notifier.description.clear();
@@ -145,8 +143,10 @@ class _FormTataKelolaState extends ConsumerState<FormTataKelola> {
                   ..._sub_activities[index],
                   "name": value
                 };
+                print('as');
               } else {
                 _sub_activities.add({"name": value});
+                print('asss');
               }
             },
           ),

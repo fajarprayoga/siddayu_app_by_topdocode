@@ -4,7 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/constants/font.dart';
 import 'package:todo_app/app/core/constants/value.dart';
 import 'package:todo_app/app/data/models/kegiatan.dart';
-import 'package:todo_app/app/providers/kegiatan/kegiatan_detail_provider.dart';
+import 'package:todo_app/app/providers/activity/activity_detail_provider.dart';
 import 'package:todo_app/app/routes/paths.dart';
 
 class FormDetailTataKelola extends ConsumerStatefulWidget {
@@ -24,10 +24,10 @@ class _FormDetailTataKelolaState extends ConsumerState<FormDetailTataKelola> {
   List<Widget> formSubKegiatan = [];
   @override
   Widget build(BuildContext context) {
-    final KegiatanDetailProvider =
-        ref.watch(kegiatanDetailProvider(widget.kegiatan.id));
+    final activityProvider =
+        ref.watch(activityDetailProvider(widget.kegiatan.id));
     final notifier =
-        ref.read(kegiatanDetailProvider(widget.kegiatan.id).notifier);
+        ref.read(activityDetailProvider(widget.kegiatan.id).notifier);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -46,14 +46,14 @@ class _FormDetailTataKelolaState extends ConsumerState<FormDetailTataKelola> {
             ],
           ),
         ),
-        body: KegiatanDetailProvider.when(
+        body: activityProvider.when(
             data: (data) {
               return SingleChildScrollView(
                   child: Padding(
-                padding: EdgeInsets.only(bottom: padding),
+                padding: const EdgeInsets.only(bottom: padding),
                 child: Container(
-                  margin: EdgeInsets.only(top: gap + 20),
-                  padding: EdgeInsets.symmetric(horizontal: padding + 10),
+                  margin: const EdgeInsets.only(top: gap + 20),
+                  padding: const EdgeInsets.symmetric(horizontal: padding + 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -70,7 +70,7 @@ class _FormDetailTataKelolaState extends ConsumerState<FormDetailTataKelola> {
                               borderRadius: BorderRadius.circular(radius - 10),
                               color: primary,
                             ),
-                            padding: EdgeInsets.all(padding),
+                            padding: const EdgeInsets.all(padding),
                             child: Text(
                               'Pertanggung Jawaban',
                               style: Gfont.fs14.white,
@@ -97,7 +97,7 @@ class _FormDetailTataKelolaState extends ConsumerState<FormDetailTataKelola> {
                       ),
                       if (data.subActivities.length > 0)
                         ListView.builder(
-                          physics: NeverScrollableScrollPhysics(),
+                          physics: const NeverScrollableScrollPhysics(),
                           itemCount: data.subActivities.length,
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
@@ -107,16 +107,13 @@ class _FormDetailTataKelolaState extends ConsumerState<FormDetailTataKelola> {
                         ),
                       if (formSubKegiatan.length > 0)
                         ListView.builder(
-                          physics: NeverScrollableScrollPhysics(),
+                          physics: const NeverScrollableScrollPhysics(),
                           itemCount: formSubKegiatan.length,
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
                             return formSubKegiatan[index];
                           },
                         ),
-                      Column(
-                        children: [],
-                      ),
                       ElevatedButton.icon(
                         onPressed: () {
                           setState(() {
@@ -128,26 +125,25 @@ class _FormDetailTataKelolaState extends ConsumerState<FormDetailTataKelola> {
                           });
                         },
                         icon: const Icon(Icons.add),
-                        label: Text('Tambah Sub Kegiatan'),
+                        label: const Text('Tambah Sub Kegiatan'),
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             onPrimary: Colors.black),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: gap + 10,
                       ),
                       InkWell(
                         onTap: () async {
-                          // _showFullModal(context);
-                          // await notifier.createKegiatan(context);
-                          // context.pop();
+                          // await notifier.(widget.kegiatan.id);
+                          await notifier.updateActivity(widget.kegiatan.id);
                         },
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(radius - 10),
                             color: primary,
                           ),
-                          padding: EdgeInsets.all(padding),
+                          padding: const EdgeInsets.all(padding),
                           child: Text(
                             'Simpan',
                             style: Gfont.fs14.white,
@@ -161,22 +157,23 @@ class _FormDetailTataKelolaState extends ConsumerState<FormDetailTataKelola> {
               ));
             },
             error: (error, stackTrace) => Text('Error: $error'),
-            loading: () => Center(
+            loading: () => const Center(
                   child: CircularProgressIndicator(),
                 )),
       ),
     );
   }
 
-  Row subKegiatan(int index, List _sub_activities) {
+  Row subKegiatan(int index, List sub_activities) {
     final name = TextEditingController();
     final total = TextEditingController();
 
-    if (_sub_activities.isNotEmpty && index < _sub_activities.length) {
+    if (sub_activities.isNotEmpty && index < sub_activities.length) {
       name.text =
-          _sub_activities[index].name ?? ''; // You can use any default value
-      total.text = _sub_activities[index].totalBudget.toString() ??
-          ''; // You can use any default value
+          sub_activities[index].name ?? ''; // You can use any default value
+      total.text = sub_activities[index]
+          .totalBudget
+          .toString(); // You can use any default value
     }
     return Row(
       // mainAxisAlignment: MainAxisAlignment.end,
@@ -189,13 +186,13 @@ class _FormDetailTataKelolaState extends ConsumerState<FormDetailTataKelola> {
             placeholder: 'Sub Kegiatan',
             controller: name,
             onChanged: (value) {
-              if (index < _sub_activities.length) {
-                _sub_activities[index] = {
-                  ..._sub_activities[index],
+              if (index < sub_activities.length) {
+                sub_activities[index] = {
+                  ...sub_activities[index],
                   "name": value
                 };
               } else {
-                _sub_activities.add({"name": value});
+                sub_activities.add({"name": value});
               }
             },
           ),
@@ -211,13 +208,13 @@ class _FormDetailTataKelolaState extends ConsumerState<FormDetailTataKelola> {
           controller: total,
           onChanged: (value) {
             // print(index);
-            if (index < _sub_activities.length) {
-              _sub_activities[index] = {
-                ..._sub_activities[index],
+            if (index < sub_activities.length) {
+              sub_activities[index] = {
+                ...sub_activities[index],
                 "total_budget": value
               };
             } else {
-              _sub_activities.add({"total_budget": value});
+              sub_activities.add({"total_budget": value});
             }
           },
         ),
