@@ -12,13 +12,9 @@ class SubActivity {
   SubActivity({required this.nameController, required this.totalController});
 }
 
-class ActivityUserNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>>
-    with UseApi {
+class ActivityUserNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>> with UseApi {
   final String userId;
-  final name = TextEditingController();
-  final description = TextEditingController();
-  ActivityUserNotifier({required this.userId})
-      : super(const AsyncValue.loading()) {
+  ActivityUserNotifier({required this.userId}) : super(const AsyncValue.loading()) {
     getKegiatan();
   }
 
@@ -35,10 +31,28 @@ class ActivityUserNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>>
       state = AsyncValue.error(e, s);
     }
   }
+
+  void addData(Kegiatan data) {
+    try {
+      final currentState = state.value ?? [];
+      state = AsyncValue.data([data, ...currentState]);
+    } catch (e, s) {
+      print('error: $e, $s');
+    }
+  }
+
+  void updateData(Kegiatan data) {
+    try {
+      final currentState = state.value ?? [];
+      final index = currentState.indexWhere((element) => element.id == data.id);
+      currentState[index] = data;
+      state = AsyncValue.data(currentState);
+    } catch (e, s) {
+      print('error: $e, $s');
+    }
+  }
 }
 
-final activityUserProvider = StateNotifierProvider.autoDispose
-    .family<ActivityUserNotifier, AsyncValue<List<Kegiatan>>, String>(
-        (ref, userId) {
+final activityUserProvider = StateNotifierProvider.autoDispose.family<ActivityUserNotifier, AsyncValue<List<Kegiatan>>, String>((ref, userId) {
   return ActivityUserNotifier(userId: userId);
 });

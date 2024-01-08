@@ -29,3 +29,21 @@ class KegiatanApi {
     return await dio.post('api/activity/$activityId/amprahan', data: data);
   }
 }
+
+class KegiatanApi2 extends Fetchly {
+  Future<ResHandler> getKegiatan() async {
+    return await get('api/activities');
+  }
+
+  Future<ResHandler> getKegiatanById(String id) async {
+    return await get('api/activities/$id');
+  }
+
+  Future<ResHandler> addKegiatan(Map<String, dynamic> data) async {
+    return await post('api/activities', data);
+  }
+
+  Future<ResHandler> updateKegiatan(String id, Map<String, dynamic> data) async {
+    return await put('api/activities/$id', data);
+  }
+}

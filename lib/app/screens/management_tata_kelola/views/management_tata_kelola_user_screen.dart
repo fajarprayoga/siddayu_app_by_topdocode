@@ -11,6 +11,8 @@ import 'package:todo_app/app/data/service/local/storage.dart';
 import 'package:todo_app/app/providers/activity/activity_user_provider.dart';
 import 'package:todo_app/app/routes/paths.dart';
 
+import '../../../core/helpers/logg.dart';
+
 class ManagementTataKelolaDetail extends ConsumerWidget {
   final params;
   const ManagementTataKelolaDetail({
@@ -23,6 +25,8 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
     String? authLocal = prefs.getString('auth');
     final auth = Auth.fromJson(json.decode(authLocal ?? ''));
     final refKegiatanProvider = ref.watch(activityUserProvider(params['id']));
+    final notifier = ref.read(activityUserProvider(params['id']).notifier);
+
     return Scaffold(
       appBar: AppBar(
           title: Column(
@@ -40,13 +44,15 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
         ],
       )),
       body: RefreshIndicator(
-        onRefresh: () async {},
+        onRefresh: () async {
+          notifier.getKegiatan();
+        },
         child: Padding(
           padding: const EdgeInsets.all(padding),
           child: Column(
             children: [
               const SizedBox(height: gap),
-              if (auth.id == params['id']) const ButtonAddKegiatan(),
+              if (auth.id == params['id']) ButtonAddKegiatan(notifier: notifier),
               const SizedBox(
                 height: gap,
               ),
@@ -59,7 +65,7 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
                         return ListView.builder(
                           itemCount: data.length,
                           itemBuilder: (BuildContext context, int index) {
-                            return ListKegiatan(item: data[index]);
+                            return ListKegiatan(item: data[index], notifier: notifier);
                           },
                         );
                       },
@@ -77,7 +83,8 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
 
 class ListKegiatan extends StatelessWidget {
   final Kegiatan item;
-  const ListKegiatan({Key? key, required this.item}) : super(key: key);
+  final ActivityUserNotifier notifier;
+  const ListKegiatan({Key? key, required this.item, required this.notifier}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -85,11 +92,13 @@ class ListKegiatan extends StatelessWidget {
       height: 60,
       margin: const EdgeInsets.symmetric(vertical: marginVertical),
       padding: const EdgeInsets.all(padding),
-      decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(5)),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(5)),
       child: InkWell(
         onTap: () {
-          context.push(Paths.formManagementTataKelolaDetail, extra: item);
+          context.push(Paths.formManagementTataKelolaDetail, extra: item).then((value) {
+            value as Map<String, dynamic>;
+            notifier.updateData(Kegiatan.fromJson(value));
+          });
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -123,9 +132,9 @@ class ListKegiatan extends StatelessWidget {
 }
 
 class ButtonAddKegiatan extends StatelessWidget {
-  const ButtonAddKegiatan({
-    super.key,
-  });
+  final ActivityUserNotifier notifier;
+
+  const ButtonAddKegiatan({super.key, required this.notifier});
 
   @override
   Widget build(BuildContext context) {
@@ -133,11 +142,13 @@ class ButtonAddKegiatan extends StatelessWidget {
       alignment: Alignment.centerRight,
       child: InkWell(
         onTap: () {
-          context.push(Paths.formManagementTataKelola);
+          context.push(Paths.formManagementTataKelola).then((value) {
+            value as Map<String, dynamic>;
+            notifier.addData(Kegiatan.fromJson(value));
+          });
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(
-              horizontal: padding, vertical: padding),
+          padding: const EdgeInsets.symmetric(horizontal: padding, vertical: padding),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(radius - 10),
             color: primary,

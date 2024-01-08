@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Kegiatan {
   final String id;
   final String activityNumber;
@@ -38,10 +40,7 @@ class Kegiatan {
       // location: json['location'],
       status: json['status'] ?? 'progress',
       totalBudget: json['total_budget'] == null ? 0 : json['total_budget'],
-      subActivities: (json['sub_activities'] as List<dynamic>?)
-              ?.map((subActivity) => SubActivity.fromJson(subActivity))
-              .toList() ??
-          [],
+      subActivities: (json['sub_activities'] as List<dynamic>?)?.map((subActivity) => SubActivity.fromJson(subActivity)).toList() ?? [],
       // documents: (json['documents'] as List)
       //     .map((document) => Document.fromJson(document))
       //     .toList(),
@@ -58,8 +57,7 @@ class Kegiatan {
         // 'location': location,
         'status': status,
         'total_budget': totalBudget,
-        'sub_activities':
-            subActivities.map((subActivity) => subActivity.toJson()).toList(),
+        'sub_activities': subActivities.map((subActivity) => subActivity.toJson()).toList(),
         //     ? subActivities.map((subActivity) => subActivity.toJson()).toList()
         //     : [{}].toList(),
         // 'documents': documents.map((document) => document.toJson()).toList(),
@@ -79,9 +77,7 @@ class SubActivity {
   factory SubActivity.fromJson(Map<String, dynamic> json) {
     return SubActivity(
       name: json['name'],
-      totalBudget: json['total_budget'] != null
-          ? int.parse(json['total_budget'].toString())
-          : 0,
+      totalBudget: json['total_budget'] != null ? int.parse(json['total_budget'].toString()) : 0,
     );
   }
 
@@ -119,4 +115,11 @@ class Document {
         'url': url,
         'type': type,
       };
+}
+
+class SubActivity2 {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController totalController = TextEditingController();
+
+  SubActivity2({required this.nameController, required this.totalController});
 }
