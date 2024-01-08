@@ -54,7 +54,7 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
                   child: refKegiatanProvider.when(
                       data: (data) {
                         if (data.isEmpty) {
-                          return const Text('data is empty');
+                          return Center(child: const Text('data is empty'));
                         }
                         return ListView.builder(
                           itemCount: data.length,
@@ -63,7 +63,7 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
                           },
                         );
                       },
-                      error: (e, s) => Text('errorr $e'),
+                      error: (e, s) => Center(child: Text('errorr $e')),
                       loading: () => const Center(
                             child: CircularProgressIndicator(),
                           )))

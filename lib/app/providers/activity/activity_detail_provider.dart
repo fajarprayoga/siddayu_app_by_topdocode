@@ -58,17 +58,6 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>>
       final res = await kegiatanApi.addKegiatan(formField);
       final map = json.decode(res.data);
       if (res.statusCode == 201) {
-        final data = map['data']['data'] ?? {};
-
-        final kegiatan = Kegiatan.fromJson(data);
-
-        // state.whenData((value) {
-        //   state = AsyncValue.data([...value, kegiatan]);
-        // });
-        // // context.push(Paths.formManagementTataKelolaDetail(null));
-        // context.pushReplacement(Paths.formManagementTataKelolaDetail,
-        //     extra: kegiatan);
-
         Toasts.show('Kegiatan berhasil dibuat');
       } else {
         Toasts.show(map['message']);
@@ -91,12 +80,8 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>>
 
       if (res.statusCode == 200) {
         final dataJson = jsonDecode(res.data);
-        final kegiatan = Kegiatan.fromJson(dataJson['data']['data'] ?? {});
 
-        // state.whenData((data) {
-        //     data[data.indexWhere((element) => element.id == activityId)] = kegiatan;
-        //     state = AsyncValue.data(data);
-        // });
+        // update state
       }
     } catch (e, s) {
       print('Error: $e, $s');

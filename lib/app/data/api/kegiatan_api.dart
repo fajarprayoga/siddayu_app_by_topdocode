@@ -25,7 +25,7 @@ class KegiatanApi {
     return await dio.patch('api/activities/$id', data: data);
   }
 
-  Future<Response> createAmprahan(String activityId, FormData data) async {
+  Future<Response> createAmprahan(String activityId, data) async {
     return await dio.post('api/activity/$activityId/amprahan', data: data);
   }
 }
