@@ -6,8 +6,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/constants/font.dart';
 import 'package:todo_app/app/core/constants/value.dart';
 import 'package:todo_app/app/data/models/kegiatan.dart';
-import 'package:todo_app/app/providers/activity/activity_detail_provider.dart';
 import 'package:todo_app/app/providers/activity/activity_tanggung_jawab.dart';
+import 'package:todo_app/app/widgets/form_field_custom.dart';
 import 'package:todo_app/app/widgets/widget.dart';
 
 class FormPertanggungJawaban extends ConsumerStatefulWidget {
@@ -26,6 +26,10 @@ class _FormPertanggungJawabanState
     extends ConsumerState<FormPertanggungJawaban> {
   List<Widget> formAmprahan = [];
   List fileList = [];
+
+  // amprahan
+  List fieldAmprahan = [];
+
 // type sk, operational_report,other
   void uploadFile(String type, notifier, BuildContext context) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -39,10 +43,9 @@ class _FormPertanggungJawabanState
         fileList.addAll(result.files.map((file) {
           return {'name': file.name, 'path': File(file.path!)};
         }));
-        final files = {"$type": fileList};
-        notifier.uploadDoc(context, files, type);
-        // fileList = [];
+        notifier.uploadDoc(context, fileList, type);
       });
+      fileList = [];
     } else {
       print('cancel');
       // User canceled the picker
@@ -77,7 +80,7 @@ class _FormPertanggungJawabanState
               style: Gfont.bold,
             ),
             Text(
-              "Kegiatan / Detail / Create",
+              "Kegiatan / Detail / Amprahan",
               style: Gfont.fs14,
             )
           ],
@@ -98,61 +101,64 @@ class _FormPertanggungJawabanState
                   onTapFunction: () {
                     uploadFile('sk', notifier, context);
                   }),
-              ListView.builder(
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: notifier.fileListPro.length,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    print("notifier.fileListPro");
-                    return Expanded(
-                        child: Container(
-                      alignment: Alignment.centerLeft,
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.picture_as_pdf_sharp,
-                            size: 36,
-                          ),
-                          InkWell(
-                            onTap: () => _showFullModal(context),
-                            child: Row(
-                              children: [
-                                SizedBox(
-                                  width: gap,
-                                ),
-                                Text(
-                                  '',
-                                  // notifier.fileListPro[index]['sk']['name'],
-                                  style: TextStyle(
-                                    overflow: TextOverflow.ellipsis,
+              if (notifier.fileListPro["sk"] != null &&
+                  notifier.fileListPro["sk"]!.length > 0)
+                ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: notifier.fileListPro["sk"]?.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      String fileName = notifier.fileListPro["sk"]![index]
+                              ["name"] ??
+                          'Nama file tidak diketahui';
+                      return Container(
+                        alignment: Alignment.centerLeft,
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.picture_as_pdf_sharp,
+                              size: 36,
+                            ),
+                            InkWell(
+                              onTap: () => _showFullModal(context),
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: gap,
                                   ),
-                                ),
-                              ],
+                                  Text(
+                                    fileName,
+                                    // notifier.fileListPro[index]['sk']['name'],
+                                    style: TextStyle(
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          SizedBox(
-                            width: gap,
-                          ),
-                          InkWell(
-                            onTap: () =>
-                                removeFile(notifier.fileListPro, index),
-                            child: Icon(
-                              Icons.delete,
-                              color: Colors.red,
-                              size: 24,
+                            SizedBox(
+                              width: gap,
                             ),
-                          )
-                        ],
-                      ),
-                    ));
-                  }),
+                            InkWell(
+                              // onTap: () =>
+                              //     removeFile(notifier.fileListPro, index),
+                              child: Icon(
+                                Icons.delete,
+                                color: Colors.red,
+                                size: 24,
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+                    }),
               ButtonIcon(
                   label: 'Berita Acara',
                   placeholder: 'Silahkan upload format PDF',
                   icon: Icons.upload_file,
                   title: 'Upload file Berita Acara',
                   onTapFunction: () {
-                    print(notifier.fileListPro.length);
+                    uploadFile('operational_report', notifier, context);
                   }),
               ButtonIcon(
                   label: 'Optional (PBJ)',
@@ -165,9 +171,12 @@ class _FormPertanggungJawabanState
                 shrinkWrap: true,
                 itemCount: formAmprahan.length,
                 itemBuilder: (context, index) {
-                  return AmprahanWidget(remove: () {
-                    print('Remove button tapped for item $index');
-                  });
+                  return amprahanWidget(
+                      indexAmprahan: index,
+                      fieldAmprahan: fieldAmprahan,
+                      remove: () {
+                        uploadFile('other', notifier, context);
+                      });
                 },
               ),
               const SizedBox(
@@ -176,7 +185,10 @@ class _FormPertanggungJawabanState
               ElevatedButton.icon(
                 onPressed: () {
                   setState(() {
-                    formAmprahan.add(AmprahanWidget());
+                    formAmprahan.add(amprahanWidget(
+                        indexAmprahan: formAmprahan.length,
+                        fieldAmprahan: fieldAmprahan,
+                        remove: () {}));
                   });
                 },
                 icon: const Icon(Icons.add),
@@ -189,6 +201,8 @@ class _FormPertanggungJawabanState
               ),
               InkWell(
                 onTap: () {
+                  // print(fieldAmprahan);
+                  notifier.updateAmprahan(widget.kegiatan.id, fieldAmprahan);
                   // _showFullModal(context);
                   // print(notifier.fileListPro);
                   // notifier.uploadDoc(context);
@@ -264,13 +278,56 @@ class _FormPertanggungJawabanState
       },
     );
   }
-}
 
-class AmprahanWidget extends StatelessWidget {
-  const AmprahanWidget({Key? key, void Function()? remove}) : super(key: key);
+  Container amprahanWidget(
+      {int? indexAmprahan,
+      required List fieldAmprahan,
+      void Function()? remove}) {
+    // Define your necessary variables and controllers here
+    final TextEditingController noAmprahan = TextEditingController();
+    final List<Map<String, dynamic>> documents = [];
+    final TextEditingController totalRealisasi = TextEditingController();
+    final TextEditingController sumberDana = TextEditingController();
+    bool pajak = false;
 
-  @override
-  Widget build(BuildContext context) {
+    // Use the provided fileList
+    void uploadFile(String type) async {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+          allowMultiple: true,
+          allowedExtensions: ['pdf', 'doc'],
+          type: FileType.custom);
+      if (result != null) {
+        // File file = File(result.files.single.path!);
+        // print(file);
+        setState(() {
+          fileList.addAll(result.files.map((file) {
+            return {'name': file.name, 'path': File(file.path!)};
+          }));
+        });
+
+        if (indexAmprahan! < fieldAmprahan.length) {
+          // Check if the 'documents' key exists
+          if (fieldAmprahan[indexAmprahan].containsKey('documents')) {
+            // Append to the existing 'documents' list
+            fieldAmprahan[indexAmprahan]['documents'] = [
+              ...fieldAmprahan[indexAmprahan]['documents'],
+              ...fileList
+            ];
+          } else {
+            // Create a new 'documents' key with the fileList
+            fieldAmprahan[indexAmprahan]['documents'] = fileList;
+          }
+        } else {
+          // Add a new map with 'documents' key if index is out of bounds
+          fieldAmprahan.add({"documents": fileList});
+        }
+        fileList = [];
+      } else {
+        print('cancel');
+        // User canceled the picker
+      }
+    }
+
     return Container(
       margin: EdgeInsets.symmetric(vertical: gap),
       // padding: EdgeInsets.all(padding + 5),
@@ -288,19 +345,59 @@ class AmprahanWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 FormFieldCustom(
-                    placeholder: '0525515518', title: 'No Amprahan'),
+                  placeholder: '0525515518',
+                  title: 'No Amprahan',
+                  controller: noAmprahan,
+                  onChanged: (value) {
+                    if (indexAmprahan! < fieldAmprahan.length) {
+                      fieldAmprahan[indexAmprahan] = {
+                        ...fieldAmprahan[indexAmprahan],
+                        "amprahan_number": value
+                      };
+                    } else {
+                      fieldAmprahan.add({"amprahan_number": value});
+                    }
+                  },
+                ),
                 ButtonIcon(
                   icon: Icons.upload_file,
                   title: 'Upload file Doku,emtasi Kegiatan',
                   label: 'Dokumentasi Kegiatan',
-                  onTapFunction: () {},
+                  onTapFunction: () {
+                    uploadFile('activity_documentation');
+                  },
                   placeholder: 'Silahkan upload format PDF',
                 ),
                 FormFieldCustom(
-                    placeholder: 'Masukan Total Realisasi Anggaran',
-                    title: 'Total Realisasi Anggaran'),
-                const FormFieldCustom(
-                    placeholder: 'Masukan Sumber Dana', title: 'Sumber Dana'),
+                  placeholder: 'Masukan Total Realisasi Anggaran',
+                  title: 'Total Realisasi Anggaran',
+                  controller: totalRealisasi,
+                  onChanged: (value) {
+                    if (indexAmprahan! < fieldAmprahan.length) {
+                      fieldAmprahan[indexAmprahan] = {
+                        ...fieldAmprahan[indexAmprahan],
+                        "total_budget_realisation": value
+                      };
+                    } else {
+                      fieldAmprahan.add({"total_budget_realisation": value});
+                    }
+                  },
+                ),
+                FormFieldCustom(
+                  placeholder: 'Masukan Sumber Dana',
+                  title: 'Sumber Dana',
+                  controller: sumberDana,
+                  onChanged: (value) {
+                    if (indexAmprahan! < fieldAmprahan.length) {
+                      fieldAmprahan[indexAmprahan] = {
+                        ...fieldAmprahan[indexAmprahan],
+                        "budget_source": value
+                      };
+                    } else {
+                      fieldAmprahan.add({"budget_source": value});
+                    }
+                  },
+                ),
                 Row(
                   children: [
                     Text('PAJAK'),
@@ -309,7 +406,19 @@ class AmprahanWidget extends StatelessWidget {
                     ),
                     Checkbox(
                       value: true,
-                      onChanged: (value) {},
+                      onChanged: (value) {
+                        setState(() {
+                          pajak = !pajak;
+                        });
+                        if (indexAmprahan! < fieldAmprahan.length) {
+                          fieldAmprahan[indexAmprahan] = {
+                            ...fieldAmprahan[indexAmprahan],
+                            "pajak": !pajak
+                          };
+                        } else {
+                          fieldAmprahan.add({"pajak": !pajak});
+                        }
+                      },
                     )
                   ],
                 )
@@ -334,69 +443,6 @@ class AmprahanWidget extends StatelessWidget {
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class FormFieldCustom extends StatelessWidget {
-  final String title;
-  final String placeholder;
-  final double? width;
-  final IconData? icon;
-  final bool? isMultiLine;
-  const FormFieldCustom(
-      {super.key,
-      required this.placeholder,
-      required this.title,
-      this.icon,
-      this.width,
-      this.isMultiLine});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: width ?? double.infinity,
-      margin: EdgeInsets.symmetric(vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title),
-          SizedBox(
-            height: gap - 2,
-          ),
-          TextFormField(
-            validator: (String? arg) {
-              if (arg!.length < 3) {
-                return 'Email must be more than 2 charater';
-              }
-              return null;
-            },
-            controller: null,
-            decoration: InputDecoration(
-                hintText: placeholder,
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey,
-                  ),
-                  borderRadius: BorderRadius.circular(5.5),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: primary, width: 2),
-                  borderRadius: BorderRadius.circular(5.5),
-                ),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 15.0, horizontal: padding),
-                prefixIcon: icon != null ? Icon(icon) : null),
-            maxLines: null,
-            minLines: isMultiLine ?? false ? 4 : 1,
-            onSaved: (String? val) {
-              // username.text = val ?? '';
-            },
           ),
         ],
       ),

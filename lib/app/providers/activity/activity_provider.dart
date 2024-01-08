@@ -6,13 +6,6 @@ import 'package:todo_app/app/data/api/api.dart';
 import 'package:todo_app/app/data/models/kegiatan.dart';
 import 'package:todo_app/app/data/service/local/storage.dart';
 
-class SubActivity {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController totalController = TextEditingController();
-
-  SubActivity({required this.nameController, required this.totalController});
-}
-
 class ActivityNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>>
     with UseApi {
   ActivityNotifier() : super(const AsyncValue.loading());
@@ -31,6 +24,7 @@ class ActivityNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>>
         state = AsyncValue.data(data.map((e) => Kegiatan.fromJson(e)).toList());
       }
     } catch (e, s) {
+      print('error: $s');
       state = AsyncValue.error(e, s);
     }
   }

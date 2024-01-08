@@ -24,4 +24,8 @@ class KegiatanApi {
   Future<Response> updateKegiatan(String id, Map<String, dynamic> data) async {
     return await dio.patch('api/activities/$id', data: data);
   }
+
+  Future<Response> createAmprahan(String activityId, FormData data) async {
+    return await dio.post('api/activity/$activityId/amprahan', data: data);
+  }
 }
