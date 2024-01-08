@@ -214,7 +214,7 @@ class _BoxStaffState extends State<BoxStaff> {
           height: 68,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: Colors.purple[100]),
+              color: Color.fromARGB(255, 251, 224, 91)),
           padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
           width: (MediaQuery.of(context).size.width / 2) - 40,
           child: Row(
@@ -228,7 +228,7 @@ class _BoxStaffState extends State<BoxStaff> {
                     color: Colors.red,
                     shape: BoxShape.circle,
                     image: DecorationImage(
-                      image: NetworkImage(widget.image),
+                      image: AssetImage('assets/images/user.jpeg'),
                       fit: BoxFit.cover,
                     )),
               ),

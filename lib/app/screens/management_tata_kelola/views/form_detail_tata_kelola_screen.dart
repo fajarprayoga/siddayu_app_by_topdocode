@@ -201,26 +201,27 @@ class _FormDetailTataKelolaState extends ConsumerState<FormDetailTataKelola> {
         SizedBox(
           width: gap,
         ),
-        FormFieldCustom(
-          width: 100,
-          title: '',
-          placeholder: '0',
-          keyboardType: TextInputType.number,
-          controller: total,
-          onChanged: (value) {
-            // print(index);
-            if (index < sub_activities.length) {
-              sub_activities[index] = {
-                ...sub_activities[index],
-                "total_budget": value
-              };
-            } else {
-              sub_activities.add({"total_budget": value});
-            }
-          },
-        ),
-        Center(
-            child: InkWell(
+        Row(
+          children: [
+            FormFieldCustom(
+              width: 100,
+              title: '',
+              placeholder: '0',
+              keyboardType: TextInputType.number,
+              controller: total,
+              onChanged: (value) {
+                // print(index);
+                if (index < sub_activities.length) {
+                  sub_activities[index] = {
+                    ...sub_activities[index],
+                    "total_budget": value
+                  };
+                } else {
+                  sub_activities.add({"total_budget": value});
+                }
+              },
+            ),
+            InkWell(
                 onTap: () {
                   setState(() {
                     formSubKegiatan.removeAt(index);
@@ -230,7 +231,9 @@ class _FormDetailTataKelolaState extends ConsumerState<FormDetailTataKelola> {
                   Icons.delete,
                   size: 32,
                   color: Colors.red[800],
-                )))
+                ))
+          ],
+        ),
       ],
     );
   }

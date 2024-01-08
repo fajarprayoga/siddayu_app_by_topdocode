@@ -80,7 +80,7 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>>
 
       if (res.statusCode == 200) {
         final dataJson = jsonDecode(res.data);
-
+        Toasts.show("update successfully");
         // update state
       }
     } catch (e, s) {
