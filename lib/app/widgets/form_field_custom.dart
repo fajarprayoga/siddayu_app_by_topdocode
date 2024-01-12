@@ -8,6 +8,7 @@ class FormFieldCustom extends StatelessWidget {
   final IconData? icon;
   final bool? isMultiLine;
   final String? type;
+  final TextStyle? titleStyle;
   final TextInputType? keyboardType;
   final TextEditingController? controller;
   final initialValue;
@@ -17,6 +18,7 @@ class FormFieldCustom extends StatelessWidget {
       {super.key,
       required this.placeholder,
       required this.title,
+      this.titleStyle,
       this.icon,
       this.width,
       this.isMultiLine,
@@ -47,12 +49,12 @@ class FormFieldCustom extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: width ?? double.infinity,
-      margin: EdgeInsets.symmetric(vertical: 10),
+      margin: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (title != '') Text(title),
-          SizedBox(
+          if (title != '') Text(title, style: titleStyle),
+          const SizedBox(
             height: gap - 2,
           ),
           if (type == 'TEXT')
@@ -64,14 +66,15 @@ class FormFieldCustom extends StatelessWidget {
                 return null;
               },
               controller: controller,
-              initialValue: initialValue ?? null,
+              initialValue: initialValue,
               decoration: InputDecoration(
                 hintText: placeholder,
+                hintStyle: const TextStyle(color: Colors.black38),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey,
+                  borderSide: const BorderSide(
+                    color: Colors.black26,
                   ),
-                  borderRadius: BorderRadius.circular(5.5),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: primary, width: 2),
@@ -79,8 +82,8 @@ class FormFieldCustom extends StatelessWidget {
                 ),
                 filled: true,
                 fillColor: Colors.white,
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 15.0, horizontal: padding),
+                contentPadding: const EdgeInsets.symmetric(
+                    vertical: 13.0, horizontal: padding),
                 prefixIcon: icon != null ? Icon(icon) : null,
               ),
               maxLines: null,

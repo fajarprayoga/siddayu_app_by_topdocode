@@ -74,15 +74,18 @@ class ManagementTataKelola extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Progress Kegiatan',
-                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                   InkWell(
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text("All"),
                                         Icon(
@@ -98,8 +101,12 @@ class ManagementTataKelola extends ConsumerWidget {
                               Expanded(
                                 child: ListView.builder(
                                   itemCount: kegiatanData.length,
-                                  itemBuilder: (BuildContext context, int index) {
-                                    return KegiatanProgress(name: kegiatanData[index].name, progress: (kegiatanData[index].progress));
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return KegiatanProgress(
+                                        name: kegiatanData[index].name,
+                                        progress:
+                                            (kegiatanData[index].progress));
                                   },
                                 ),
                               ),
@@ -160,13 +167,17 @@ class _KegiatanProgressState extends State<KegiatanProgress> {
             children: [
               Container(
                 width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(color: Colors.amber[100], borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(
+                    color: Colors.amber[100],
+                    borderRadius: BorderRadius.circular(10)),
                 height: 21,
               ),
               AnimatedContainer(
                 duration: const Duration(milliseconds: 800),
                 width: _width,
-                decoration: BoxDecoration(color: Colors.amber, borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(
+                    color: Colors.amber,
+                    borderRadius: BorderRadius.circular(10)),
                 height: 21,
               )
             ],
@@ -197,14 +208,17 @@ class _BoxStaffState extends State<BoxStaff> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        context.push(Paths.managementTataKelolaDetail('1'), extra: {'id': widget.id, 'name': widget.name});
+        context.push(Paths.managementTataKelolaDetail('1'),
+            extra: {'id': widget.id, 'name': widget.name});
       },
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 800),
         opacity: 1,
         child: Container(
           height: 68,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Color.fromARGB(255, 251, 224, 91)),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Color.fromARGB(255, 251, 224, 91)),
           padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
           width: (MediaQuery.of(context).size.width / 2) - 40,
           child: Row(
@@ -228,7 +242,9 @@ class _BoxStaffState extends State<BoxStaff> {
               Expanded(
                 child: Text(
                   widget.name,
-                  style: TextStyle(fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      overflow: TextOverflow.ellipsis),
                 ),
               )
             ],

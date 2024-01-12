@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/constants/font.dart';
 import 'package:todo_app/app/core/constants/pages.dart';
@@ -48,60 +49,56 @@ class HomePage extends ConsumerWidget {
           child: ListView(
             padding: EdgeInsets.zero,
             children: <Widget>[
-              SizedBox(
-                height: 150,
-                // drawer header
-                child: DrawerHeader(
-                  decoration: const BoxDecoration(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      InkWell(
-                        onTap: () => {},
-                        child: const Icon(
-                          Icons.arrow_back,
-                          size: 17,
-                        ),
+              DrawerHeader(
+                decoration: const BoxDecoration(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    InkWell(
+                      onTap: () => {},
+                      child: const Icon(
+                        Icons.arrow_back,
+                        size: 17,
                       ),
-                      const SizedBox(
-                        height: 20,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 8),
+                      decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.black38,
+                                blurRadius: 4,
+                                offset: Offset(1, 2))
+                          ]),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(Icons.person),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(auth.name),
+                                Text(
+                                  auth.email,
+                                  overflow: TextOverflow.ellipsis,
+                                  softWrap: false,
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
                       ),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 8),
-                        decoration: const BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(Radius.circular(12)),
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.black38,
-                                  blurRadius: 4,
-                                  offset: Offset(1, 2))
-                            ]),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Icon(Icons.person),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(auth.name),
-                                  Text(
-                                    auth.email,
-                                    overflow: TextOverflow.ellipsis,
-                                    softWrap: false,
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               SizedBox(

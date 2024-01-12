@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app/app/core/extensions/dio_extension.dart';
@@ -27,6 +28,13 @@ void main() async {
 
   // NOTE: kamu juga bisa membuat file sendiri untuk menjalankan kode pada bagian ini
   // sehingga file main.dart ini terlihat lebih bersih
+
+  // config status bar
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      systemNavigationBarIconBrightness: Brightness.dark,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.white));
 
   // init provider and run app
   runApp(const ProviderScope(child: MyApp()));

@@ -7,6 +7,7 @@ import 'package:todo_app/app/data/service/local/storage.dart';
 import 'package:todo_app/app/screens/home/views/home_page.dart';
 import 'package:todo_app/app/screens/login/login_view.dart';
 import 'package:todo_app/app/screens/management_tata_kelola/views/form_detail_tata_kelola_screen.dart';
+import 'package:todo_app/app/screens/management_tata_kelola/views/form_kegiatan_screen.dart';
 import 'package:todo_app/app/screens/management_tata_kelola/views/form_pertanggung_jawaban_screen.dart';
 import 'package:todo_app/app/screens/management_tata_kelola/views/form_tata_kelola_screen.dart';
 import 'package:todo_app/app/screens/management_tata_kelola/views/management_tata_kelola_screen.dart';
@@ -33,6 +34,9 @@ final GoRouter router = GoRouter(
         path: Paths.formManagementTataKelolaDetail,
         builder: (_, GoRouterState state) =>
             FormDetailTataKelola(kegiatan: state.extra as Kegiatan)),
+
+    // management tata kelola
+    Route.set(Paths.formKegiatan, (state) => const FormKegiatanScreen()),
   ],
 );
 

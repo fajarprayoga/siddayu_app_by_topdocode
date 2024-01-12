@@ -9,7 +9,7 @@ part 'kegiatan_api.dart';
 
 BaseOptions dioOptions({String? baseUrl}) => BaseOptions(
     followRedirects: false,
-    baseUrl: 'http://192.168.18.106:8000/',
+    baseUrl: 'https://sidayu.topdocode.com/',
     connectTimeout: const Duration(seconds: 60),
     receiveTimeout: const Duration(seconds: 200),
     headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
