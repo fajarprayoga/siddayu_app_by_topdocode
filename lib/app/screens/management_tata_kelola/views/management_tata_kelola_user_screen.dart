@@ -52,15 +52,26 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
           child: Column(
             children: [
               const SizedBox(height: gap),
-              if (auth.id == params['id']) ButtonAddKegiatan(notifier: notifier),
+              if (auth.id == params['id'])
+                ButtonAddKegiatan(
+                  notifier: notifier,
+                  onTap: () {
+                    context.push(Paths.formManagementTataKelola).then((value) {
+                      value as Map<String, dynamic>;
+                      notifier.addData(Kegiatan.fromJson(value));
+                    });
+                  },
+                ),
               const SizedBox(
                 height: gap,
               ),
               Expanded(
                   child: refKegiatanProvider.when(
                       data: (data) {
+                        logg(data);
+
                         if (data.isEmpty) {
-                          return Center(child: const Text('data is empty'));
+                          return const Center(child: Text('data is empty'));
                         }
                         return ListView.builder(
                           itemCount: data.length,
@@ -133,20 +144,16 @@ class ListKegiatan extends StatelessWidget {
 
 class ButtonAddKegiatan extends StatelessWidget {
   final ActivityUserNotifier notifier;
+  final Function()? onTap;
 
-  const ButtonAddKegiatan({super.key, required this.notifier});
+  const ButtonAddKegiatan({super.key, required this.notifier, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.centerRight,
       child: InkWell(
-        onTap: () {
-          context.push(Paths.formManagementTataKelola).then((value) {
-            value as Map<String, dynamic>;
-            notifier.addData(Kegiatan.fromJson(value));
-          });
-        },
+        onTap: onTap,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: padding, vertical: padding),
           decoration: BoxDecoration(

@@ -1,10 +1,10 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/helpers/toast.dart';
+import 'package:todo_app/app/core/helpers/utils.dart';
 import 'package:todo_app/app/data/api/api.dart';
 import 'package:todo_app/app/data/models/kegiatan.dart';
 
@@ -34,8 +34,8 @@ class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>>
     try {
       state = const AsyncValue.loading();
       final res = await kegiatanApi.getKegiatanById(activityId ?? '');
-      if (res.statusCode == 200) {
-        final map = json.decode(res.data);
+      if (res.status) {
+        final map = res.data;
         final data = map['data']['data'];
         name.text = data['name'];
         activity_date.text = data['activity_date'].toString().split(' ')[0];
@@ -66,8 +66,8 @@ class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>>
         }
         // Assuming you have the Dio setup and a URL endpoint
         final res = await kegiatanApi.uploadDoc(formData);
-        final map = json.decode(res.data);
-        if (res.statusCode == 201) {
+        final map = res.data;
+        if (res.status) {
           List pathFiles = map['data']['file_paths'];
           updateActivity(activityId ?? '', pathFiles);
 
@@ -79,7 +79,7 @@ class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>>
         Toasts.show('No files to upload');
       }
     } catch (e, s) {
-      print('Error: $e, $s');
+      Utils.errorCatcher(e, s);
     }
   }
 
@@ -87,7 +87,7 @@ class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>>
     try {
       final data = {"sk": fields};
       final res = await kegiatanApi.updateKegiatan(activityId, data);
-      if (res.statusCode == 200) {
+      if (res.status) {
         Toasts.show('Success');
         // final dataJson = jsonDecode(res.data);
         // final kegiatan = Kegiatan.fromJson(dataJson['data']['data'] ?? {});
@@ -95,7 +95,7 @@ class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>>
         // update state
       }
     } catch (e, s) {
-      print('Error: $e, $s');
+      Utils.errorCatcher(e, s);
     }
   }
 
@@ -126,8 +126,8 @@ class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>>
       if (formFiles.fields.isNotEmpty) {
         final resFiles = await kegiatanApi.uploadDoc(formFiles);
 
-        if (resFiles.statusCode == 201) {
-          mapFiles = json.decode(resFiles.data);
+        if (resFiles.status) {
+          mapFiles = resFiles.data;
         } else {
           statusUpload = false;
           Toasts.show("Doc not Uploaded");
@@ -146,7 +146,7 @@ class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>>
         };
         final res = await kegiatanApi.createAmprahan(activityId, form);
 
-        if (res.statusCode == 201) {
+        if (res.status) {
           // update state
         }
       }

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/data/api/api.dart';
@@ -26,8 +24,8 @@ class KegiatanDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>>
     try {
       state = const AsyncValue.loading();
       final res = await kegiatanApi.getKegiatanById(activityId);
-      if (res.statusCode == 200) {
-        final map = json.decode(res.data);
+      if (res.status) {
+        final map = res.data;
         final data = map['data']['data'];
         name.text = data['name'];
         activity_date.text = data['activity_date'].toString().split(' ')[0];

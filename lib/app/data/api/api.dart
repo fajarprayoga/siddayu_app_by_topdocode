@@ -22,5 +22,4 @@ mixin UseApi {
   AuthApi authApi = AuthApi();
   UserApi userApi = UserApi();
   KegiatanApi kegiatanApi = KegiatanApi();
-  KegiatanApi2 kegiatanApi2 = KegiatanApi2();
 }

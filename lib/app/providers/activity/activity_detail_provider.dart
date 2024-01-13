@@ -3,11 +3,11 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/helpers/logg.dart';
 import 'package:todo_app/app/core/helpers/toast.dart';
-import 'package:todo_app/app/core/helpers/utils.dart';
 import 'package:todo_app/app/data/api/api.dart';
 import 'package:todo_app/app/data/models/kegiatan.dart';
 
-class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>> with UseApi {
+class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>>
+    with UseApi {
   final String? activityId;
   final name = TextEditingController();
   final activity_date = TextEditingController();
@@ -26,7 +26,7 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>> with Use
   Future getActivity() async {
     try {
       state = const AsyncValue.loading();
-      final res = await kegiatanApi2.getKegiatanById(activityId ?? '');
+      final res = await kegiatanApi.getKegiatanById(activityId ?? '');
 
       if (res.status) {
         final data = res.data['data'];
@@ -39,7 +39,8 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>> with Use
         subActivities = activities.map((e) {
           return SubActivity2(
             nameController: TextEditingController(text: e['name']),
-            totalController: TextEditingController(text: e['total_budget'].toString()),
+            totalController:
+                TextEditingController(text: e['total_budget'].toString()),
           );
         }).toList();
 
@@ -80,7 +81,7 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>> with Use
         // "created_by": auth.id
       };
 
-      final res = await kegiatanApi2.addKegiatan(formField);
+      final res = await kegiatanApi.addKegiatan(formField);
 
       if (res.status) {
         // ignore: use_build_context_synchronously
@@ -91,13 +92,14 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>> with Use
         Toasts.show(res.message ?? '');
       }
     } catch (e, s) {
-      print('Error: $e, $s');
       // state = AsyncValue.error(e, s);
     }
   }
 
   void addSubActivity() {
-    subActivities.add(SubActivity2(nameController: TextEditingController(), totalController: TextEditingController()));
+    subActivities.add(SubActivity2(
+        nameController: TextEditingController(),
+        totalController: TextEditingController()));
     state = AsyncValue.data(state.value!);
   }
 
@@ -118,21 +120,21 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>> with Use
         "sub_activities": activies,
       };
 
-      final res = await kegiatanApi2.updateKegiatan(activityId, fields);
+      final res = await kegiatanApi.updateKegiatan(activityId, fields);
 
       if (res.status) {
         Toasts.show("update successfully");
         return res.data?['data'] ?? {};
         // update state
       }
-    } catch (e, s) {
-      print('Error: $e, $s');
-    }
+    } catch (e, s) {}
   }
 
   void uploadDoc(BuildContext context) {}
 }
 
-final activityDetailProvider = StateNotifierProvider.autoDispose.family<ActivtyDetailNotifier, AsyncValue<Kegiatan>, String>((ref, activityId) {
+final activityDetailProvider = StateNotifierProvider.autoDispose
+    .family<ActivtyDetailNotifier, AsyncValue<Kegiatan>, String>(
+        (ref, activityId) {
   return ActivtyDetailNotifier(activityId: activityId);
 });

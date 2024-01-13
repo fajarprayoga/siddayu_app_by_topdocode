@@ -18,22 +18,19 @@ import 'paths.dart';
 
 final GoRouter router = GoRouter(
   routes: <RouteBase>[
-    Route.set(Paths.home, (state) => const HomePage(),
-        redirect: (_) => _redirect()),
+    Route.set(Paths.home, (state) => const HomePage(), redirect: (_) => _redirect()),
     Route.set(Paths.login, (state) => const LoginView()),
     Route.set(Paths.formTodo, (state) => const ManagementTataKelola()),
-    Route.set(Paths.managementTataKelolaDetail(null),
-        (state) => ManagementTataKelolaDetail(params: state.extra)),
-    Route.set(
-        Paths.formManagementTataKelola, (state) => const FormTataKelola()),
+    Route.set(Paths.managementTataKelolaDetail(null), (state) => ManagementTataKelolaDetail(params: state.extra)),
+
+    Route.set(Paths.formManagementTataKelola, (state) => const FormTataKelola()),
+
     GoRoute(
         path: Paths.formPertanggungJawaban,
-        builder: (_, GoRouterState state) =>
-            FormPertanggungJawaban(kegiatan: state.extra as Kegiatan)),
+        builder: (_, GoRouterState state) => FormPertanggungJawaban(kegiatan: state.extra as Kegiatan)),
     GoRoute(
         path: Paths.formManagementTataKelolaDetail,
-        builder: (_, GoRouterState state) =>
-            FormDetailTataKelola(kegiatan: state.extra as Kegiatan)),
+        builder: (_, GoRouterState state) => FormDetailTataKelola(kegiatan: state.extra as Kegiatan)),
 
     // management tata kelola
     Route.set(Paths.formKegiatan, (state) => const FormKegiatanScreen()),

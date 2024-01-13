@@ -28,8 +28,8 @@ class KegiatanByUserNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>>
       state = const AsyncValue.loading();
       final res = await kegiatanApi.getKegiatanByUser(userId);
       print(res);
-      if (res.statusCode == 200) {
-        final map = json.decode(res.data);
+      if (res.status) {
+        final map = res.data;
         List data = map['data']['data'] ?? [];
         state = AsyncValue.data(data.map((e) => Kegiatan.fromJson(e)).toList());
       }

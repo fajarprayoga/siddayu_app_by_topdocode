@@ -33,8 +33,8 @@ class KegiatanNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>>
     try {
       state = const AsyncValue.loading();
       final res = await kegiatanApi.getKegiatan();
-      if (res.statusCode == 200) {
-        final map = json.decode(res.data);
+      if (res.status) {
+        final map = res.data;
         List data = map['data']['data'] ?? [];
         state = AsyncValue.data(data.map((e) => Kegiatan.fromJson(e)).toList());
       }
@@ -95,7 +95,7 @@ class KegiatanNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>>
 
         // Assuming you have the Dio setup and a URL endpoint
         final res = await kegiatanApi.uploadDoc(formData);
-        if (res.statusCode == 201) {
+        if (res.status) {
           print('success');
         } else {
           print('nno');
