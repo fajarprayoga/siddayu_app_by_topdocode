@@ -33,7 +33,11 @@ final GoRouter router = GoRouter(
         builder: (_, GoRouterState state) => FormDetailTataKelola(kegiatan: state.extra as Kegiatan)),
 
     // management tata kelola
-    Route.set(Paths.formKegiatan, (state) => const FormKegiatanScreen()),
+    Route.set(
+        Paths.formKegiatan,
+        (state) => FormKegiatanScreen(
+              kegiatan: state.extra as Kegiatan,
+            )),
   ],
 );
 

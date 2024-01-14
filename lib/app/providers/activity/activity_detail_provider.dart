@@ -6,8 +6,7 @@ import 'package:todo_app/app/core/helpers/toast.dart';
 import 'package:todo_app/app/data/api/api.dart';
 import 'package:todo_app/app/data/models/kegiatan.dart';
 
-class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>>
-    with UseApi {
+class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>> with UseApi {
   final String? activityId;
   final name = TextEditingController();
   final activity_date = TextEditingController();
@@ -16,6 +15,9 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>>
   List fileList = [];
   List<SubActivity2> subActivities = [];
   String userId = '';
+
+  List<Widget> formAmprahan = [];
+  List<Widget> formSubKegiatan = [];
 
   ActivtyDetailNotifier({this.activityId}) : super(const AsyncValue.loading()) {
     if (activityId != '') {
@@ -39,8 +41,7 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>>
         subActivities = activities.map((e) {
           return SubActivity2(
             nameController: TextEditingController(text: e['name']),
-            totalController:
-                TextEditingController(text: e['total_budget'].toString()),
+            totalController: TextEditingController(text: e['total_budget'].toString()),
           );
         }).toList();
 
@@ -97,9 +98,7 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>>
   }
 
   void addSubActivity() {
-    subActivities.add(SubActivity2(
-        nameController: TextEditingController(),
-        totalController: TextEditingController()));
+    subActivities.add(SubActivity2(nameController: TextEditingController(), totalController: TextEditingController()));
     state = AsyncValue.data(state.value!);
   }
 
@@ -133,8 +132,7 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>>
   void uploadDoc(BuildContext context) {}
 }
 
-final activityDetailProvider = StateNotifierProvider.autoDispose
-    .family<ActivtyDetailNotifier, AsyncValue<Kegiatan>, String>(
-        (ref, activityId) {
+final activityDetailProvider =
+    StateNotifierProvider.autoDispose.family<ActivtyDetailNotifier, AsyncValue<Kegiatan>, String>((ref, activityId) {
   return ActivtyDetailNotifier(activityId: activityId);
 });
