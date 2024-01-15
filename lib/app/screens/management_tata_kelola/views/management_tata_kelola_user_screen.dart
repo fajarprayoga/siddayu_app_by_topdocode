@@ -7,7 +7,6 @@ import 'package:todo_app/app/data/models/user/user.dart';
 import 'package:todo_app/app/providers/activity/activity_user_provider.dart';
 import 'package:todo_app/app/routes/paths.dart';
 import 'package:todo_app/app/widgets/custom_appbar.dart';
-import 'package:todo_app/app/widgets/primary_button.dart';
 
 class ManagementTataKelolaDetail extends ConsumerWidget {
   final User data;

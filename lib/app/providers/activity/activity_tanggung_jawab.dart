@@ -2,15 +2,15 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:lazyui/lazyui.dart';
 import 'package:todo_app/app/core/helpers/toast.dart';
 import 'package:todo_app/app/data/api/api.dart';
 import 'package:todo_app/app/data/models/kegiatan.dart';
 
-class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>>
-    with Apis {
+class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>> with Apis {
   final String? activityId;
   final name = TextEditingController();
-  final activity_date = TextEditingController();
+  final activityDate = TextEditingController();
   final description = TextEditingController();
   Map<String, List<Map<String, dynamic>>> fileListPro = {};
 
@@ -22,9 +22,8 @@ class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>>
   bool pajak = false;
   List<Map<String, List<Map<String, dynamic>>>> fileListAmprahan = [];
 
-  List sub_activities = [];
-  ActivtyTanggungjawabNotifier({this.activityId})
-      : super(const AsyncValue.loading()) {
+  List subActivities = [];
+  ActivtyTanggungjawabNotifier({this.activityId}) : super(const AsyncValue.loading()) {
     if (activityId != '') getActivity();
   }
 
@@ -36,7 +35,7 @@ class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>>
         final map = res.data;
         final data = map['data']['data'];
         name.text = data['name'];
-        activity_date.text = data['activity_date'].toString().split(' ')[0];
+        activityDate.text = data['activity_date'].toString().split(' ')[0];
 
         description.text = data['description'];
         state = AsyncValue.data(Kegiatan.fromJson(data));
@@ -94,6 +93,7 @@ class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>>
       }
     } catch (e, s) {
       // Utils.errorCatcher(e, s);
+      Errors.check(e, s);
     }
   }
 
@@ -160,7 +160,6 @@ class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>>
 }
 
 final activitTanggungJawabProvider = StateNotifierProvider.autoDispose
-    .family<ActivtyTanggungjawabNotifier, AsyncValue<Kegiatan>, String>(
-        (ref, activityId) {
+    .family<ActivtyTanggungjawabNotifier, AsyncValue<Kegiatan>, String>((ref, activityId) {
   return ActivtyTanggungjawabNotifier(activityId: activityId);
 });

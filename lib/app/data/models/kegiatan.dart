@@ -39,7 +39,7 @@ class Kegiatan {
       description: json['description'],
       // location: json['location'],
       status: json['status'] ?? 'progress',
-      totalBudget: json['total_budget'] == null ? 0 : json['total_budget'],
+      totalBudget: json['total_budget'] ?? 0,
       subActivities: (json['sub_activities'] as List<dynamic>?)
               ?.map((subActivity) => SubActivity.fromJson(subActivity))
               .toList() ??
@@ -60,8 +60,7 @@ class Kegiatan {
         // 'location': location,
         'status': status,
         'total_budget': totalBudget,
-        'sub_activities':
-            subActivities.map((subActivity) => subActivity.toJson()).toList(),
+        'sub_activities': subActivities.map((subActivity) => subActivity.toJson()).toList(),
         //     ? subActivities.map((subActivity) => subActivity.toJson()).toList()
         //     : [{}].toList(),
         // 'documents': documents.map((document) => document.toJson()).toList(),
@@ -81,9 +80,7 @@ class SubActivity {
   factory SubActivity.fromJson(Map<String, dynamic> json) {
     return SubActivity(
       name: json['name'],
-      totalBudget: json['total_budget'] != null
-          ? int.parse(json['total_budget'].toString())
-          : 0,
+      totalBudget: json['total_budget'] != null ? int.parse(json['total_budget'].toString()) : 0,
     );
   }
 

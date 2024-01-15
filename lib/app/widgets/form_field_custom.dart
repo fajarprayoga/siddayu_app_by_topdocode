@@ -11,7 +11,7 @@ class FormFieldCustom extends StatelessWidget {
   final TextStyle? titleStyle;
   final TextInputType? keyboardType;
   final TextEditingController? controller;
-  final initialValue;
+  final dynamic initialValue;
   final void Function(String)? onChanged;
 
   const FormFieldCustom(
@@ -38,10 +38,8 @@ class FormFieldCustom extends StatelessWidget {
     if (picked != null && picked != DateTime.now()) {
       // Handle the selected date value
       DateTime localPicked = picked.toLocal(); // Convert to local time
-      String formattedDate =
-          localPicked.toString().split(' ')[0]; // Get only the date part
-      controller?.text =
-          formattedDate; // Update the text field with the formatted date
+      String formattedDate = localPicked.toString().split(' ')[0]; // Get only the date part
+      controller?.text = formattedDate; // Update the text field with the formatted date
     }
   }
 
@@ -77,13 +75,12 @@ class FormFieldCustom extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: primary, width: 2),
+                  borderSide: const BorderSide(color: primary, width: 2),
                   borderRadius: BorderRadius.circular(5.5),
                 ),
                 filled: true,
                 fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(
-                    vertical: 13.0, horizontal: padding),
+                contentPadding: const EdgeInsets.symmetric(vertical: 13.0, horizontal: padding),
                 prefixIcon: icon != null ? Icon(icon) : null,
               ),
               maxLines: null,
@@ -100,18 +97,18 @@ class FormFieldCustom extends StatelessWidget {
               decoration: InputDecoration(
                 hintText: placeholder,
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
+                  borderSide: const BorderSide(
                     color: Colors.grey,
                   ),
                   borderRadius: BorderRadius.circular(5.5),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: primary, width: 2),
+                  borderSide: const BorderSide(color: primary, width: 2),
                   borderRadius: BorderRadius.circular(5.5),
                 ),
                 filled: true,
                 fillColor: Colors.white,
-                contentPadding: EdgeInsets.symmetric(
+                contentPadding: const EdgeInsets.symmetric(
                   vertical: 15.0,
                   horizontal: padding,
                 ),

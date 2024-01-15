@@ -16,22 +16,20 @@ class Kependudukan extends ConsumerWidget {
       runSpacing: gap,
       spacing: gap,
       children: List.generate(10, (index) {
-        return IconBoxCustom(screenWidth, index, notifier);
+        return iconBoxCustom(screenWidth, index, notifier);
       }),
     );
   }
 
-  Container IconBoxCustom(double screenWidth, int index, notifier) {
-    return Container(
+  Widget iconBoxCustom(double screenWidth, int index, notifier) {
+    return SizedBox(
       width: (screenWidth - 72) / 3, // Atur lebar sesuai kebutuhan Anda
       height: 140.0, // Atur tinggi sesuai kebutuhan Anda
       // Atur warna latar belakang sesuai kebutuhan Anda
       child: Padding(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: InkWell(
-            onTap: () {
-              print(notifier);
-            },
+            onTap: () {},
             child: Column(
               children: [
                 Container(
@@ -40,22 +38,20 @@ class Kependudukan extends ConsumerWidget {
                   decoration: BoxDecoration(
                     // Atur warna latar belakang sesuai kebutuhan Anda
                     border: Border.all(
-                      color: Colors
-                          .grey, // Atur warna border sesuai kebutuhan Anda
+                      color: Colors.grey, // Atur warna border sesuai kebutuhan Anda
                       width: 0.8, // Atur lebar border sesuai kebutuhan Anda
                     ),
-                    borderRadius: BorderRadius.circular(
-                        8.0), // Atur sudut border sesuai kebutuhan Anda
+                    borderRadius: BorderRadius.circular(8.0), // Atur sudut border sesuai kebutuhan Anda
                   ),
                   child: Icon(
                     Icons.person,
                     color: Colors.lightBlue[300],
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
-                Text('Pendaftaran')
+                const Text('Pendaftaran')
               ],
             ),
           )),
