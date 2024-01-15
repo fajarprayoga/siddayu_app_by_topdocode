@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lazyui/lazyui.dart';
-import 'package:todo_app/app/core/constants/value.dart';
 import 'package:todo_app/app/data/api/api.dart';
+import 'package:todo_app/app/data/models/kegiatan/kegiatan.dart';
 
 class SubActivityModel {
   final TextEditingController name, total;
@@ -38,7 +38,31 @@ class FormActivityNotifier extends StateNotifier<FormActivityState> with Apis {
     state = state.copyWith(subActivities: data);
   }
 
-  Future onSubmit() async {
+  void initForm(Kegiatan data) {
+    try {
+      forms.fill({
+        'name': data.name,
+        'activity_date': data.activityDate.format(),
+        'description': data.description,
+      });
+
+      final activities = data.subActivities ?? [];
+      List<SubActivityModel> subActivities = [];
+
+      for (var e in activities) {
+        subActivities.add(SubActivityModel(
+            name: TextEditingController(text: e.name), total: TextEditingController(text: e.totalBudget.toString())));
+      }
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        state = state.copyWith(subActivities: subActivities);
+      });
+    } catch (e, s) {
+      Errors.check(e, s);
+    }
+  }
+
+  Future onSubmit([String? activityID]) async {
     try {
       final form = forms.validate(
           required: ['*'],
@@ -67,14 +91,23 @@ class FormActivityNotifier extends StateNotifier<FormActivityState> with Apis {
         payload['sub_activities'] = subActivities;
       }
 
-      LzToast.overlay('Menambahkan kegiatan...');
-      final res = await kegiatanApi.addKegiatan(payload);
+      LzToast.overlay(activityID == null ? 'Menambahkan kegiatan...' : 'Mengubah kegiatan...');
 
-      if (!res.status) {
-        return LzToast.show(res.message);
+      if (activityID == null) {
+        final res = await kegiatanApi.addKegiatan(payload);
+        if (!res.status) {
+          return LzToast.show(res.message);
+        }
+
+        return res.data;
+      } else {
+        final res = await kegiatanApi.updateKegiatan(activityID, payload);
+        if (!res.status) {
+          return LzToast.show(res.message);
+        }
+
+        return res.data;
       }
-
-      return res.data;
     } catch (e, s) {
       Errors.check(e, s);
     } finally {

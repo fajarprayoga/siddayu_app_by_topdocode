@@ -12,7 +12,7 @@ class Paths {
   //   }
   // }
   static const String formManagementTataKelola = '/form-management-tata-kelola';
-  static const String formManagementTataKelolaDetail = '/form-management-tata-kelola-detail';
+  // static const String formManagementTataKelolaDetail = '/form-management-tata-kelola-detail';
   static const String formPertanggungJawaban = '/form-pertanggung-jawaban';
 
   // management tata kelola

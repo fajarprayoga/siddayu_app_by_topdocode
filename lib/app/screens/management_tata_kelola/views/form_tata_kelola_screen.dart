@@ -5,26 +5,45 @@ import 'package:lazyui/lazyui.dart';
 import 'package:todo_app/app/core/constants/value.dart';
 import 'package:todo_app/app/core/extensions/riverpod_extension.dart';
 import 'package:todo_app/app/core/extensions/widget_extension.dart';
+import 'package:todo_app/app/data/models/kegiatan/kegiatan.dart';
 import 'package:todo_app/app/providers/activity/form_activity_provider.dart';
+import 'package:todo_app/app/routes/paths.dart';
 import 'package:todo_app/app/widgets/custom_appbar.dart';
+import 'package:todo_app/app/widgets/primary_button.dart';
 
 import '../../../widgets/custom_textfield.dart';
 
 class FormTataKelola extends ConsumerWidget {
-  const FormTataKelola({super.key});
+  final Kegiatan? data;
+  const FormTataKelola({super.key, this.data});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final notifier = ref.read(formActivityProvider.notifier);
     final forms = notifier.forms;
 
+    String sub = data == null ? 'Create' : 'Edit';
+
+    if (data != null) {
+      notifier.initForm(data!);
+    }
+
     return Wrapper(
       child: Scaffold(
         appBar: AppBar(
-            title: const CustomAppbar(
-          title: 'Management Tata Kelola',
-          subtitle: 'Kegiatan / Create',
-        )),
+          title: CustomAppbar(
+            title: 'Management Tata Kelola',
+            subtitle: 'Kegiatan / $sub',
+          ),
+          actions: [
+            const Icon(Ti.clipboardCheck)
+                .onPressed(() {
+                  context.push(Paths.formKegiatan, extra: data);
+                })
+                .lz
+                .hide(data == null)
+          ],
+        ),
 
         body: LzFormList(
           style: const LzFormStyle(type: FormType.topAligned, inputBorderColor: Colors.black38),
@@ -91,11 +110,11 @@ class FormTataKelola extends ConsumerWidget {
         ),
 
         bottomNavigationBar: LzButton(
-          text: 'Simpan',
+          text: data == null ? 'Simpan' : 'Perbarui',
           color: primary,
           textColor: Colors.white,
           onTap: (_) async {
-            final res = await notifier.onSubmit();
+            final res = await notifier.onSubmit(data?.id);
             if (res != null && context.mounted) {
               context.pop(res?['data'] ?? {});
             }

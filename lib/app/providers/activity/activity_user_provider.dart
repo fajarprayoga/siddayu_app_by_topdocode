@@ -45,7 +45,7 @@ class ActivityUserNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>> wit
       final currentState = state.value ?? [];
       state = AsyncValue.data([data, ...currentState]);
     } catch (e, s) {
-      print('error: $e, $s');
+      Errors.check(e, s);
     }
   }
 
@@ -56,7 +56,7 @@ class ActivityUserNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>> wit
       currentState[index] = data;
       state = AsyncValue.data(currentState);
     } catch (e, s) {
-      print('error: $e, $s');
+      Errors.check(e, s);
     }
   }
 }

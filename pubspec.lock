@@ -173,10 +173,10 @@ packages:
     dependency: "direct main"
     description:
       name: fetchly
-      sha256: "36adcdf3f7546885b7287c22c31239be7d178f8c74cffb08ad623779ae9ae219"
+      sha256: "23c48c1caa4d67bdca6d3dcf55758dfbc86a7078f739262bfec1624996f42c56"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.6"
+    version: "0.0.7"
   ffi:
     dependency: transitive
     description:

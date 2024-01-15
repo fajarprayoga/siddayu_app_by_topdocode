@@ -62,9 +62,11 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
                           onTap: () {
                             DropX.show(ikey, options: ['Edit', 'Hapus'].options(dangers: [1]), onSelect: (value) {
                               if (value.index == 0) {
-                                context.push(Paths.formManagementTataKelolaDetail, extra: item).then((value) {
-                                  value as Map<String, dynamic>;
-                                  notifier.updateData(Kegiatan.fromJson(value));
+                                context.push(Paths.formManagementTataKelola, extra: item).then((value) {
+                                  if (value != null) {
+                                    value as Map<String, dynamic>;
+                                    notifier.updateData(Kegiatan.fromJson(value));
+                                  }
                                 });
                               } else {
                                 LzConfirm(
@@ -107,8 +109,10 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
           ? FloatingActionButton(
               onPressed: () {
                 context.push(Paths.formManagementTataKelola).then((value) {
-                  value as Map<String, dynamic>;
-                  notifier.addData(Kegiatan.fromJson(value));
+                  if (value != null) {
+                    value as Map<String, dynamic>;
+                    notifier.addData(Kegiatan.fromJson(value));
+                  }
                 });
               },
               child: const Icon(Ti.plus),

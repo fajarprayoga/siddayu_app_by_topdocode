@@ -1,9 +1,12 @@
 import 'dart:io';
 
+import 'package:fetchly/fetchly.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:lazyui/lazyui.dart';
+import 'package:lazyui/lazyui.dart' hide MultipartFile;
 import 'package:todo_app/app/core/helpers/toast.dart';
+import 'package:todo_app/app/data/api/api.dart';
+import 'package:todo_app/app/data/models/kegiatan/kegiatan.dart';
 import '../../data/models/amprahan.dart';
 
 class FormKegiatanState {
@@ -13,16 +16,10 @@ class FormKegiatanState {
   final List<Amprahan> amprahans;
 
   FormKegiatanState(
-      {this.fileSK = const [],
-      this.fileBeritaAcara = const [],
-      this.fileOption = const [],
-      this.amprahans = const []});
+      {this.fileSK = const [], this.fileBeritaAcara = const [], this.fileOption = const [], this.amprahans = const []});
 
   FormKegiatanState copyWith(
-      {List<File>? fileSK,
-      List<File>? fileBeritaAcara,
-      List<File>? fileOption,
-      List<Amprahan>? amprahans}) {
+      {List<File>? fileSK, List<File>? fileBeritaAcara, List<File>? fileOption, List<Amprahan>? amprahans}) {
     return FormKegiatanState(
         fileSK: fileSK ?? this.fileSK,
         fileBeritaAcara: fileBeritaAcara ?? this.fileBeritaAcara,
@@ -31,7 +28,7 @@ class FormKegiatanState {
   }
 }
 
-class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> {
+class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
   FormKegiatanNotifier() : super(FormKegiatanState());
 
   void addFileSK(List<File> files) {
@@ -120,15 +117,52 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> {
     }
   }
 
-  Future onSubmit() async {
-    try {} catch (e, s) {
+  Future<List<MultipartFile>> fileToMultipart(List<File> files) async {
+    List<MultipartFile> multipart = [];
+    for (var e in files) {
+      final f = await kegiatanApi.toFile(e.path);
+      multipart.add(f);
+    }
+
+    return multipart;
+  }
+
+  Future onSubmit(Kegiatan data) async {
+    try {
+      final fileSK = await fileToMultipart(state.fileSK);
+      final fileBeritaAcara = await fileToMultipart(state.fileBeritaAcara);
+      final fileOption = await fileToMultipart(state.fileOption);
+
+      Map<String, dynamic> payload = {
+        'file_sk': fileSK,
+        'file_berita_acara': fileBeritaAcara,
+        'file_option': fileOption,
+      };
+
+      if (state.amprahans.isNotEmpty) {
+        List<Map<String, dynamic>> amprahans = [];
+
+        for (Amprahan e in state.amprahans) {
+          amprahans.add({
+            'no_amprahan': e.noAmprahan.text,
+            'total_realisasi_anggaran': e.totalRealisasiAnggaran.text,
+            'sumber_dana': e.sumberDana.text,
+            'file_dokumentasi_kegiatan': await fileToMultipart(e.fileDokumentasiKegiatan),
+            'file_dokumentasi_pajak': await fileToMultipart(e.fileDokumentasiPajak),
+            'pajak': true
+          });
+        }
+
+        payload['amprahans'] = amprahans;
+      }
+
+      logg(payload);
+    } catch (e, s) {
       Errors.check(e, s);
     }
   }
 }
 
-final formKegiatanProvider =
-    StateNotifierProvider.autoDispose<FormKegiatanNotifier, FormKegiatanState>(
-        (ref) {
+final formKegiatanProvider = StateNotifierProvider.autoDispose<FormKegiatanNotifier, FormKegiatanState>((ref) {
   return FormKegiatanNotifier();
 });

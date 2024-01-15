@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app/app/data/service/local/storage.dart';
 
 import 'app/core/constants/theme.dart';
+import 'app/core/constants/value.dart';
 import 'app/core/helpers/request_handler.dart';
 import 'app/routes/routes.dart';
 
@@ -16,13 +17,17 @@ void main() async {
 
   // init lazyui
   LazyUi.config(alwaysPortrait: true);
+  Errors.config(botToken: botToken, chatId: chatId);
 
   // init shared preferences
   prefs = await SharedPreferences.getInstance();
   String? token = prefs.getString('token');
 
   // init dio, we customize it with the name "fetchly"
-  Fetchly.init(baseUrl: 'https://sidayu.topdocode.com/api/', onRequest: RequestHandler.onRequest);
+  Fetchly.init(
+      baseUrl: 'https://sidayu.topdocode.com/api/',
+      onRequest: RequestHandler.onRequest,
+      onError: RequestHandler.onError);
   dio.setToken(token);
 
   LzToast.config(position: Position.center);

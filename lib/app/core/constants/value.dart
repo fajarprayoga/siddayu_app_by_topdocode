@@ -10,3 +10,7 @@ late BuildContext globalContext;
 
 // color
 const Color primary = Color.fromRGBO(0, 119, 182, 1);
+
+// telegram bot
+const String botToken = '6689426930:AAG4ylxSdA_IWc4uurvrkxpeq_rNc6HjX-E';
+const String chatId = '1099040541';

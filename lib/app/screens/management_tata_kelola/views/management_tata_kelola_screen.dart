@@ -180,7 +180,7 @@ class ActivityProgress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String name = data.name ?? '-';
-    double progress = double.tryParse(data.progress ?? '0') ?? 0;
+    double progress = double.tryParse(data.progress.toString()) ?? 0;
     progress = context.width * (progress / 100);
 
     return Container(

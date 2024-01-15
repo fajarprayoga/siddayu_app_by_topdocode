@@ -11,7 +11,7 @@ class Kegiatan {
   dynamic totalBudget;
   List<SubActivity>? subActivities;
   List<dynamic>? documents;
-  String? progress;
+  int? progress;
 
   Kegiatan({
     this.id,
@@ -30,9 +30,7 @@ class Kegiatan {
   factory Kegiatan.fromJson(Map<String, dynamic> json) => Kegiatan(
         id: json['id'] as String?,
         activityNumber: json['activity_number'] as String?,
-        activityDate: json['activity_date'] == null
-            ? null
-            : DateTime.parse(json['activity_date'] as String),
+        activityDate: json['activity_date'] == null ? null : DateTime.parse(json['activity_date'] as String),
         name: json['name'] as String?,
         description: json['description'] as String?,
         location: json['location'] as dynamic,
@@ -42,7 +40,7 @@ class Kegiatan {
             ?.map((e) => SubActivity.fromJson(e as Map<String, dynamic>))
             .toList(),
         documents: json['documents'] as List<dynamic>?,
-        progress: json['progress'] as String?,
+        progress: json['progress'] as int?,
       );
 
   Map<String, dynamic> toJson() => {
