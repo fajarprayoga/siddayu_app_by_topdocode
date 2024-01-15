@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:lazyui/lazyui.dart';
 import 'package:todo_app/app/data/api/api.dart';
 import 'package:todo_app/app/data/models/kegiatan.dart';
 
@@ -11,10 +12,10 @@ class SubActivity {
 }
 
 class KegiatanDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>>
-    with UseApi {
+    with Apis {
   final String activityId;
   final name = TextEditingController();
-  final activity_date = TextEditingController();
+  final activityDate = TextEditingController();
   final description = TextEditingController();
   KegiatanDetailNotifier({required this.activityId})
       : super(const AsyncValue.loading()) {
@@ -28,13 +29,13 @@ class KegiatanDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>>
         final map = res.data;
         final data = map['data']['data'];
         name.text = data['name'];
-        activity_date.text = data['activity_date'].toString().split(' ')[0];
+        activityDate.text = data['activity_date'].toString().split(' ')[0];
 
         description.text = data['description'];
         state = AsyncValue.data(Kegiatan.fromJson(data));
       }
     } catch (e, s) {
-      print('Error: $e, $s');
+      Errors.check(e, s);
     }
   }
 }

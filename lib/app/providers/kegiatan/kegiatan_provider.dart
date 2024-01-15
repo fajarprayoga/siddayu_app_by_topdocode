@@ -1,15 +1,9 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:todo_app/app/core/helpers/toast.dart';
+import 'package:lazyui/lazyui.dart';
 import 'package:todo_app/app/data/api/api.dart';
 import 'package:todo_app/app/data/models/kegiatan.dart';
 import 'package:todo_app/app/data/service/local/storage.dart';
-import 'package:todo_app/app/routes/paths.dart';
 
 class SubActivity {
   TextEditingController nameController = TextEditingController();
@@ -19,15 +13,15 @@ class SubActivity {
 }
 
 class KegiatanNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>>
-    with UseApi {
+    with Apis {
   KegiatanNotifier() : super(const AsyncValue.loading());
 
   String? authLocal = prefs.getString('auth');
   final name = TextEditingController();
-  final activity_date = TextEditingController();
+  final activityDate = TextEditingController();
   final description = TextEditingController();
   List fileListSK = [];
-  List sub_activities = [];
+  List subActivities = [];
 
   Future getKegiatan() async {
     try {
@@ -39,8 +33,7 @@ class KegiatanNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>>
         state = AsyncValue.data(data.map((e) => Kegiatan.fromJson(e)).toList());
       }
     } catch (e, s) {
-      print('Error: $e, $s');
-      state = AsyncValue.error(e, s);
+      Errors.check(e, s);
     }
   }
 
@@ -49,8 +42,8 @@ class KegiatanNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>>
       final formField = {
         "name": name.value.text,
         "description": description.value.text,
-        "activity_date": activity_date.value.text,
-        "sub_activities": sub_activities,
+        "activity_date": activityDate.value.text,
+        "sub_activities": subActivities,
         // "created_by": auth.id
       };
 
@@ -70,48 +63,46 @@ class KegiatanNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>>
       // } else {
       //   Toasts.show(map['message']);
       // }
-      print(formField);
+      logg(formField);
     } catch (e, s) {
-      print('Error: $e, $s');
-      // state = AsyncValue.error(e, s);
+      Errors.check(e, s);
     }
   }
 
   Future uploadDoc(BuildContext context) async {
-    try {
-      if (fileListSK.isNotEmpty) {
-        FormData formData = FormData();
+    // try {
+    //   if (fileListSK.isNotEmpty) {
+    //     FormData formData = FormData();
 
-        for (var i = 0; i < fileListSK.length; i++) {
-          final fileName = fileListSK[i]['name'];
-          final File file =
-              fileListSK[i]['path']; // Diasumsikan ini adalah objek File
+    //     for (var i = 0; i < fileListSK.length; i++) {
+    //       final fileName = fileListSK[i]['name'];
+    //       final File file = fileListSK[i]['path']; // Diasumsikan ini adalah objek File
 
-          formData.files.add(MapEntry(
-            'files[]', // Menggunakan 'files[]' untuk menandai sebagai array
-            await MultipartFile.fromFile(file.path, filename: fileName),
-          ));
-        }
+    //       formData.files.add(MapEntry(
+    //         'files[]', // Menggunakan 'files[]' untuk menandai sebagai array
+    //         await MultipartFile.fromFile(file.path, filename: fileName),
+    //       ));
+    //     }
 
-        // Assuming you have the Dio setup and a URL endpoint
-        final res = await kegiatanApi.uploadDoc(formData);
-        if (res.status) {
-          print('success');
-        } else {
-          print('nno');
-        }
+    //     // Assuming you have the Dio setup and a URL endpoint
+    //     final res = await kegiatanApi.uploadDoc(formData);
+    //     if (res.status) {
+    //       print('success');
+    //     } else {
+    //       print('nno');
+    //     }
 
-        // Handle the response
-        // Example: print(response.data);
-      } else {
-        // Handle the case when files is null or empty
-        print("No files to upload");
-      }
-    } catch (e, s) {
-      print('Error: $e, $s');
-      // Handle the error state
-      // Example: state = AsyncValue.error(e, s);
-    }
+    //     // Handle the response
+    //     // Example: print(response.data);
+    //   } else {
+    //     // Handle the case when files is null or empty
+    //     print("No files to upload");
+    //   }
+    // } catch (e, s) {
+    //   print('Error: $e, $s');
+    //   // Handle the error state
+    //   // Example: state = AsyncValue.error(e, s);
+    // }
   }
 }
 

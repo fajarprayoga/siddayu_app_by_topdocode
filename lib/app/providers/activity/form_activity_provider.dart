@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:todo_app/app/core/helpers/utils.dart';
+import 'package:lazyui/lazyui.dart';
+import 'package:todo_app/app/core/constants/value.dart';
 import 'package:todo_app/app/data/api/api.dart';
 
 class SubActivityModel {
-  final TextEditingController name;
-  final TextEditingController total;
-
+  final TextEditingController name, total;
   SubActivityModel({required this.name, required this.total});
 }
 
@@ -22,10 +21,10 @@ class FormActivityState {
   }
 }
 
-class FormActivityNotifier extends StateNotifier<FormActivityState> with UseApi {
+class FormActivityNotifier extends StateNotifier<FormActivityState> with Apis {
   FormActivityNotifier() : super(FormActivityState());
 
-  final name = TextEditingController(), activityDate = TextEditingController(), description = TextEditingController();
+  final forms = LzForm.make(['name', 'activity_date', 'description']);
 
   void addSubActivity() {
     final data = [...state.subActivities];
@@ -41,11 +40,20 @@ class FormActivityNotifier extends StateNotifier<FormActivityState> with UseApi 
 
   Future onSubmit() async {
     try {
-      Map<String, dynamic> payload = {
-        'name': name.text,
-        'activity_date': activityDate.text,
-        'description': description.text,
-      };
+      final form = forms.validate(
+          required: ['*'],
+          messages: FormMessages(required: {
+            'name': 'Nama kegiatan tidak boleh kosong',
+            'activity_date': 'Tanggal kegiatan tidak boleh kosong',
+            'description': 'Deskripsi kegiatan tidak boleh kosong'
+          }));
+
+      if (!form.ok) {
+        return;
+      }
+
+      Map<String, dynamic> payload = form.value;
+      payload['sub_activities'] = [];
 
       // add sub_activies if not empty
       if (state.subActivities.isNotEmpty) {
@@ -59,9 +67,18 @@ class FormActivityNotifier extends StateNotifier<FormActivityState> with UseApi 
         payload['sub_activities'] = subActivities;
       }
 
+      LzToast.overlay('Menambahkan kegiatan...');
       final res = await kegiatanApi.addKegiatan(payload);
+
+      if (!res.status) {
+        return LzToast.show(res.message);
+      }
+
+      return res.data;
     } catch (e, s) {
-      Utils.errorCatcher(e, s);
+      Errors.check(e, s);
+    } finally {
+      LzToast.dismiss();
     }
   }
 }

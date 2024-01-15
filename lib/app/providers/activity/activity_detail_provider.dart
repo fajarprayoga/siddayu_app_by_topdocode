@@ -1,15 +1,16 @@
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:todo_app/app/core/helpers/logg.dart';
+import 'package:lazyui/lazyui.dart';
 import 'package:todo_app/app/core/helpers/toast.dart';
 import 'package:todo_app/app/data/api/api.dart';
 import 'package:todo_app/app/data/models/kegiatan.dart';
 
-class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>> with UseApi {
+class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>>
+    with Apis {
   final String? activityId;
   final name = TextEditingController();
-  final activity_date = TextEditingController();
+  final activityDate = TextEditingController();
   final description = TextEditingController();
 
   List fileList = [];
@@ -33,7 +34,7 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>> with Use
       if (res.status) {
         final data = res.data['data'];
         name.text = data['name'];
-        activity_date.text = data['activity_date'].toString().split(' ')[0];
+        activityDate.text = data['activity_date'].toString().split(' ')[0];
         description.text = data['description'];
 
         // set sub activities
@@ -41,14 +42,13 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>> with Use
         subActivities = activities.map((e) {
           return SubActivity2(
             nameController: TextEditingController(text: e['name']),
-            totalController: TextEditingController(text: e['total_budget'].toString()),
+            totalController:
+                TextEditingController(text: e['total_budget'].toString()),
           );
         }).toList();
 
         state = AsyncValue.data(Kegiatan.fromJson(data));
       }
-
-      logg(res.data);
 
       // if (res.statusCode == 200) {
       //   final map = json.decode(res.data);
@@ -60,7 +60,6 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>> with Use
       //   state = AsyncValue.data(Kegiatan.fromJson(data));
       // }
     } catch (e, s) {
-      logg('Error: $e, $s');
       AsyncValue.error(e, s);
     }
   }
@@ -77,7 +76,7 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>> with Use
       final formField = {
         "name": name.value.text,
         "description": description.value.text,
-        "activity_date": activity_date.value.text,
+        "activity_date": activityDate.value.text,
         "sub_activities": activies,
         // "created_by": auth.id
       };
@@ -93,12 +92,15 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>> with Use
         Toasts.show(res.message ?? '');
       }
     } catch (e, s) {
+      Errors.check(e, s);
       // state = AsyncValue.error(e, s);
     }
   }
 
   void addSubActivity() {
-    subActivities.add(SubActivity2(nameController: TextEditingController(), totalController: TextEditingController()));
+    subActivities.add(SubActivity2(
+        nameController: TextEditingController(),
+        totalController: TextEditingController()));
     state = AsyncValue.data(state.value!);
   }
 
@@ -114,7 +116,7 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>> with Use
       // state = const AsyncValue.loading();
       final fields = {
         "name": name.value.text,
-        "activity_date": activity_date.value.text,
+        "activity_date": activityDate.value.text,
         "description": description.value.text,
         "sub_activities": activies,
       };
@@ -126,13 +128,16 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>> with Use
         return res.data?['data'] ?? {};
         // update state
       }
-    } catch (e, s) {}
+    } catch (e, s) {
+      Errors.check(e, s);
+    }
   }
 
   void uploadDoc(BuildContext context) {}
 }
 
-final activityDetailProvider =
-    StateNotifierProvider.autoDispose.family<ActivtyDetailNotifier, AsyncValue<Kegiatan>, String>((ref, activityId) {
+final activityDetailProvider = StateNotifierProvider.autoDispose
+    .family<ActivtyDetailNotifier, AsyncValue<Kegiatan>, String>(
+        (ref, activityId) {
   return ActivtyDetailNotifier(activityId: activityId);
 });

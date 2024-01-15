@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/data/api/api.dart';
@@ -13,10 +11,10 @@ class SubActivity {
 }
 
 class KegiatanByUserNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>>
-    with UseApi {
+    with Apis {
   final String userId;
   final name = TextEditingController();
-  final activity_date = TextEditingController();
+  final activityDate = TextEditingController();
   final description = TextEditingController();
   KegiatanByUserNotifier({required this.userId})
       : super(const AsyncValue.loading()) {
@@ -27,14 +25,11 @@ class KegiatanByUserNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>>
     try {
       state = const AsyncValue.loading();
       final res = await kegiatanApi.getKegiatanByUser(userId);
-      print(res);
       if (res.status) {
-        final map = res.data;
-        List data = map['data']['data'] ?? [];
+        List data = res.data['data'] ?? [];
         state = AsyncValue.data(data.map((e) => Kegiatan.fromJson(e)).toList());
       }
     } catch (e, s) {
-      print('Error: $e, $s');
       state = AsyncValue.error(e, s);
     }
   }

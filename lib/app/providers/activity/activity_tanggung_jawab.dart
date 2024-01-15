@@ -1,15 +1,13 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/core/helpers/toast.dart';
-import 'package:todo_app/app/core/helpers/utils.dart';
 import 'package:todo_app/app/data/api/api.dart';
 import 'package:todo_app/app/data/models/kegiatan.dart';
 
 class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>>
-    with UseApi {
+    with Apis {
   final String? activityId;
   final name = TextEditingController();
   final activity_date = TextEditingController();
@@ -49,38 +47,38 @@ class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>>
   }
 
   Future uploadDoc(BuildContext context, fileList, String type) async {
-    try {
-      if (fileList.isNotEmpty) {
-        FormData formData = FormData();
+    // try {
+    //   if (fileList.isNotEmpty) {
+    //     FormData formData = FormData();
 
-        for (var i = 0; i < fileList.length; i++) {
-          final fileName = fileList[i]['name'];
-          final File file =
-              fileList[i]['path']; // Diasumsikan ini adalah objek File
+    //     for (var i = 0; i < fileList.length; i++) {
+    //       final fileName = fileList[i]['name'];
+    //       final File file =
+    //           fileList[i]['path']; // Diasumsikan ini adalah objek File
 
-          formData.files.add(MapEntry(
-            'files[]', // Menggunakan 'files[]' untuk menandai sebagai array
-            await MultipartFile.fromFile(file.path, filename: fileName),
-          ));
-          addFile(type, fileList[i]['name'], fileList[i]['path']);
-        }
-        // Assuming you have the Dio setup and a URL endpoint
-        final res = await kegiatanApi.uploadDoc(formData);
-        final map = res.data;
-        if (res.status) {
-          List pathFiles = map['data']['file_paths'];
-          updateActivity(activityId ?? '', pathFiles);
+    //       formData.files.add(MapEntry(
+    //         'files[]', // Menggunakan 'files[]' untuk menandai sebagai array
+    //         await MultipartFile.fromFile(file.path, filename: fileName),
+    //       ));
+    //       addFile(type, fileList[i]['name'], fileList[i]['path']);
+    //     }
+    //     // Assuming you have the Dio setup and a URL endpoint
+    //     final res = await kegiatanApi.uploadDoc(formData);
+    //     final map = res.data;
+    //     if (res.status) {
+    //       List pathFiles = map['data']['file_paths'];
+    //       updateActivity(activityId ?? '', pathFiles);
 
-          // update state
-        } else {
-          Toasts.show('Activity not update');
-        }
-      } else {
-        Toasts.show('No files to upload');
-      }
-    } catch (e, s) {
-      Utils.errorCatcher(e, s);
-    }
+    //       // update state
+    //     } else {
+    //       Toasts.show('Activity not update');
+    //     }
+    //   } else {
+    //     Toasts.show('No files to upload');
+    //   }
+    // } catch (e, s) {
+    //   Utils.errorCatcher(e, s);
+    // }
   }
 
   Future updateActivity(String activityId, fields) async {
@@ -95,7 +93,7 @@ class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>>
         // update state
       }
     } catch (e, s) {
-      Utils.errorCatcher(e, s);
+      // Utils.errorCatcher(e, s);
     }
   }
 
@@ -103,54 +101,54 @@ class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>>
   Future updateAmprahan(String activityId, List data) async {
     // List<FormData> formDataList = [];
 
-    for (var entry in data.asMap().entries) {
-      dynamic item = entry.value; // Ini adalah item pada index tersebut
+    // for (var entry in data.asMap().entries) {
+    //   dynamic item = entry.value; // Ini adalah item pada index tersebut
 
-      final fileList = item['documents'];
-      FormData formFiles = FormData();
+    //   final fileList = item['documents'];
+    //   FormData formFiles = FormData();
 
-      // const List activityDocumentations = [];
-      for (var i = 0; i < fileList.length; i++) {
-        final fileName = fileList[i]['name'];
-        final File file = fileList[i]['path'];
+    //   // const List activityDocumentations = [];
+    //   for (var i = 0; i < fileList.length; i++) {
+    //     final fileName = fileList[i]['name'];
+    //     final File file = fileList[i]['path'];
 
-        formFiles.files.add(MapEntry(
-          'files[]', // Menggunakan 'files[]' untuk menandai sebagai array
-          await MultipartFile.fromFile(file.path, filename: fileName),
-        ));
-      }
+    //     formFiles.files.add(MapEntry(
+    //       'files[]', // Menggunakan 'files[]' untuk menandai sebagai array
+    //       await MultipartFile.fromFile(file.path, filename: fileName),
+    //     ));
+    //   }
 
-      var mapFiles;
-      bool statusUpload = true;
-      List paths = [];
-      if (formFiles.fields.isNotEmpty) {
-        final resFiles = await kegiatanApi.uploadDoc(formFiles);
+    //   var mapFiles;
+    //   bool statusUpload = true;
+    //   List paths = [];
+    //   if (formFiles.fields.isNotEmpty) {
+    //     final resFiles = await kegiatanApi.uploadDoc(formFiles);
 
-        if (resFiles.status) {
-          mapFiles = resFiles.data;
-        } else {
-          statusUpload = false;
-          Toasts.show("Doc not Uploaded");
-        }
-      }
+    //     if (resFiles.status) {
+    //       mapFiles = resFiles.data;
+    //     } else {
+    //       statusUpload = false;
+    //       Toasts.show("Doc not Uploaded");
+    //     }
+    //   }
 
-      if (statusUpload) {
-        paths = mapFiles['data']['file_paths'];
-        // Menambahkan field non-file ke FormData
-        final form = {
-          "amprahan_number": item['amprahan_number'].toString(),
-          "total_budget_realisation": item['total_budget_realisation'] ?? "",
-          "budget_source": item['budget_source'].toString(),
-          "pajak": item['pajak'] ?? false,
-          "activity_documentations": paths
-        };
-        final res = await kegiatanApi.createAmprahan(activityId, form);
+    //   if (statusUpload) {
+    //     paths = mapFiles['data']['file_paths'];
+    //     // Menambahkan field non-file ke FormData
+    //     final form = {
+    //       "amprahan_number": item['amprahan_number'].toString(),
+    //       "total_budget_realisation": item['total_budget_realisation'] ?? "",
+    //       "budget_source": item['budget_source'].toString(),
+    //       "pajak": item['pajak'] ?? false,
+    //       "activity_documentations": paths
+    //     };
+    //     final res = await kegiatanApi.createAmprahan(activityId, form);
 
-        if (res.status) {
-          // update state
-        }
-      }
-    }
+    //     if (res.status) {
+    //       // update state
+    //     }
+    //   }
+    // }
   }
 
   void addFile(String type, String name, File path) {

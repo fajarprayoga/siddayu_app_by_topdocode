@@ -1,15 +1,8 @@
 part of api;
 
-class AuthApi {
-  Future<Response> login(Map<String, dynamic> data) async {
-    return await dio.post('api/auth/login', data: data);
-  }
-
-  Future<Response> getAuth() async {
-    return await dio.get('api/login/user');
-  }
-
-  Future<Response> getUserStaff() async {
-    return await dio.get('api/users');
-  }
+class AuthApi extends Fetchly {
+  Future<ResHandler> login(Map<String, dynamic> data) async =>
+      await post('auth/login', data);
+  Future<ResHandler> getAuth() async => await get('login/user');
+  Future<ResHandler> getUserStaff() async => await get('users');
 }

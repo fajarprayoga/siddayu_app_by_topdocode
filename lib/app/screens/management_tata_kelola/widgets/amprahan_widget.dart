@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:todo_app/app/core/constants/font.dart';
-import 'package:todo_app/app/core/extensions/list_extension.dart';
+import 'package:lazyui/lazyui.dart';
 import 'package:todo_app/app/core/extensions/riverpod_extension.dart';
-import 'package:todo_app/app/core/extensions/widget_extension.dart';
-import 'package:todo_app/app/core/helpers/shortcut.dart';
 import 'package:todo_app/app/core/helpers/utils.dart';
 import 'package:todo_app/app/providers/kegiatan/form_kegiatan_provider.dart';
-import 'package:todo_app/app/widgets/animations/slideup.dart';
 
 import '../../../data/models/amprahan.dart';
 import '../../../widgets/form_field_custom.dart';
@@ -69,7 +65,7 @@ class AmprahanWidget extends StatelessWidget {
                   title: 'Dokumentasi Kegiatan',
                   textButton: 'Upload File Dokumentasi Kegiatan',
                   onTap: () async {
-                    final files = await Utils.pickFiles();
+                    final files = await Helper.pickFiles();
                     notifier.addFileDokumentasiKegiatan(files, index);
                   }),
 
@@ -99,7 +95,7 @@ class AmprahanWidget extends StatelessWidget {
                   title: 'Pajak',
                   textButton: 'Upload File Dokumentasi Pajak',
                   onTap: () async {
-                    final files = await Utils.pickFiles();
+                    final files = await Helper.pickFiles();
                     notifier.addFileDokumentasiPajak(files, index);
                   }),
 

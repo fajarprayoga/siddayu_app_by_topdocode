@@ -5,7 +5,7 @@ class ProgressKegiatanPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return shimmer.Shimmer.fromColors(
+    return Shimmer.fromColors(
       baseColor: Colors.grey[300]!,
       highlightColor: Colors.grey[100]!,
       child: Expanded(

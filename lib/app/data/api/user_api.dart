@@ -1,7 +1,5 @@
 part of api;
 
-class UserApi {
-  Future<Response> getUsers() async {
-    return await dio.get('api/user');
-  }
+class UserApi extends Fetchly {
+  Future<ResHandler> getUsers() async => await get('user');
 }

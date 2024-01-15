@@ -1,13 +1,11 @@
-import 'dart:convert';
-
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:todo_app/app/core/helpers/utils.dart';
+import 'package:lazyui/lazyui.dart';
 import 'package:todo_app/app/data/api/api.dart';
-import 'package:todo_app/app/data/models/kegiatan.dart';
+import 'package:todo_app/app/data/models/kegiatan/kegiatan.dart';
 import 'package:todo_app/app/data/service/local/storage.dart';
 
-class ActivityNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>> with UseApi {
+class ActivityNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>> with Apis {
   ActivityNotifier() : super(const AsyncValue.loading());
 
   String? authLocal = prefs.getString('auth');
@@ -23,6 +21,7 @@ class ActivityNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>> with Us
         state = AsyncValue.data(data.map((e) => Kegiatan.fromJson(e)).toList());
       }
     } catch (e, s) {
+      Errors.check(e, s);
       state = AsyncValue.error(e, s);
     }
   }

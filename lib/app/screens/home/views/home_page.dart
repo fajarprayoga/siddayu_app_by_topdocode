@@ -1,33 +1,21 @@
-// this base for routes
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:todo_app/app/core/constants/font.dart';
+import 'package:lazyui/lazyui.dart';
 import 'package:todo_app/app/core/constants/pages.dart';
-import 'package:todo_app/app/core/constants/value.dart';
-import 'package:todo_app/app/data/models/auth.dart';
-import 'package:todo_app/app/data/service/local/storage.dart';
-// import 'package:todo_app/app/data/service/local/storage.dart';
+import 'package:todo_app/app/core/extensions/riverpod_extension.dart';
 import 'package:todo_app/app/providers/app_provider.dart';
 import 'package:todo_app/app/routes/paths.dart';
 import 'package:todo_app/app/routes/routes.dart';
 
-class HomePage extends ConsumerWidget {
-  // final User user;
+import '../../../data/service/local/auth.dart';
 
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // prefs.remove('token');
-    final notifier = ref.watch(appStateProvider);
-
-    // get data auth
-
-    String? authLocal = prefs.getString('auth');
-
-    final auth = Auth.fromJson(json.decode(authLocal ?? ''));
+    final notifier = ref.read(appStateProvider.notifier);
 
     // final User user;
     return Scaffold(
@@ -36,7 +24,7 @@ class HomePage extends ConsumerWidget {
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
                 topRight: Radius.circular(15),
-                bottomRight: Radius.circular(15))),
+                bottomRight: Radius.circular(0))),
         child: Container(
           decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -48,127 +36,136 @@ class HomePage extends ConsumerWidget {
               ])),
           child: ListView(
             padding: EdgeInsets.zero,
+            physics: BounceScroll(),
             children: <Widget>[
-              DrawerHeader(
-                decoration: const BoxDecoration(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    InkWell(
-                      onTap: () => {},
-                      child: const Icon(
-                        Icons.arrow_back,
-                        size: 17,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 8),
-                      decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(12)),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.black38,
-                                blurRadius: 4,
-                                offset: Offset(1, 2))
-                          ]),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+              // DrawerHeader(
+              //   child: Column(
+              //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     children: [
+              //       Container(
+              //           width: double.infinity,
+              //           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              //           decoration: BoxDecoration(
+              //               color: Colors.white, borderRadius: Br.radius(8), border: Br.all(color: Colors.black38)),
+              //           // boxShadow: [BoxShadow(color: Colors.black38, blurRadius: 4, offset: Offset(1, 2))]),
+              //           child: FutureBuilder(
+              //             future: Auth.user(),
+              //             builder: (_, snap) {
+              //               if (snap.connectionState == ConnectionState.waiting) return const None();
+
+              //               final auth = snap.data;
+              //               String name = auth?.name ?? '-';
+              //               String email = auth?.email ?? '-';
+
+              //               return Row(
+              //                 crossAxisAlignment: CrossAxisAlignment.start,
+              //                 children: [
+              //                   const Icon(Ti.user),
+              //                   const SizedBox(width: 10),
+              //                   Expanded(
+              //                     child: Column(
+              //                       children: [
+              //                         Text(
+              //                           name,
+              //                           overflow: Tof.ellipsis,
+              //                         ),
+              //                         Text(
+              //                           email,
+              //                           overflow: Tof.ellipsis,
+              //                           style: Gfont.muted,
+              //                         ),
+              //                       ],
+              //                     ).start,
+              //                   )
+              //                 ],
+              //               );
+              //             },
+              //           )),
+              //     ],
+              //   ),
+              // ),
+
+              Container(
+                width: context.width,
+                padding: Ei.only(t: context.viewPadding.top + 20, others: 20),
+                child: FutureBuilder(
+                    future: Auth.user(),
+                    builder: (_, snap) {
+                      final auth = snap.data;
+                      String name = auth?.name ?? '-';
+                      String email = auth?.email ?? '-';
+
+                      return Column(
                         children: [
-                          const Icon(Icons.person),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(auth.name),
-                                Text(
-                                  auth.email,
-                                  overflow: TextOverflow.ellipsis,
-                                  softWrap: false,
-                                ),
-                              ],
+                          const SizedBox(
+                            width: 60,
+                            height: 60,
+                            child: CircleAvatar(
+                              child: Icon(Ti.user),
                             ),
-                          )
+                          ),
+                          Textr(
+                            name,
+                            overflow: Tof.ellipsis,
+                            margin: Ei.only(t: 15),
+                          ),
+                          Text(
+                            email,
+                            overflow: Tof.ellipsis,
+                            style: Gfont.muted,
+                          ),
                         ],
-                      ),
-                    ),
-                  ],
-                ),
+                      ).start;
+                    }),
               ),
-              SizedBox(
-                height: gap * 3,
-              ),
+
               // List Generate Menu
               ...List.generate(pages.length, (i) {
-                return ListTile(
-                  title: Row(
-                    children: [
-                      Icon(pages[i]['icon']),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        pages[i]['title'],
-                        style: TextStyle(
-                            fontWeight: notifier.page == i
-                                ? FontWeight.bold
-                                : FontWeight.normal),
-                      ),
-                    ],
-                  ),
+                String title = pages[i]['title'];
+                IconData? icon = pages[i]['icon'];
+
+                return InkTouch(
                   onTap: () {
-                    final notifier = ref.read(appStateProvider.notifier);
-                    // Tindakan yang diambil saat ListTile ditekan
-                    notifier.navigateTo(i);
-                    Navigator.pop(context);
+                    final page = pages[i]['page'];
+
+                    if (page != '') {
+                      notifier.navigateTo(i);
+                      context.pop();
+                    } else {
+                      // logout
+                      LzConfirm(
+                        title: 'Logout',
+                        message:
+                            'Apakah Anda yakin ingin keluar dari aplikasi ini?',
+                        onConfirm: () {
+                          notifier.logout();
+
+                          context.pop();
+                          router.push(Paths.login);
+                        },
+                      ).show(context);
+                    }
                   },
-                  tileColor: notifier.page == i ? Colors.red : null,
-                  selected: notifier.page == i,
-                  selectedColor: notifier.page == i
-                      ? Colors.lightBlueAccent[300]
-                      : Colors.black,
+                  padding: Ei.all(20),
+                  border: Br.only(['t'], except: i == 0),
+                  child: Textr(title, icon: icon),
                 );
-              }),
-              ListTile(
-                title: const Text(
-                  "Logout",
-                  style: TextStyle(
-                    fontWeight: FontWeight.normal,
-                  ),
-                ),
-                onTap: () {
-                  // Tindakan yang diambil saat Logout ditekan
-                  prefs.remove('token');
-                  prefs.remove('auth');
-                  Navigator.pop(context); // Tutup Drawer setelah Logout
-                  router.push(Paths.login);
-                },
-              ),
+              })
             ],
           ),
         ),
       ),
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              pages[notifier.page]['title'],
-              style: Gfont.bold.fsize(18),
-            ),
-          ],
-        ),
-        // backgroundColor: Colors.blueGrey,
-      ),
-      body: Padding(
-          padding: const EdgeInsets.all(20),
-          child: pages[notifier.page]['page']),
+      appBar: AppBar(title: appStateProvider.watch(
+        (state) {
+          String title = pages[state.page]['title'];
+
+          return Text(
+            title,
+            style: Gfont.fs18.bold,
+          );
+        },
+      )),
+      body: appStateProvider.watch((state) => pages[state.page]['page']),
     );
   }
 }

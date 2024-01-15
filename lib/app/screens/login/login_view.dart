@@ -1,103 +1,76 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:todo_app/app/core/constants/font.dart';
+import 'package:lazyui/lazyui.dart';
+import 'package:todo_app/app/core/constants/app.dart';
+import 'package:todo_app/app/core/constants/value.dart';
 import 'package:todo_app/app/providers/login/login_provider.dart';
-import 'package:todo_app/app/widgets/widget.dart';
-// import 'package:todo_app/app/providers/login/login_provider.dart';
-
-// import '../../../core/constants/font.dart';
+import 'package:todo_app/app/routes/paths.dart';
 
 class LoginView extends ConsumerWidget {
   const LoginView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final notifier = ref.watch(authProvider);
-    final username = notifier.username, password = notifier.password;
+    final notifier = ref.read(authProvider);
+    final forms = notifier.forms;
 
-    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+    // set or unset form value
+    forms.fill({'email': 'kades@example.org', 'password': 'password'});
 
-    return Scaffold(
-        body: notifier.loading
-            ? Loading(
-                isLoading: true,
-              )
-            : Center(
-                child: SizedBox(
-                  width: 320,
-                  child: ListView(
-                    padding: const EdgeInsets.symmetric(vertical: 50),
-                    shrinkWrap: true,
-                    children: [
-                      // form title
-                      Column(
-                        children: [
-                          Text('Sistem Informasi Digital Desa Ayunan',
-                              style: Gfont.fs18.bold),
-                          const SizedBox(height: 5),
-                          Text(
-                              'Silahkan login untuk menggunakan aplikasi SIDDAYU.',
-                              textAlign: TextAlign.center,
-                              style: Gfont.muted),
-                        ],
-                      ),
+    return Wrapper(
+      child: Scaffold(
+          body: Center(
+        child: SizedBox(
+          width: 320,
+          child: LzListView(
+            padding: Ei.sym(v: 50),
+            scrollLimit: const [50, 50],
+            shrinkWrap: true,
+            children: [
+              // form title
+              Column(
+                children: [
+                  Text('Sistem Informasi Digital Desa Ayunan',
+                      style: Gfont.fs16.bold, textAlign: Ta.center),
+                  Textr('Silakan login untuk menggunakan aplikasi SIDDAYU.',
+                      textAlign: TextAlign.center, margin: Ei.only(t: 5)),
+                ],
+              ).margin(b: 25),
 
-                      const SizedBox(height: 50),
+              // form input
+              LzFormGroup(
+                type: FormType.underlined,
+                children: [
+                  LzForm.input(hint: 'Enter your email', model: forms['email']),
+                  LzForm.input(
+                      hint: 'Enter your password',
+                      obsecureToggle: true,
+                      model: forms['password']),
+                ],
+              ),
 
-                      Form(
-                        key: formKey,
-                        child: Column(
-                          children: [
-                            // text input email
-                            TextFormField(
-                              validator: (String? arg) {
-                                if (arg!.length < 3) {
-                                  return 'Email must be more than 2 charater';
-                                }
-                                return null;
-                              },
-                              controller: username,
-                              decoration: const InputDecoration(
-                                  hintText: 'Type your email address'),
-                              onSaved: (String? val) {
-                                username.text = val ?? '';
-                              },
-                            ),
+              // form button
+              LzButton(
+                text: 'Login',
+                color: primary,
+                textColor: Colors.white,
+                onTap: (state) async {
+                  final ok = await notifier.login(state);
 
-                            // text input password
-                            TextFormField(
-                              validator: (String? arg) {
-                                if (arg!.length < 6) {
-                                  return 'Password must be more than 6 charater';
-                                }
-                                return null;
-                              },
-                              controller: password,
-                              decoration: const InputDecoration(
-                                  hintText: 'Type your password'),
-                              onSaved: (String? val) {
-                                password.text = val ?? '';
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
+                  if (ok && context.mounted) {
+                    context.go(Paths.home);
+                  }
+                },
+              ),
 
-                      const SizedBox(height: 15),
-
-                      // form button
-                      ElevatedButton(
-                        onPressed: () {
-                          if (formKey.currentState!.validate()) {
-                            formKey.currentState?.save();
-                            notifier.login(context);
-                          }
-                        },
-                        child: const Text('Login'),
-                      )
-                    ],
-                  ),
-                ),
-              ));
+              Text('v${App.version} - ${App.build}',
+                      style: Gfont.fs14.muted, textAlign: Ta.center)
+                  .margin(t: 15)
+            ],
+          ),
+        ),
+      )),
+    );
   }
 }

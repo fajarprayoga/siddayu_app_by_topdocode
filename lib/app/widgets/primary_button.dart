@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/app/widgets/customs/textr.dart';
+import 'package:lazyui/lazyui.dart';
 
-import '../../core/constants/font.dart';
-import '../../core/constants/value.dart';
-import '../../core/helpers/shortcut.dart';
-import 'ink_touch.dart';
+import '../core/constants/value.dart';
 
 class PrimaryButton extends StatelessWidget {
   final Function()? onTap;

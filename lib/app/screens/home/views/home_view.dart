@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/app/core/constants/font.dart';
+import 'package:lazyui/lazyui.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});

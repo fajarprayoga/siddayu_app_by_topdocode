@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:todo_app/app/core/constants/font.dart';
+import 'package:lazyui/lazyui.dart';
 import 'package:todo_app/app/core/constants/value.dart';
 import 'package:todo_app/app/data/models/kegiatan.dart';
 import 'package:todo_app/app/providers/activity/activity_tanggung_jawab.dart';
@@ -425,22 +425,22 @@ class _FormPertanggungJawabanState
                     SizedBox(
                       width: gap,
                     ),
-                    Checkbox(
-                      value: true,
-                      onChanged: (value) {
-                        setState(() {
-                          pajak = !pajak;
-                        });
-                        if (indexAmprahan! < fieldAmprahan.length) {
-                          fieldAmprahan[indexAmprahan] = {
-                            ...fieldAmprahan[indexAmprahan],
-                            "pajak": !pajak
-                          };
-                        } else {
-                          fieldAmprahan.add({"pajak": !pajak});
-                        }
-                      },
-                    )
+                    // Checkbox(
+                    //   value: true,
+                    //   onChanged: (value) {
+                    //     setState(() {
+                    //       pajak = !pajak;
+                    //     });
+                    //     if (indexAmprahan! < fieldAmprahan.length) {
+                    //       fieldAmprahan[indexAmprahan] = {
+                    //         ...fieldAmprahan[indexAmprahan],
+                    //         "pajak": !pajak
+                    //       };
+                    //     } else {
+                    //       fieldAmprahan.add({"pajak": !pajak});
+                    //     }
+                    //   },
+                    // )
                   ],
                 )
               ],

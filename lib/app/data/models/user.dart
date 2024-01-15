@@ -1,18 +1,18 @@
 class User {
-  final String id;
-  final String name;
-  final String email;
-  final role;
-  final position;
-  final String? profile_picture;
+  final String? id;
+  final String? name;
+  final String? email;
+  final String? role;
+  final String? position;
+  final String? profilePicture;
 
   User({
-    required this.id,
-    required this.name,
-    required this.email,
-    required this.role,
-    required this.position,
-    required this.profile_picture,
+    this.id,
+    this.name,
+    this.email,
+    this.role,
+    this.position,
+    this.profilePicture,
   });
 
   // Factory method untuk membuat instance User dari JSON
@@ -23,7 +23,7 @@ class User {
         email: json['email'],
         role: json['role'],
         position: json['position'],
-        profile_picture: json['profile_picture']);
+        profilePicture: json['profile_picture']);
   }
 
   Map<String, dynamic> toJson() => {
@@ -31,7 +31,7 @@ class User {
         'name': name,
         'email': email,
         'role': role,
-        'profile_picture': profile_picture,
+        'profile_picture': profilePicture,
         'position': position,
       };
 }

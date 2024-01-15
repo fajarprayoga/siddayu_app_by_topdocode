@@ -2,10 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:lazyui/lazyui.dart';
 import 'package:todo_app/app/core/helpers/toast.dart';
-import 'package:todo_app/app/core/helpers/utils.dart';
-
-import '../../core/helpers/logg.dart';
 import '../../data/models/amprahan.dart';
 
 class FormKegiatanState {
@@ -15,10 +13,16 @@ class FormKegiatanState {
   final List<Amprahan> amprahans;
 
   FormKegiatanState(
-      {this.fileSK = const [], this.fileBeritaAcara = const [], this.fileOption = const [], this.amprahans = const []});
+      {this.fileSK = const [],
+      this.fileBeritaAcara = const [],
+      this.fileOption = const [],
+      this.amprahans = const []});
 
   FormKegiatanState copyWith(
-      {List<File>? fileSK, List<File>? fileBeritaAcara, List<File>? fileOption, List<Amprahan>? amprahans}) {
+      {List<File>? fileSK,
+      List<File>? fileBeritaAcara,
+      List<File>? fileOption,
+      List<Amprahan>? amprahans}) {
     return FormKegiatanState(
         fileSK: fileSK ?? this.fileSK,
         fileBeritaAcara: fileBeritaAcara ?? this.fileBeritaAcara,
@@ -118,11 +122,13 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> {
 
   Future onSubmit() async {
     try {} catch (e, s) {
-      Utils.errorCatcher(e, s);
+      Errors.check(e, s);
     }
   }
 }
 
-final formKegiatanProvider = StateNotifierProvider.autoDispose<FormKegiatanNotifier, FormKegiatanState>((ref) {
+final formKegiatanProvider =
+    StateNotifierProvider.autoDispose<FormKegiatanNotifier, FormKegiatanState>(
+        (ref) {
   return FormKegiatanNotifier();
 });

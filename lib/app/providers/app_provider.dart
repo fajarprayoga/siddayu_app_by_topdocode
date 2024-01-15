@@ -2,6 +2,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/app/providers/activity/activity_provider.dart';
 import 'package:todo_app/app/providers/user/user_provider.dart';
 
+import '../data/service/local/storage.dart';
+
 // import 'todo/todo_provider.dart';
 
 class AppStateNotifier extends StateNotifier<AppState> {
@@ -18,7 +20,7 @@ class AppStateNotifier extends StateNotifier<AppState> {
         if (!visited.contains(index)) {}
       case 2:
         if (!visited.contains(index)) {
-          ref.read(userProvider.notifier).getUserStaff();
+          ref.read(userProvider.notifier).getStaffUsers();
           ref.read(activityProvider.notifier).getKegiatan();
         }
         break;
@@ -28,6 +30,11 @@ class AppStateNotifier extends StateNotifier<AppState> {
     if (!visited.contains(index)) {
       visited.add(index);
     }
+  }
+
+  Future logout() async {
+    prefs.remove('token');
+    prefs.remove('auth');
   }
 }
 
