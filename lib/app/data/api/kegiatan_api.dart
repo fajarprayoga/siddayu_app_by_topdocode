@@ -7,7 +7,7 @@ class KegiatanApi extends Fetchly {
 
   Future<ResHandler> uploadDoc(Map<String, dynamic> data) async =>
       await post('upload/multiple', data, useFormData: true);
-  Future<ResHandler> deleteDoc(String id) async => await delete('document/batch-delete/$id');
+  Future<ResHandler> deleteDoc(String id) async => await post('document/batch-delete', {'id': id});
 
   Future<ResHandler> getKegiatanById(String id) async => await get('activities/$id');
   Future<ResHandler> updateKegiatan(String id, Map<String, dynamic> data) async => await put('activities/$id', data);
