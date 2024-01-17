@@ -17,4 +17,5 @@ class Paths {
 
   // management tata kelola
   static const String formKegiatan = '/form-kegiatan';
+  static const String allActivities = '/all-activities';
 }

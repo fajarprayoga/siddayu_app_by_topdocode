@@ -29,38 +29,106 @@ class FormKegiatanState {
 }
 
 class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
-  FormKegiatanNotifier() : super(FormKegiatanState());
+  final Kegiatan kegiatan;
+  FormKegiatanNotifier(this.kegiatan) : super(FormKegiatanState());
 
-  void addFileSK(List<File> files) {
-    state = state.copyWith(fileSK: files);
+  Map<String, dynamic> tempFiles = {'sk': [], 'operational_report': [], 'other': []};
+
+  Future<bool> uploadFiles(String type, List<File> files) async {
+    try {
+      final mfiles = await fileToMultipart(files);
+
+      Map<String, dynamic> payload = {
+        'type': 'sk',
+        'activity_id': kegiatan.id,
+      };
+
+      for (var i = 0; i < mfiles.length; i++) {
+        payload['files[$i]'] = mfiles[i];
+      }
+
+      final res = await kegiatanApi.uploadDoc(payload);
+
+      if (!res.status) {
+        LzToast.error(res.message ?? 'Gagal mengunggah file');
+      }
+
+      tempFiles[type] = [...tempFiles[type], ...res.data['data']];
+      logg(tempFiles);
+
+      return res.status;
+    } catch (e, s) {
+      Errors.check(e, s);
+      return false;
+    }
   }
 
-  void addFileBeritaAcara(List<File> files) {
-    state = state.copyWith(fileBeritaAcara: files);
+  void addFileSK(List<File> files) async {
+    LzToast.overlay('Mengunggah file SK');
+    final ok = await uploadFiles('sk', files);
+    LzToast.dismiss();
+
+    if (ok) {
+      state = state.copyWith(fileSK: files);
+    }
   }
 
-  void addFileOption(List<File> files) {
-    state = state.copyWith(fileOption: files);
+  void addFileBeritaAcara(List<File> files) async {
+    LzToast.overlay('Mengunggah file berita acara');
+    final ok = await uploadFiles('operational_report', files);
+    LzToast.dismiss();
+
+    if (ok) {
+      state = state.copyWith(fileBeritaAcara: files);
+    }
   }
 
-  void removeFile(String label, int index) {
-    switch (label) {
-      case 'sk':
-        List<File> files = state.fileSK;
-        files.removeAt(index);
-        state = state.copyWith(fileSK: files);
-        break;
-      case 'berita_acara':
-        List<File> files = state.fileBeritaAcara;
-        files.removeAt(index);
-        state = state.copyWith(fileBeritaAcara: files);
-        break;
-      case 'option':
-        List<File> files = state.fileOption;
-        files.removeAt(index);
-        state = state.copyWith(fileOption: files);
-        break;
-      default:
+  void addFileOption(List<File> files) async {
+    LzToast.overlay('Mengunggah file option');
+    final ok = await uploadFiles('other', files);
+    LzToast.dismiss();
+
+    if (ok) {
+      state = state.copyWith(fileOption: files);
+    }
+  }
+
+  void removeFile(String label, int index) async {
+    // find file id
+    final id = tempFiles[label][index]['id'];
+
+    if (id == null) {
+      return LzToast.warning('File tidak ditemukan');
+    }
+
+    try {
+      LzToast.overlay('Menghapus file...');
+      final res = await kegiatanApi.deleteDoc(id);
+
+      if (res.status) {
+        switch (label) {
+          case 'sk':
+            List<File> files = state.fileSK;
+            files.removeAt(index);
+            state = state.copyWith(fileSK: files);
+            break;
+          case 'operational_report':
+            List<File> files = state.fileBeritaAcara;
+            files.removeAt(index);
+            state = state.copyWith(fileBeritaAcara: files);
+            break;
+          case 'other':
+            List<File> files = state.fileOption;
+            files.removeAt(index);
+            state = state.copyWith(fileOption: files);
+            break;
+          default:
+        }
+      }
+    } catch (e, s) {
+      Errors.check(e, s);
+    } finally {
+      LzToast.dismiss();
     }
   }
 
@@ -71,8 +139,15 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
         fileDokumentasiKegiatan: [],
         totalRealisasiAnggaran: TextEditingController(),
         sumberDana: TextEditingController(),
-        fileDokumentasiPajak: []));
+        fileDokumentasiPajak: [],
+        isPajak: false));
 
+    state = state.copyWith(amprahans: amprahans);
+  }
+
+  void checkPajak(bool value, int index) {
+    List<Amprahan> amprahans = [...state.amprahans];
+    amprahans[index].isPajak = value;
     state = state.copyWith(amprahans: amprahans);
   }
 
@@ -81,7 +156,7 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
     amprahans.removeAt(index);
 
     state = state.copyWith(amprahans: amprahans);
-    Toasts.show('Berhasil menghapus amprahan');
+    LzToast.show('Berhasil menghapus amprahan');
   }
 
   void addFileDokumentasiKegiatan(List<File> files, int index) {
@@ -163,6 +238,7 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
   }
 }
 
-final formKegiatanProvider = StateNotifierProvider.autoDispose<FormKegiatanNotifier, FormKegiatanState>((ref) {
-  return FormKegiatanNotifier();
+final formKegiatanProvider =
+    StateNotifierProvider.autoDispose.family<FormKegiatanNotifier, FormKegiatanState, Kegiatan>((ref, kegiatan) {
+  return FormKegiatanNotifier(kegiatan);
 });

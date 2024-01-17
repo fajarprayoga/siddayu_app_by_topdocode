@@ -6,6 +6,7 @@ import 'package:todo_app/app/core/constants/value.dart';
 import 'package:todo_app/app/core/extensions/riverpod_extension.dart';
 import 'package:todo_app/app/core/extensions/widget_extension.dart';
 import 'package:todo_app/app/data/models/kegiatan/kegiatan.dart';
+import 'package:todo_app/app/data/service/local/trainer.dart';
 import 'package:todo_app/app/providers/activity/form_activity_provider.dart';
 import 'package:todo_app/app/routes/paths.dart';
 import 'package:todo_app/app/widgets/custom_appbar.dart';
@@ -18,6 +19,7 @@ class FormTataKelola extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final ikey = GlobalKey();
     final notifier = ref.read(formActivityProvider.notifier);
     final forms = notifier.forms;
 
@@ -27,238 +29,255 @@ class FormTataKelola extends ConsumerWidget {
       notifier.initForm(data!);
     }
 
-    return Wrapper(
-      child: Scaffold(
-        appBar: AppBar(
-          title: CustomAppbar(
-            title: 'Management Tata Kelola',
-            subtitle: 'Kegiatan / $sub',
+    return AppTrainer(
+      targets: [
+        Target(
+            key: ikey,
+            title: 'Pertanggung Jawaban',
+            description: 'Klik icon ini untuk melihat atau menambahkan pertanggung jawaban.')
+      ],
+      showOnInit: false,
+      onInit: (control) {
+        if (data != null && !Trainer.get(TType.activity)) {
+          control.show();
+          Trainer.set(TType.activity);
+        }
+      },
+      showSectionLabel: true,
+      finishLabel: 'Tutup',
+      child: Wrapper(
+        child: Scaffold(
+          appBar: AppBar(
+            title: CustomAppbar(
+              title: 'Management Tata Kelola',
+              subtitle: 'Kegiatan / $sub',
+            ),
+            actions: [
+              Icon(Ti.clipboardCheck, key: ikey)
+                  .onPressed(() {
+                    context.push(Paths.formKegiatan, extra: data);
+                  })
+                  .lz
+                  .hide(data == null)
+            ],
           ),
-          actions: [
-            const Icon(Ti.clipboardCheck)
-                .onPressed(() {
-                  context.push(Paths.formKegiatan, extra: data);
-                })
-                .lz
-                .hide(data == null)
-          ],
-        ),
 
-        body: LzFormList(
-          style: const LzFormStyle(type: FormType.topAligned, inputBorderColor: Colors.black38),
-          children: [
-            LzForm.input(
-              label: 'Nama Kegiatan',
-              hint: 'Masukan nama kegiatan',
-              model: forms['name'],
-            ),
-            LzForm.input(
-                label: 'Tanggal Kegiatan',
-                hint: 'Masukan tanggal kegiatan',
-                suffixIcon: Ti.calendar,
-                model: forms['activity_date'],
-                onTap: (control) {
-                  LzPicker.datePicker(context).then((value) {
-                    control.text = value.format();
-                  });
-                }),
-            LzForm.input(
-              label: 'Deskripsi Kegiatan',
-              hint: 'Masukan deskripsi kegiatan',
-              maxLines: 5,
-              maxLength: 500,
-              model: forms['description'],
-            ),
+          body: LzFormList(
+            style: const LzFormStyle(type: FormType.topAligned, inputBorderColor: Colors.black38),
+            children: [
+              LzForm.input(
+                label: 'Nama Kegiatan',
+                hint: 'Masukan nama kegiatan',
+                model: forms['name'],
+              ),
+              LzForm.input(
+                  label: 'Tanggal Kegiatan',
+                  hint: 'Masukan tanggal kegiatan',
+                  suffixIcon: Ti.calendar,
+                  model: forms['activity_date'],
+                  onTap: (control) {
+                    LzPicker.datePicker(context).then((value) {
+                      control.text = value.format();
+                    });
+                  }),
+              LzForm.input(
+                label: 'Deskripsi Kegiatan',
+                hint: 'Masukan deskripsi kegiatan',
+                maxLines: 5,
+                maxLength: 500,
+                model: forms['description'],
+              ),
 
-            // sub activities
-            formActivityProvider.watch((state) {
-              if (state.subActivities.isEmpty) {
-                return const SizedBox();
+              // sub activities
+              formActivityProvider.watch((state) {
+                if (state.subActivities.isEmpty) {
+                  return const SizedBox();
+                }
+
+                return Column(children: [
+                  Textr('Sub Kegiatan', style: Gfont.bold, margin: Ei.only(t: 15, b: 10)),
+                  ...state.subActivities.generate((item, i) {
+                    return SlideUp(
+                      child: Row(
+                        children: [
+                          Expanded(child: CustomTextfield(hint: 'Sub kegiatan', controller: item.name)),
+                          CustomTextfield(hint: '0', controller: item.total, keyboard: Tit.number)
+                              .sized(width: 100)
+                              .margin(h: 5),
+                          Iconr(
+                            Ti.x,
+                            color: Colors.red,
+                            padding: Ei.only(l: 5, v: 10),
+                          ).onTap(() {
+                            notifier.removeSubActivity(i);
+                          }),
+                        ],
+                      ).margin(b: 5),
+                    );
+                  })
+                ]).start;
+              }),
+              Textr(
+                'Tambah Sub Kegiatan',
+                icon: Ti.plus,
+                style: Gfont.bold,
+                padding: Ei.sym(v: 10),
+              ).onTap(() => notifier.addSubActivity())
+            ],
+          ),
+
+          bottomNavigationBar: LzButton(
+            text: data == null ? 'Simpan' : 'Perbarui',
+            color: primary,
+            textColor: Colors.white,
+            onTap: (_) async {
+              final res = await notifier.onSubmit(data?.id);
+              if (res != null && context.mounted) {
+                context.pop(res?['data'] ?? {});
               }
+            },
+          ).theme1(),
 
-              return Column(children: [
-                Textr('Sub Kegiatan', style: Gfont.bold, margin: Ei.only(t: 15, b: 10)),
-                ...state.subActivities.generate((item, i) {
-                  return SlideUp(
-                    child: Row(
-                      children: [
-                        Expanded(child: CustomTextfield(hint: 'Sub kegiatan', controller: item.name)),
-                        CustomTextfield(hint: '0', controller: item.total, keyboard: Tit.number)
-                            .sized(width: 100)
-                            .margin(h: 5),
-                        Iconr(
-                          Ti.x,
-                          color: Colors.red,
-                          padding: Ei.only(l: 5, v: 10),
-                        ).onTap(() {
-                          notifier.removeSubActivity(i);
-                        }),
-                      ],
-                    ).margin(b: 5),
-                  );
-                })
-              ]).start;
-            }),
-            Textr(
-              'Tambah Sub Kegiatan',
-              icon: Ti.plus,
-              style: Gfont.bold,
-              padding: Ei.sym(v: 10),
-            ).onTap(() => notifier.addSubActivity())
-          ],
+          // body: SingleChildScrollView(
+          //   child: Padding(
+          //     padding: const EdgeInsets.only(bottom: padding),
+          //     child: Container(
+          //       margin: const EdgeInsets.only(top: gap + 20),
+          //       padding: const EdgeInsets.symmetric(horizontal: padding + 10),
+          //       child: Column(
+          //         crossAxisAlignment: CrossAxisAlignment.start,
+          //         children: [
+          //           // Row(
+          //           //   mainAxisAlignment: Maa.end,
+          //           //   children: [
+          //           //     PrimaryButton('Pertanggung Jawaban', onTap: () {
+          //           //       context.push(Paths.formKegiatan);
+          //           //     }),
+          //           //   ],
+          //           // ),
+
+          //           FormFieldCustom(
+          //             title: 'Nama Kegiatan',
+          //             placeholder: 'Masukan nama kegiatan',
+          //             controller: notifier.name,
+          //           ),
+          //           FormFieldCustom(
+          //               title: 'Tanggal Kegiatan',
+          //               placeholder: 'Masukan tanggal kegiatan',
+          //               icon: Icons.date_range,
+          //               controller: notifier.activityDate,
+          //               type: 'DATE'),
+          //           FormFieldCustom(
+          //             title: 'Deskripsi Kegiatan',
+          //             placeholder: 'Masukan deskripsi kegiatan',
+          //             isMultiLine: true,
+          //             controller: notifier.description,
+          //           ),
+
+          //           formActivityProvider.watch((state) {
+          //             return Column(
+          //               children: state.subActivities.generate((item, i) {
+          //                 // return notifier.subActivities[i];
+          //                 return Row(
+          //                   // mainAxisAlignment: MainAxisAlignment.end,
+          //                   crossAxisAlignment: CrossAxisAlignment.center,
+          //                   mainAxisSize: MainAxisSize.min,
+          //                   children: [
+          //                     Expanded(
+          //                       child: FormFieldCustom(
+          //                         title: '',
+          //                         placeholder: 'Sub Kegiatan',
+          //                         controller: item.name,
+          //                         // onChanged: (value) {
+          //                         //   if (index < subActivities.length) {
+          //                         //     subActivities[index] = {...subActivities[index], "name": value};
+          //                         //   } else {
+          //                         //     subActivities.add({"name": value});
+          //                         //   }
+          //                         // },
+          //                       ),
+          //                     ),
+          //                     const SizedBox(
+          //                       width: gap,
+          //                     ),
+          //                     FormFieldCustom(
+          //                       width: 100,
+          //                       title: '',
+          //                       placeholder: '0',
+          //                       keyboardType: TextInputType.number,
+          //                       controller: item.total,
+          //                       onChanged: (value) {
+          //                         // print(index);
+          //                         // if (index < subActivities.length) {
+          //                         //   subActivities[index] = {...subActivities[index], "total_budget": value};
+          //                         // } else {
+          //                         //   subActivities.add({"total_budget": value});
+          //                         // }
+          //                       },
+          //                     ),
+          //                     Center(
+          //                         child: InkWell(
+          //                             onTap: () {
+          //                               notifier.removeSubActivity(i);
+          //                             },
+          //                             child: Icon(
+          //                               Icons.delete,
+          //                               size: 32,
+          //                               color: Colors.red[800],
+          //                             )))
+          //                   ],
+          //                 );
+          //               }),
+          //             );
+          //           }),
+
+          //           // if (formSubKegiatan.isNotEmpty)
+          //           //   ListView.builder(
+          //           //     physics: const NeverScrollableScrollPhysics(),
+          //           //     itemCount: formSubKegiatan.length,
+          //           //     shrinkWrap: true,
+          //           //     itemBuilder: (context, index) {
+          //           //       return formSubKegiatan[index];
+          //           //     },
+          //           //   ),
+
+          //           ElevatedButton.icon(
+          //             onPressed: () {
+          //               notifier.addSubActivity();
+          //             },
+          //             icon: const Icon(Icons.add),
+          //             label: const Text('Tambah Sub Kegiatan'),
+          //             style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black),
+          //           ),
+          //           const SizedBox(
+          //             height: gap + 10,
+          //           ),
+          //           InkWell(
+          //             onTap: () async {
+          //               notifier.onSubmit();
+          //               // _showFullModal(context);
+          //               // await notifier.createKegiatan(context);
+          //               // context.pop();
+          //             },
+          //             child: Container(
+          //               decoration: BoxDecoration(
+          //                 borderRadius: BorderRadius.circular(radius - 10),
+          //                 color: primary,
+          //               ),
+          //               padding: const EdgeInsets.all(padding),
+          //               child: Text(
+          //                 'Simpan',
+          //                 style: Gfont.fs14.white,
+          //               ),
+          //             ),
+          //           )
+          //           // Checkbox(value: true, onChanged: (){})
+          //         ],
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ),
-
-        bottomNavigationBar: LzButton(
-          text: data == null ? 'Simpan' : 'Perbarui',
-          color: primary,
-          textColor: Colors.white,
-          onTap: (_) async {
-            final res = await notifier.onSubmit(data?.id);
-            if (res != null && context.mounted) {
-              context.pop(res?['data'] ?? {});
-            }
-          },
-        ).theme1(),
-
-        // body: SingleChildScrollView(
-        //   child: Padding(
-        //     padding: const EdgeInsets.only(bottom: padding),
-        //     child: Container(
-        //       margin: const EdgeInsets.only(top: gap + 20),
-        //       padding: const EdgeInsets.symmetric(horizontal: padding + 10),
-        //       child: Column(
-        //         crossAxisAlignment: CrossAxisAlignment.start,
-        //         children: [
-        //           // Row(
-        //           //   mainAxisAlignment: Maa.end,
-        //           //   children: [
-        //           //     PrimaryButton('Pertanggung Jawaban', onTap: () {
-        //           //       context.push(Paths.formKegiatan);
-        //           //     }),
-        //           //   ],
-        //           // ),
-
-        //           FormFieldCustom(
-        //             title: 'Nama Kegiatan',
-        //             placeholder: 'Masukan nama kegiatan',
-        //             controller: notifier.name,
-        //           ),
-        //           FormFieldCustom(
-        //               title: 'Tanggal Kegiatan',
-        //               placeholder: 'Masukan tanggal kegiatan',
-        //               icon: Icons.date_range,
-        //               controller: notifier.activityDate,
-        //               type: 'DATE'),
-        //           FormFieldCustom(
-        //             title: 'Deskripsi Kegiatan',
-        //             placeholder: 'Masukan deskripsi kegiatan',
-        //             isMultiLine: true,
-        //             controller: notifier.description,
-        //           ),
-
-        //           formActivityProvider.watch((state) {
-        //             return Column(
-        //               children: state.subActivities.generate((item, i) {
-        //                 // return notifier.subActivities[i];
-        //                 return Row(
-        //                   // mainAxisAlignment: MainAxisAlignment.end,
-        //                   crossAxisAlignment: CrossAxisAlignment.center,
-        //                   mainAxisSize: MainAxisSize.min,
-        //                   children: [
-        //                     Expanded(
-        //                       child: FormFieldCustom(
-        //                         title: '',
-        //                         placeholder: 'Sub Kegiatan',
-        //                         controller: item.name,
-        //                         // onChanged: (value) {
-        //                         //   if (index < subActivities.length) {
-        //                         //     subActivities[index] = {...subActivities[index], "name": value};
-        //                         //   } else {
-        //                         //     subActivities.add({"name": value});
-        //                         //   }
-        //                         // },
-        //                       ),
-        //                     ),
-        //                     const SizedBox(
-        //                       width: gap,
-        //                     ),
-        //                     FormFieldCustom(
-        //                       width: 100,
-        //                       title: '',
-        //                       placeholder: '0',
-        //                       keyboardType: TextInputType.number,
-        //                       controller: item.total,
-        //                       onChanged: (value) {
-        //                         // print(index);
-        //                         // if (index < subActivities.length) {
-        //                         //   subActivities[index] = {...subActivities[index], "total_budget": value};
-        //                         // } else {
-        //                         //   subActivities.add({"total_budget": value});
-        //                         // }
-        //                       },
-        //                     ),
-        //                     Center(
-        //                         child: InkWell(
-        //                             onTap: () {
-        //                               notifier.removeSubActivity(i);
-        //                             },
-        //                             child: Icon(
-        //                               Icons.delete,
-        //                               size: 32,
-        //                               color: Colors.red[800],
-        //                             )))
-        //                   ],
-        //                 );
-        //               }),
-        //             );
-        //           }),
-
-        //           // if (formSubKegiatan.isNotEmpty)
-        //           //   ListView.builder(
-        //           //     physics: const NeverScrollableScrollPhysics(),
-        //           //     itemCount: formSubKegiatan.length,
-        //           //     shrinkWrap: true,
-        //           //     itemBuilder: (context, index) {
-        //           //       return formSubKegiatan[index];
-        //           //     },
-        //           //   ),
-
-        //           ElevatedButton.icon(
-        //             onPressed: () {
-        //               notifier.addSubActivity();
-        //             },
-        //             icon: const Icon(Icons.add),
-        //             label: const Text('Tambah Sub Kegiatan'),
-        //             style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black),
-        //           ),
-        //           const SizedBox(
-        //             height: gap + 10,
-        //           ),
-        //           InkWell(
-        //             onTap: () async {
-        //               notifier.onSubmit();
-        //               // _showFullModal(context);
-        //               // await notifier.createKegiatan(context);
-        //               // context.pop();
-        //             },
-        //             child: Container(
-        //               decoration: BoxDecoration(
-        //                 borderRadius: BorderRadius.circular(radius - 10),
-        //                 color: primary,
-        //               ),
-        //               padding: const EdgeInsets.all(padding),
-        //               child: Text(
-        //                 'Simpan',
-        //                 style: Gfont.fs14.white,
-        //               ),
-        //             ),
-        //           )
-        //           // Checkbox(value: true, onChanged: (){})
-        //         ],
-        //       ),
-        //     ),
-        //   ),
-        // ),
       ),
     );
   }

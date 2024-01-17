@@ -29,6 +29,7 @@ void main() async {
       onError: RequestHandler.onError);
   dio.setToken(token);
 
+  // init toast
   LzToast.config(position: Position.center);
 
   // init provider and run app

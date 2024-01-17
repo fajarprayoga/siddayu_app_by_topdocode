@@ -39,7 +39,7 @@ dependencies:
   fluttertoast: any
   go_router: ^10.1.2
   hooks_riverpod: ^2.3.6
-  lazyui: ^2.0.6
+  lazyui: ^2.0.7
   open_file_plus: ^3.4.1
   riverpod: ^2.3.6
   shared_preferences: ^2.2.0

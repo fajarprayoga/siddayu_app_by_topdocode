@@ -71,7 +71,9 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
                                 LzConfirm(
                                   title: 'Hapus Data',
                                   message: 'Apakah anda yakin ingin menghapus data kegiatan ini?',
-                                  onConfirm: () {},
+                                  onConfirm: () {
+                                    notifier.deleteData(item.id!);
+                                  },
                                 ).show(context);
                               }
                             });
@@ -82,7 +84,7 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
                             mainAxisAlignment: Maa.spaceBetween,
                             children: [
                               Textr(
-                                item.name ?? '-',
+                                (item.name ?? '-').ucwords,
                                 icon: Ti.list,
                                 margin: Ei.only(r: 15),
                               ).lz.flexible(),

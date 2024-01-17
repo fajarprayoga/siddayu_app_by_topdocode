@@ -59,6 +59,29 @@ class ActivityUserNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>> wit
       Errors.check(e, s);
     }
   }
+
+  void deleteData(String id) async {
+    try {
+      LzToast.overlay('Menghapus data...');
+      final res = await kegiatanApi.deleteActivity(id);
+
+      if (!res.status) {
+        return LzToast.error(res.message ?? 'Gagal menghapus data');
+      }
+
+      // remove data from state
+      final currentState = state.value ?? [];
+      final index = currentState.indexWhere((e) => e.id == id);
+      currentState.removeAt(index);
+
+      // update state
+      state = AsyncValue.data(currentState);
+    } catch (e, s) {
+      Errors.check(e, s);
+    } finally {
+      LzToast.dismiss();
+    }
+  }
 }
 
 final activityUserProvider =

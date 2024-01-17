@@ -7,6 +7,7 @@ import 'package:todo_app/app/core/constants/value.dart';
 import 'package:todo_app/app/core/extensions/riverpod_extension.dart';
 import 'package:todo_app/app/core/helpers/utils.dart';
 import 'package:todo_app/app/data/models/kegiatan/kegiatan.dart';
+import 'package:todo_app/app/widgets/custom_appbar.dart';
 
 import '../../../providers/kegiatan/form_kegiatan_provider.dart';
 import '../../../widgets/primary_button.dart';
@@ -18,12 +19,16 @@ class FormKegiatanScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final notifier = ref.read(formKegiatanProvider.notifier);
+    final provider = formKegiatanProvider(kegiatan);
+    final notifier = ref.read(provider.notifier);
 
     return Wrapper(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Management Tata Kelola'),
+          title: const CustomAppbar(
+            title: 'Management Tata Kelola',
+            subtitle: 'Kegiatan / Detail / Kegiatan 1',
+          ),
         ),
         body: ListView(
           padding: Ei.all(20),
@@ -41,7 +46,7 @@ class FormKegiatanScreen extends ConsumerWidget {
                     }),
 
                 // list of file sk
-                formKegiatanProvider.watch((value) => FkFileContent('sk', files: value.fileSK)),
+                provider.watch((value) => FkFileContent('sk', files: value.fileSK, provider: provider)),
 
                 // section berita acara
                 FKSection(
@@ -53,7 +58,8 @@ class FormKegiatanScreen extends ConsumerWidget {
                     }),
 
                 // list of file berita acara
-                formKegiatanProvider.watch((value) => FkFileContent('berita_acara', files: value.fileBeritaAcara)),
+                provider.watch(
+                    (value) => FkFileContent('operational_report', files: value.fileBeritaAcara, provider: provider)),
 
                 // section option
                 FKSection(
@@ -65,10 +71,10 @@ class FormKegiatanScreen extends ConsumerWidget {
                     }),
 
                 // list of file option
-                formKegiatanProvider.watch((value) => FkFileContent('option', files: value.fileOption)),
+                provider.watch((value) => FkFileContent('other', files: value.fileOption, provider: provider)),
 
                 // amprahan widget
-                const ListAmprahanWidget(),
+                ListAmprahanWidget(provider),
 
                 // button tambah no amprahan
                 Textr('Tambah No Amprahan', icon: Icons.add, style: Gfont.bold).onTap(() {
@@ -81,13 +87,13 @@ class FormKegiatanScreen extends ConsumerWidget {
             )
           ],
         ),
-        bottomNavigationBar: LzButton(
-            text: 'Simpan / Approve',
-            color: primary,
-            textColor: Colors.white,
-            onTap: (_) {
-              notifier.onSubmit(kegiatan);
-            }).theme1(),
+        // bottomNavigationBar: LzButton(
+        //     text: 'Simpan / Approve',
+        //     color: primary,
+        //     textColor: Colors.white,
+        //     onTap: (_) {
+        //       notifier.onSubmit(kegiatan);
+        //     }).theme1(),
       ),
     );
   }
@@ -126,11 +132,12 @@ class FkFileContent extends ConsumerWidget {
   final String label;
   final List<File> files;
   final Function(int index)? onRemove;
-  const FkFileContent(this.label, {super.key, this.files = const [], this.onRemove});
+  final AutoDisposeStateNotifierProvider<FormKegiatanNotifier, FormKegiatanState> provider;
+  const FkFileContent(this.label, {super.key, this.files = const [], this.onRemove, required this.provider});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final notifier = ref.read(formKegiatanProvider.notifier);
+    final notifier = ref.read(provider.notifier);
 
     if (files.isEmpty) {
       return Container(
@@ -163,7 +170,15 @@ class FkFileContent extends ConsumerWidget {
                   const Icon(
                     Icons.close,
                     color: Colors.red,
-                  ).onTap(() => onRemove != null ? onRemove!.call(i) : notifier.removeFile(label, i))
+                  ).onTap(() {
+                    LzConfirm(
+                      title: 'Hapus File',
+                      message: 'Apakah Anda yakin ingin menghapus file ini?',
+                      onConfirm: () {
+                        onRemove != null ? onRemove!.call(i) : notifier.removeFile(label, i);
+                      },
+                    ).show(context);
+                  })
                 ],
               ),
             ),

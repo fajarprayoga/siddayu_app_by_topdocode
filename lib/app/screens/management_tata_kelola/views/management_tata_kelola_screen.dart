@@ -49,7 +49,9 @@ class ManagementTataKelola extends ConsumerWidget {
                               style: Gfont.bold,
                             ),
                             InkTouch(
-                              onTap: () {},
+                              onTap: () {
+                                context.push(Paths.allActivities);
+                              },
                               padding: Ei.sym(v: 10, h: 20),
                               border: Br.all(color: Colors.black38),
                               radius: Br.radius(8),

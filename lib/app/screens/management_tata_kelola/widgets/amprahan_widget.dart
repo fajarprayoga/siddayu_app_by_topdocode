@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lazyui/lazyui.dart';
+import 'package:todo_app/app/core/constants/value.dart';
 import 'package:todo_app/app/core/extensions/riverpod_extension.dart';
 import 'package:todo_app/app/core/helpers/utils.dart';
 import 'package:todo_app/app/providers/kegiatan/form_kegiatan_provider.dart';
@@ -10,14 +11,14 @@ import '../../../widgets/form_field_custom.dart';
 import '../views/form_kegiatan_screen.dart';
 
 class ListAmprahanWidget extends ConsumerWidget {
-  const ListAmprahanWidget({super.key});
+  final AutoDisposeStateNotifierProvider<FormKegiatanNotifier, FormKegiatanState> provider;
+  const ListAmprahanWidget(this.provider, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return formKegiatanProvider.watchX((value, notifier) => Column(
-          children: value.amprahans.generate((item, i) => SlideUp(
-              delay: (i + 1) * 100,
-              child: AmprahanWidget(notifier, item, i).margin(b: 25))),
+    return provider.watchX((value, notifier) => Column(
+          children: value.amprahans.generate((item, i) =>
+              SlideUp(delay: (i + 1) * 100, child: AmprahanWidget(notifier, item, i, provider).margin(b: 25))),
         ));
   }
 }
@@ -26,7 +27,8 @@ class AmprahanWidget extends StatelessWidget {
   final FormKegiatanNotifier notifier;
   final Amprahan amprahan;
   final int index;
-  const AmprahanWidget(this.notifier, this.amprahan, this.index, {super.key});
+  final AutoDisposeStateNotifierProvider<FormKegiatanNotifier, FormKegiatanState> provider;
+  const AmprahanWidget(this.notifier, this.amprahan, this.index, this.provider, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -45,10 +47,8 @@ class AmprahanWidget extends StatelessWidget {
         Container(
           padding: Ei.all(15),
           margin: Ei.only(t: 10),
-          decoration: BoxDecoration(
-              color: Colors.white,
-              border: Br.all(color: Colors.black45),
-              borderRadius: Br.radius(8)),
+          decoration:
+              BoxDecoration(color: Colors.white, border: Br.all(color: Colors.black45), borderRadius: Br.radius(8)),
           child: Column(
             crossAxisAlignment: Caa.start,
             children: [
@@ -70,10 +70,9 @@ class AmprahanWidget extends StatelessWidget {
                   }),
 
               // list of file dokumentasi kegiatan
-              FkFileContent('doc_kegiatan',
-                  files: amprahan.fileDokumentasiKegiatan, onRemove: (i) {
+              FkFileContent('doc_kegiatan', files: amprahan.fileDokumentasiKegiatan, onRemove: (i) {
                 notifier.removeFileAmprahan('doc_kegiatan', i, index);
-              }),
+              }, provider: provider),
 
               FormFieldCustom(
                 title: 'Total Realisasi Anggaran',
@@ -99,15 +98,43 @@ class AmprahanWidget extends StatelessWidget {
                     notifier.addFileDokumentasiPajak(files, index);
                   }),
 
+              CustomCheckbox(
+                  value: amprahan.isPajak,
+                  onTap: () {
+                    notifier.checkPajak(!amprahan.isPajak, index);
+                  }),
+
               // list of file pajak
-              FkFileContent('pajak', files: amprahan.fileDokumentasiPajak,
-                  onRemove: (i) {
+              FkFileContent('pajak', files: amprahan.fileDokumentasiPajak, onRemove: (i) {
                 notifier.removeFileAmprahan('pajak', i, index);
-              }),
+              }, provider: provider),
+
+              LzButton(text: 'Simpan', color: primary, onTap: (_) {}).sized(context.width)
             ],
           ),
         ),
       ],
+    );
+  }
+}
+
+class CustomCheckbox extends StatelessWidget {
+  final bool value;
+  final Function()? onTap;
+  const CustomCheckbox({super.key, this.value = false, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkTouch(
+      onTap: onTap,
+      border: Br.all(color: Colors.black38),
+      radius: Br.radius(8),
+      margin: Ei.only(b: 15),
+      child: SizedBox(
+        width: 25,
+        height: 25,
+        child: value ? const Icon(Ti.check) : const None(),
+      ),
     );
   }
 }

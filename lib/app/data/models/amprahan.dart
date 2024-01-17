@@ -8,6 +8,7 @@ class Amprahan {
   TextEditingController totalRealisasiAnggaran;
   TextEditingController sumberDana;
   List<File> fileDokumentasiPajak;
+  bool isPajak;
 
   Amprahan({
     required this.noAmprahan,
@@ -15,5 +16,6 @@ class Amprahan {
     required this.totalRealisasiAnggaran,
     required this.sumberDana,
     required this.fileDokumentasiPajak,
+    required this.isPajak,
   });
 }
