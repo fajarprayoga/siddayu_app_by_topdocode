@@ -173,10 +173,10 @@ packages:
     dependency: "direct main"
     description:
       name: fetchly
-      sha256: "23c48c1caa4d67bdca6d3dcf55758dfbc86a7078f739262bfec1624996f42c56"
+      sha256: cb42e075b9be7a51d870950462def85f9c8dd685ef41764f960d622ddf83ecfc
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.7"
+    version: "0.0.12"
   ffi:
     dependency: transitive
     description:
@@ -380,10 +380,10 @@ packages:
     dependency: "direct main"
     description:
       name: lazyui
-      sha256: a3464eaefab4bf00900fcb0f40214f50c8215ba69e02e715bb0fc338e83ab167
+      sha256: "6873e86c41c8fa747cd691de2596ac2ea03cc689664d59479f44476203f346a2"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.7"
+    version: "2.0.9"
   lints:
     dependency: transitive
     description:

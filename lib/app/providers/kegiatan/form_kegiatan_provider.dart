@@ -30,16 +30,82 @@ class FormKegiatanState {
 
 class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
   final Kegiatan kegiatan;
-  FormKegiatanNotifier(this.kegiatan) : super(FormKegiatanState());
+  FormKegiatanNotifier(this.kegiatan) : super(FormKegiatanState()) {
+    Bindings.onRendered(() async {
+      getData();
+    });
+  }
 
-  Map<String, dynamic> tempFiles = {'sk': [], 'operational_report': [], 'other': []};
+  Future getData() async {
+    try {
+      LzToast.overlay('Mengambil data amprahan...');
+      final res = await kegiatanApi.getAmprahanFiles(kegiatan.id!);
+      final data = res.data?['data'] ?? {};
+
+      List documents = data['documents'] ?? [];
+
+      // get and set file sk
+      final sk = documents.where((e) => e['type'] == 'sk').toList();
+      List<File> fileSK = sk.map((e) => File(e['url'])).toList();
+      state = state.copyWith(fileSK: fileSK);
+      tempFiles['sk'] = sk; // untuk menghapus file dengan id
+
+      // get and set file berita acara
+      final operationalReport = documents.where((e) => e['type'] == 'operational_report').toList();
+      List<File> fileBeritaAcara = operationalReport.map((e) => File(e['url'])).toList();
+      state = state.copyWith(fileBeritaAcara: fileBeritaAcara);
+      tempFiles['operational_report'] = operationalReport; // untuk menghapus file dengan id
+
+      // get and set file option
+      final other = documents.where((e) => e['type'] == 'other').toList();
+      List<File> fileOption = other.map((e) => File(e['url'])).toList();
+      state = state.copyWith(fileOption: fileOption);
+      tempFiles['other'] = other; // untuk menghapus file dengan id
+
+      getAmprahan();
+    } catch (e, s) {
+      Errors.check(e, s);
+    }
+  }
+
+  Future getAmprahan() async {
+    try {
+      final res = await kegiatanApi.getAmprahan(kegiatan.id!);
+      final data = res.data?['data'] ?? [];
+
+      List<Amprahan> amprahans = [];
+      for (Map<String, dynamic> e in data) {
+        amprahans.add(Amprahan(
+          id: e['id'].toString(),
+          noAmprahan: e['amprahan_number'].toString().tec,
+          fileDokumentasiKegiatan: [],
+          totalRealisasiAnggaran: e['total_budget_realisation'].toString().tec,
+          sumberDana: e['budget_source'].toString().tec,
+          fileDokumentasiPajak: [],
+          amprahanDate: e['amprahan_date'].toString().tec,
+          disbuermentDate: e['disbuerment_date'].toString().tec,
+          isPajak: e['pajak'] == 1,
+        ));
+      }
+
+      state = state.copyWith(amprahans: amprahans);
+
+      logg(data, limit: 5000);
+    } catch (e, s) {
+      Errors.check(e, s);
+    } finally {
+      LzToast.dismiss();
+    }
+  }
+
+  Map<String, List> tempFiles = {'sk': [], 'operational_report': [], 'other': []};
 
   Future<bool> uploadFiles(String type, List<File> files) async {
     try {
       final mfiles = await fileToMultipart(files);
 
       Map<String, dynamic> payload = {
-        'type': 'sk',
+        'type': type,
         'activity_id': kegiatan.id,
       };
 
@@ -53,7 +119,7 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
         LzToast.error(res.message ?? 'Gagal mengunggah file');
       }
 
-      tempFiles[type] = [...tempFiles[type], ...res.data['data']];
+      tempFiles[type] = [...tempFiles[type] ?? [], ...res.data['data']];
       logg(tempFiles);
 
       return res.status;
@@ -95,7 +161,7 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
 
   void removeFile(String label, int index) async {
     // find file id
-    final id = tempFiles[label][index]['id'];
+    final id = tempFiles[label]![index]['id'];
 
     if (id == null) {
       return LzToast.warning('File tidak ditemukan');
@@ -110,16 +176,19 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
           case 'sk':
             List<File> files = state.fileSK;
             files.removeAt(index);
+            tempFiles['sk']?.removeAt(index);
             state = state.copyWith(fileSK: files);
             break;
           case 'operational_report':
             List<File> files = state.fileBeritaAcara;
             files.removeAt(index);
+            tempFiles['operational_report']?.removeAt(index);
             state = state.copyWith(fileBeritaAcara: files);
             break;
           case 'other':
             List<File> files = state.fileOption;
             files.removeAt(index);
+            tempFiles['other']?.removeAt(index);
             state = state.copyWith(fileOption: files);
             break;
           default:
@@ -140,6 +209,8 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
         totalRealisasiAnggaran: TextEditingController(),
         sumberDana: TextEditingController(),
         fileDokumentasiPajak: [],
+        amprahanDate: ''.tec,
+        disbuermentDate: ''.tec,
         isPajak: false));
 
     state = state.copyWith(amprahans: amprahans);
@@ -202,38 +273,90 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
     return multipart;
   }
 
-  Future onSubmit(Kegiatan data) async {
-    try {
-      final fileSK = await fileToMultipart(state.fileSK);
-      final fileBeritaAcara = await fileToMultipart(state.fileBeritaAcara);
-      final fileOption = await fileToMultipart(state.fileOption);
+  // Future onSubmit(Kegiatan data) async {
+  //   try {
+  //     final fileSK = await fileToMultipart(state.fileSK);
+  //     final fileBeritaAcara = await fileToMultipart(state.fileBeritaAcara);
+  //     final fileOption = await fileToMultipart(state.fileOption);
 
+  //     Map<String, dynamic> payload = {
+  //       'file_sk': fileSK,
+  //       'file_berita_acara': fileBeritaAcara,
+  //       'file_option': fileOption,
+  //     };
+
+  //     if (state.amprahans.isNotEmpty) {
+  //       List<Map<String, dynamic>> amprahans = [];
+
+  //       for (Amprahan e in state.amprahans) {
+  //         amprahans.add({
+  //           'no_amprahan': e.noAmprahan.text,
+  //           'total_realisasi_anggaran': e.totalRealisasiAnggaran.text,
+  //           'sumber_dana': e.sumberDana.text,
+  //           'file_dokumentasi_kegiatan': await fileToMultipart(e.fileDokumentasiKegiatan),
+  //           'file_dokumentasi_pajak': await fileToMultipart(e.fileDokumentasiPajak),
+  //           'pajak': true
+  //         });
+  //       }
+
+  //       payload['amprahans'] = amprahans;
+  //     }
+
+  //     logg(payload);
+  //   } catch (e, s) {
+  //     Errors.check(e, s);
+  //   }
+  // }
+
+  Future onSubmitAmprahan(int index) async {
+    try {
+      // get amprahan by index
+      final amprahan = state.amprahans[index];
+
+      LzToast.overlay(amprahan.id == null ? 'Menambahkan data amprahan...' : 'Mengubah data amprahan...');
+
+      // get activity doc files
+      final activityFiles = await fileToMultipart(amprahan.fileDokumentasiKegiatan);
+      final taxFiles = await fileToMultipart(amprahan.fileDokumentasiPajak);
+
+      // make payload
       Map<String, dynamic> payload = {
-        'file_sk': fileSK,
-        'file_berita_acara': fileBeritaAcara,
-        'file_option': fileOption,
+        'amprahan_number': amprahan.noAmprahan.text,
+        'total_budget_realisation': amprahan.totalRealisasiAnggaran.text,
+        'budget_source': amprahan.sumberDana.text,
+        'pajak': amprahan.isPajak.toInt,
+        'amprahan_date': amprahan.amprahanDate.text,
+        'disbuerment_date': amprahan.disbuermentDate.text,
+        'activity_id': kegiatan.id,
       };
 
-      if (state.amprahans.isNotEmpty) {
-        List<Map<String, dynamic>> amprahans = [];
+      for (var i = 0; i < activityFiles.length; i++) {
+        payload['activity_documentations[$i]'] = activityFiles[i];
+      }
 
-        for (Amprahan e in state.amprahans) {
-          amprahans.add({
-            'no_amprahan': e.noAmprahan.text,
-            'total_realisasi_anggaran': e.totalRealisasiAnggaran.text,
-            'sumber_dana': e.sumberDana.text,
-            'file_dokumentasi_kegiatan': await fileToMultipart(e.fileDokumentasiKegiatan),
-            'file_dokumentasi_pajak': await fileToMultipart(e.fileDokumentasiPajak),
-            'pajak': true
-          });
+      for (var i = 0; i < taxFiles.length; i++) {
+        payload['tax_documentations[$i]'] = taxFiles[i];
+      }
+
+      if (amprahan.id != null) {
+        payload['amprahan_id'] = amprahan.id;
+      }
+
+      final res = await kegiatanApi.createAmprahan(payload);
+
+      if (res.status) {
+        if (amprahan.id != null) {
+          LzToast.success('Berhasil mengubah data amprahan');
+        } else {
+          LzToast.success('Berhasil menambahkan data amprahan');
         }
-
-        payload['amprahans'] = amprahans;
       }
 
       logg(payload);
     } catch (e, s) {
       Errors.check(e, s);
+    } finally {
+      LzToast.dismiss();
     }
   }
 }

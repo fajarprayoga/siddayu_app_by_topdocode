@@ -166,7 +166,10 @@ class FkFileContent extends ConsumerWidget {
               child: Row(
                 mainAxisAlignment: Maa.spaceBetween,
                 children: [
-                  Text(name),
+                  Text(
+                    name,
+                    overflow: Tof.ellipsis,
+                  ).lz.flexible(),
                   const Icon(
                     Icons.close,
                     color: Colors.red,

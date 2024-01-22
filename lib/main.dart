@@ -26,7 +26,8 @@ void main() async {
   Fetchly.init(
       baseUrl: 'https://sidayu.topdocode.com/api/',
       onRequest: RequestHandler.onRequest,
-      onError: RequestHandler.onError);
+      onError: RequestHandler.onError,
+      printType: PrintType.log);
   dio.setToken(token);
 
   // init toast

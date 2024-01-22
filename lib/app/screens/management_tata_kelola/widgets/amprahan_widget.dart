@@ -7,6 +7,7 @@ import 'package:todo_app/app/core/helpers/utils.dart';
 import 'package:todo_app/app/providers/kegiatan/form_kegiatan_provider.dart';
 
 import '../../../data/models/amprahan.dart';
+import '../../../widgets/custom_textfield.dart';
 import '../../../widgets/form_field_custom.dart';
 import '../views/form_kegiatan_screen.dart';
 
@@ -52,11 +53,10 @@ class AmprahanWidget extends StatelessWidget {
           child: Column(
             crossAxisAlignment: Caa.start,
             children: [
-              FormFieldCustom(
-                title: 'No Amprahan',
-                placeholder: '2465768798900',
-                titleStyle: Gfont.bold,
-                keyboardType: Tit.number,
+              CustomTextfield2(
+                label: 'No Amprahan',
+                hint: '2465768798900',
+                keyboard: Tit.number,
                 controller: amprahan.noAmprahan,
               ).margin(b: 15),
 
@@ -74,19 +74,41 @@ class AmprahanWidget extends StatelessWidget {
                 notifier.removeFileAmprahan('doc_kegiatan', i, index);
               }, provider: provider),
 
-              FormFieldCustom(
-                title: 'Total Realisasi Anggaran',
-                placeholder: 'Masukkan total realisasi anggaran',
-                titleStyle: Gfont.bold,
-                keyboardType: Tit.number,
+              CustomTextfield2(
+                label: 'Total Realisasi Anggaran',
+                hint: 'Masukkan total realisasi anggaran',
+                keyboard: Tit.number,
                 controller: amprahan.totalRealisasiAnggaran,
               ).margin(b: 15),
-              FormFieldCustom(
-                title: 'Sumber Dana',
-                placeholder: 'Masukkan sumber dana',
-                titleStyle: Gfont.bold,
-                keyboardType: Tit.number,
+
+              CustomTextfield2(
+                label: 'Sumber Dana',
+                hint: 'Masukkan sumber dana',
                 controller: amprahan.sumberDana,
+              ).margin(b: 15),
+
+              CustomTextfield2(
+                label: 'Tanggal Amprahan',
+                hint: 'Inputkan tanggal amprahan',
+                suffixIcon: Ti.calendar,
+                controller: amprahan.amprahanDate,
+                onTap: () {
+                  LzPicker.datePicker(context).then((value) {
+                    amprahan.amprahanDate.text = value.format();
+                  });
+                },
+              ).margin(b: 15),
+
+              CustomTextfield2(
+                label: 'Tanggal Pencaiaran',
+                hint: 'Inputkan tanggal pencaiaran',
+                suffixIcon: Ti.calendar,
+                controller: amprahan.disbuermentDate,
+                onTap: () {
+                  LzPicker.datePicker(context).then((value) {
+                    amprahan.disbuermentDate.text = value.format();
+                  });
+                },
               ).margin(b: 15),
 
               // pajak
@@ -109,7 +131,12 @@ class AmprahanWidget extends StatelessWidget {
                 notifier.removeFileAmprahan('pajak', i, index);
               }, provider: provider),
 
-              LzButton(text: 'Simpan', color: primary, onTap: (_) {}).sized(context.width)
+              LzButton(
+                  text: 'Simpan',
+                  color: primary,
+                  onTap: (_) {
+                    notifier.onSubmitAmprahan(index);
+                  }).sized(context.width)
             ],
           ),
         ),
