@@ -74,13 +74,23 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
 
       List<Amprahan> amprahans = [];
       for (Map<String, dynamic> e in data) {
+        List documents = e['documents'] ?? [];
+
+        // get data dokumentasi Kegiatan
+        final activityDocumentation = documents.where((e) => e['type'] == 'activity_documentation').toList();
+        List<File> fileDokumentasiKegiatan = activityDocumentation.map((e) => File(e['url'])).toList();
+
+        // get data dokumentasi pajak
+        final taxDocumentation = documents.where((e) => e['type'] == 'tax_documentation').toList();
+        List<File> fileDokumentasiPajak = taxDocumentation.map((e) => File(e['url'])).toList();
+
         amprahans.add(Amprahan(
           id: e['id'].toString(),
           noAmprahan: e['amprahan_number'].toString().tec,
-          fileDokumentasiKegiatan: [],
+          fileDokumentasiKegiatan: fileDokumentasiKegiatan,
           totalRealisasiAnggaran: e['total_budget_realisation'].toString().tec,
           sumberDana: e['budget_source'].toString().tec,
-          fileDokumentasiPajak: [],
+          fileDokumentasiPajak: fileDokumentasiPajak,
           amprahanDate: e['amprahan_date'].toString().tec,
           disbuermentDate: e['disbuerment_date'].toString().tec,
           isPajak: e['pajak'] == 1,
@@ -334,7 +344,7 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
       }
 
       for (var i = 0; i < taxFiles.length; i++) {
-        payload['tax_documentations[$i]'] = taxFiles[i];
+        payload['tax_documentation[$i]'] = taxFiles[i];
       }
 
       if (amprahan.id != null) {

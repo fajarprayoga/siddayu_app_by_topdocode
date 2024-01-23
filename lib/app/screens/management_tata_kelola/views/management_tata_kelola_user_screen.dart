@@ -59,7 +59,8 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
 
                         return InkTouch(
                           onTap: () {
-                            DropX.show(ikey, options: ['Edit', 'Hapus'].options(dangers: [1]), onSelect: (value) {
+                            DropX.show(ikey, options: ['Edit', 'Detail', 'Hapus'].options(dangers: [2]),
+                                onSelect: (value) {
                               if (value.index == 0) {
                                 context.push(Paths.formManagementTataKelola, extra: item).then((value) {
                                   if (value != null) {
@@ -67,7 +68,9 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
                                     notifier.updateData(Kegiatan.fromJson(value));
                                   }
                                 });
-                              } else {
+                              } else if (value.index == 1) {
+                                logg('halo');
+                              } else if (value.index == 2) {
                                 LzConfirm(
                                   title: 'Hapus Data',
                                   message: 'Apakah anda yakin ingin menghapus data kegiatan ini?',

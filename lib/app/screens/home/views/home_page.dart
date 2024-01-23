@@ -22,69 +22,17 @@ class HomePage extends ConsumerWidget {
       drawer: Drawer(
         backgroundColor: Colors.white,
         shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-                topRight: Radius.circular(15),
-                bottomRight: Radius.circular(0))),
+            borderRadius: BorderRadius.only(topRight: Radius.circular(15), bottomRight: Radius.circular(0))),
         child: Container(
           decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                Color.fromRGBO(235, 244, 245, 1),
-                Color.fromRGBO(254, 253, 253, 1),
-              ])),
+              gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [
+            Color.fromRGBO(235, 244, 245, 1),
+            Color.fromRGBO(254, 253, 253, 1),
+          ])),
           child: ListView(
             padding: EdgeInsets.zero,
             physics: BounceScroll(),
             children: <Widget>[
-              // DrawerHeader(
-              //   child: Column(
-              //     crossAxisAlignment: CrossAxisAlignment.start,
-              //     children: [
-              //       Container(
-              //           width: double.infinity,
-              //           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              //           decoration: BoxDecoration(
-              //               color: Colors.white, borderRadius: Br.radius(8), border: Br.all(color: Colors.black38)),
-              //           // boxShadow: [BoxShadow(color: Colors.black38, blurRadius: 4, offset: Offset(1, 2))]),
-              //           child: FutureBuilder(
-              //             future: Auth.user(),
-              //             builder: (_, snap) {
-              //               if (snap.connectionState == ConnectionState.waiting) return const None();
-
-              //               final auth = snap.data;
-              //               String name = auth?.name ?? '-';
-              //               String email = auth?.email ?? '-';
-
-              //               return Row(
-              //                 crossAxisAlignment: CrossAxisAlignment.start,
-              //                 children: [
-              //                   const Icon(Ti.user),
-              //                   const SizedBox(width: 10),
-              //                   Expanded(
-              //                     child: Column(
-              //                       children: [
-              //                         Text(
-              //                           name,
-              //                           overflow: Tof.ellipsis,
-              //                         ),
-              //                         Text(
-              //                           email,
-              //                           overflow: Tof.ellipsis,
-              //                           style: Gfont.muted,
-              //                         ),
-              //                       ],
-              //                     ).start,
-              //                   )
-              //                 ],
-              //               );
-              //             },
-              //           )),
-              //     ],
-              //   ),
-              // ),
-
               Container(
                 width: context.width,
                 padding: Ei.only(t: context.viewPadding.top + 20, others: 20),
@@ -94,7 +42,6 @@ class HomePage extends ConsumerWidget {
                       final auth = snap.data;
                       String name = auth?.name ?? '-';
                       String email = auth?.email ?? '-';
-
                       return Column(
                         children: [
                           const SizedBox(
@@ -135,8 +82,7 @@ class HomePage extends ConsumerWidget {
                       // logout
                       LzConfirm(
                         title: 'Logout',
-                        message:
-                            'Apakah Anda yakin ingin keluar dari aplikasi ini?',
+                        message: 'Apakah Anda yakin ingin keluar dari aplikasi ini?',
                         onConfirm: () {
                           notifier.logout();
 

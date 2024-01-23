@@ -315,7 +315,7 @@ class StaffBoxWidget extends StatelessWidget {
               child: Row(
                 mainAxisSize: Mas.min,
                 children: [
-                  const LzImage('user.jpeg', size: 50, radius: 100).margin(r: 10),
+                  LzImage(item.profilePicture ?? 'user.jpeg', size: 50, radius: 100).margin(r: 10),
                   Text(name.ucwords).lz.flexible()
                 ],
               ),

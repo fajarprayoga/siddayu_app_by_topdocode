@@ -20,12 +20,10 @@ class ActivityUserNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>> wit
   }
 
   bool isUserLogged = false;
-
   Future getKegiatan() async {
     try {
       final auth = await Auth.user();
       isUserLogged = auth.id == userId;
-
       state = const AsyncValue.loading();
       final res = await kegiatanApi.getKegiatanByUser(userId);
       if (res.status) {
