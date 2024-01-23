@@ -24,7 +24,7 @@ void main() async {
 
   // init dio, we customize it with the name "fetchly"
   Fetchly.init(
-      baseUrl: 'http://172.20.10.2:8000/api/',
+      baseUrl: 'https://topdocode.sidayu.com/api/',
       onRequest: RequestHandler.onRequest,
       onError: RequestHandler.onError,
       printType: PrintType.log);
