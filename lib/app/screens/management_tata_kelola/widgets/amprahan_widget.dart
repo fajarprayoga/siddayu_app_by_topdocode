@@ -7,6 +7,7 @@ import 'package:todo_app/app/core/helpers/utils.dart';
 import 'package:todo_app/app/providers/kegiatan/form_kegiatan_provider.dart';
 
 import '../../../data/models/amprahan.dart';
+import '../../../data/service/local/auth.dart';
 import '../../../widgets/custom_textfield.dart';
 import '../views/form_kegiatan_screen.dart';
 
@@ -32,115 +33,127 @@ class AmprahanWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: Maa.spaceBetween,
-          children: [
-            Text('Amprahan', style: Gfont.bold),
-            const Icon(
-              Icons.close,
-              color: Colors.red,
-            ).onTap(() => notifier.removeAmprahan(index))
-          ],
-        ),
-        Container(
-          padding: Ei.all(15),
-          margin: Ei.only(t: 10),
-          decoration:
-              BoxDecoration(color: Colors.white, border: Br.all(color: Colors.black45), borderRadius: Br.radius(8)),
-          child: Column(
-            crossAxisAlignment: Caa.start,
+    return FutureBuilder(
+        future: Auth.user(),
+        builder: (context, snap) {
+          final user = snap.data;
+          final userRole = user?.role;
+          final roleName = userRole?.code;
+
+          bool isSKU = roleName == 'SKU';
+
+          return Column(
             children: [
-              CustomTextfield2(
-                label: 'No Amprahan',
-                hint: '2465768798900',
-                keyboard: Tit.number,
-                controller: amprahan.noAmprahan,
-              ).margin(b: 15),
+              Row(
+                mainAxisAlignment: Maa.spaceBetween,
+                children: [
+                  Text('Amprahan', style: Gfont.bold),
+                  const Icon(
+                    Icons.close,
+                    color: Colors.red,
+                  ).onTap(() => notifier.removeAmprahan(index))
+                ],
+              ),
+              Container(
+                padding: Ei.all(15),
+                margin: Ei.only(t: 10),
+                decoration: BoxDecoration(
+                    color: Colors.white, border: Br.all(color: Colors.black45), borderRadius: Br.radius(8)),
+                child: Column(
+                  crossAxisAlignment: Caa.start,
+                  children: [
+                    CustomTextfield2(
+                      label: 'No Amprahan',
+                      hint: '2465768798900',
+                      keyboard: Tit.number,
+                      controller: amprahan.noAmprahan,
+                    ).margin(b: 15),
 
-              // file section
-              FKSection(
-                  title: 'Dokumentasi Kegiatan',
-                  textButton: 'Upload File Dokumentasi Kegiatan',
-                  onTap: () async {
-                    final files = await Helper.pickFiles();
-                    notifier.addFileDokumentasiKegiatan(files, index);
-                  }),
+                    // file section
+                    FKSection(
+                        title: 'Dokumentasi Kegiatan',
+                        textButton: 'Upload File Dokumentasi Kegiatan',
+                        onTap: () async {
+                          final files = await Helper.pickFiles();
+                          notifier.addFileDokumentasiKegiatan(files, index);
+                        }).disabled(!isSKU),
 
-              // list of file dokumentasi kegiatan
-              FkFileContent('doc_kegiatan', files: amprahan.fileDokumentasiKegiatan, onRemove: (i) {
-                notifier.removeFileAmprahan('doc_kegiatan', i, index);
-              }, provider: provider),
+                    // list of file dokumentasi kegiatan
+                    FkFileContent('doc_kegiatan', files: amprahan.fileDokumentasiKegiatan, onRemove: (i) {
+                      notifier.removeFileAmprahan('doc_kegiatan', i, index);
+                    }, provider: provider)
+                        .disabled(!isSKU),
 
-              CustomTextfield2(
-                label: 'Total Realisasi Anggaran',
-                hint: 'Masukkan total realisasi anggaran',
-                keyboard: Tit.number,
-                controller: amprahan.totalRealisasiAnggaran,
-              ).margin(b: 15),
+                    CustomTextfield2(
+                      label: 'Total Realisasi Anggaran',
+                      hint: 'Masukkan total realisasi anggaran',
+                      keyboard: Tit.number,
+                      controller: amprahan.totalRealisasiAnggaran,
+                    ).margin(b: 15),
 
-              CustomTextfield2(
-                label: 'Sumber Dana',
-                hint: 'Masukkan sumber dana',
-                controller: amprahan.sumberDana,
-              ).margin(b: 15),
+                    CustomTextfield2(
+                      label: 'Sumber Dana',
+                      hint: 'Masukkan sumber dana',
+                      controller: amprahan.sumberDana,
+                    ).margin(b: 15),
 
-              CustomTextfield2(
-                label: 'Tanggal Amprahan',
-                hint: 'Inputkan tanggal amprahan',
-                suffixIcon: Ti.calendar,
-                controller: amprahan.amprahanDate,
-                onTap: () {
-                  LzPicker.datePicker(context).then((value) {
-                    amprahan.amprahanDate.text = value.format();
-                  });
-                },
-              ).margin(b: 15),
+                    CustomTextfield2(
+                      label: 'Tanggal Amprahan',
+                      hint: 'Inputkan tanggal amprahan',
+                      suffixIcon: Ti.calendar,
+                      controller: amprahan.amprahanDate,
+                      onTap: () {
+                        LzPicker.datePicker(context).then((value) {
+                          amprahan.amprahanDate.text = value.format();
+                        });
+                      },
+                    ).margin(b: 15),
 
-              CustomTextfield2(
-                label: 'Tanggal Pencaiaran',
-                hint: 'Inputkan tanggal pencaiaran',
-                suffixIcon: Ti.calendar,
-                controller: amprahan.disbuermentDate,
-                onTap: () {
-                  LzPicker.datePicker(context).then((value) {
-                    amprahan.disbuermentDate.text = value.format();
-                  });
-                },
-              ).margin(b: 15),
+                    CustomTextfield2(
+                      label: 'Tanggal Pencaiaran',
+                      hint: 'Inputkan tanggal pencaiaran',
+                      suffixIcon: Ti.calendar,
+                      controller: amprahan.disbuermentDate,
+                      onTap: () {
+                        LzPicker.datePicker(context).then((value) {
+                          amprahan.disbuermentDate.text = value.format();
+                        });
+                      },
+                    ).margin(b: 15),
 
-              // pajak
-              FKSection(
-                  title: 'Pajak',
-                  textButton: 'Upload File Dokumentasi Pajak',
-                  onTap: () async {
-                    final files = await Helper.pickFiles();
-                    notifier.addFileDokumentasiPajak(files, index);
-                  }),
+                    // pajak
+                    FKSection(
+                        title: 'Pajak',
+                        textButton: 'Upload File Dokumentasi Pajak',
+                        onTap: () async {
+                          final files = await Helper.pickFiles();
+                          notifier.addFileDokumentasiPajak(files, index);
+                        }).disabled(!isSKU),
 
-              CustomCheckbox(
-                  value: amprahan.isPajak,
-                  onTap: () {
-                    notifier.checkPajak(!amprahan.isPajak, index);
-                  }),
+                    CustomCheckbox(
+                        value: amprahan.isPajak,
+                        onTap: () {
+                          notifier.checkPajak(!amprahan.isPajak, index);
+                        }).disabled(!isSKU),
 
-              // list of file pajak
-              FkFileContent('pajak', files: amprahan.fileDokumentasiPajak, onRemove: (i) {
-                notifier.removeFileAmprahan('pajak', i, index);
-              }, provider: provider),
+                    // list of file pajak
+                    FkFileContent('pajak', files: amprahan.fileDokumentasiPajak, onRemove: (i) {
+                      notifier.removeFileAmprahan('pajak', i, index);
+                    }, provider: provider)
+                        .disabled(!isSKU),
 
-              LzButton(
-                  text: 'Simpan',
-                  color: primary,
-                  onTap: (_) {
-                    notifier.onSubmitAmprahan(index);
-                  }).sized(context.width)
+                    LzButton(
+                        text: 'Simpan',
+                        color: primary,
+                        onTap: (_) {
+                          notifier.onSubmitAmprahan(index);
+                        }).sized(context.width)
+                  ],
+                ),
+              ),
             ],
-          ),
-        ),
-      ],
-    );
+          );
+        });
   }
 }
 
@@ -161,6 +174,15 @@ class CustomCheckbox extends StatelessWidget {
         height: 25,
         child: value ? const Icon(Ti.check) : const None(),
       ),
+    );
+  }
+}
+
+extension CustomWidgetExtension on Widget {
+  Widget disabled(bool value) {
+    return IgnorePointer(
+      ignoring: value,
+      child: Opacity(opacity: value ? 0.5 : 1, child: this),
     );
   }
 }

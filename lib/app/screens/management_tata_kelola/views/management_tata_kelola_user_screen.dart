@@ -83,6 +83,7 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
                           },
                           padding: Ei.all(20),
                           border: Br.only(['t'], except: i == 0),
+                          color: Colors.white,
                           child: Row(
                             mainAxisAlignment: Maa.spaceBetween,
                             children: [

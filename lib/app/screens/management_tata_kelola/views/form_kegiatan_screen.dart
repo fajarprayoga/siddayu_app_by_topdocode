@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lazyui/lazyui.dart';
 import 'package:todo_app/app/core/extensions/riverpod_extension.dart';
@@ -9,18 +8,27 @@ import 'package:todo_app/app/core/helpers/utils.dart';
 import 'package:todo_app/app/data/models/kegiatan/kegiatan.dart';
 import 'package:todo_app/app/widgets/custom_appbar.dart';
 
+import '../../../data/models/user/user.dart';
 import '../../../providers/kegiatan/form_kegiatan_provider.dart';
 import '../../../widgets/primary_button.dart';
 import '../widgets/amprahan_widget.dart';
 
 class FormKegiatanScreen extends ConsumerWidget {
   final Kegiatan kegiatan;
-  const FormKegiatanScreen({super.key, required this.kegiatan});
+  final User user;
+  const FormKegiatanScreen({super.key, required this.kegiatan, required this.user});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = formKegiatanProvider(kegiatan);
     final notifier = ref.read(provider.notifier);
+
+    final userRole = user.role;
+    // [SK, Berita Acara, Option PBJ] : hanya bisa diisi role ST
+    // Amprahan : [Pajak, upload file documentasi Pajak, Bukti Pajak] hanya bisa diisi oleh role SKU
+
+    final roleName = userRole?.code;
+    bool isST = roleName == 'ST';
 
     return Wrapper(
       child: Scaffold(
@@ -30,70 +38,67 @@ class FormKegiatanScreen extends ConsumerWidget {
             subtitle: 'Kegiatan / Detail / Kegiatan 1',
           ),
         ),
-        body: ListView(
-          padding: Ei.all(20),
-          physics: BounceScroll(),
+        body: LzListView(
+          onRefresh: () async {
+            notifier.getData();
+          },
           children: [
-            Column(
-              crossAxisAlignment: Caa.start,
-              children: [
-                FKSection(
-                    title: 'SK',
-                    textButton: 'Upload File SK',
-                    onTap: () async {
-                      final files = await Helper.pickFiles();
-                      notifier.addFileSK(files);
-                    }),
+            Opacity(
+              opacity: isST ? 1 : 0.5,
+              child: Column(
+                crossAxisAlignment: Caa.start,
+                children: [
+                  FKSection(
+                      title: 'SK',
+                      textButton: 'Upload File SK',
+                      onTap: () async {
+                        final files = await Helper.pickFiles();
+                        notifier.addFileSK(files);
+                      }),
 
-                // list of file sk
-                provider.watch((value) => FkFileContent('sk', files: value.fileSK, provider: provider)),
+                  // list of file sk
+                  provider.watch((value) => FkFileContent('sk', files: value.fileSK, provider: provider)),
 
-                // section berita acara
-                FKSection(
-                    title: 'Berita Acara',
-                    textButton: 'Upload File Berita Acara',
-                    onTap: () async {
-                      final files = await Helper.pickFiles();
-                      notifier.addFileBeritaAcara(files);
-                    }),
+                  // section berita acara
+                  FKSection(
+                      title: 'Berita Acara',
+                      textButton: 'Upload File Berita Acara',
+                      onTap: () async {
+                        final files = await Helper.pickFiles();
+                        notifier.addFileBeritaAcara(files);
+                      }),
 
-                // list of file berita acara
-                provider.watch(
-                    (value) => FkFileContent('operational_report', files: value.fileBeritaAcara, provider: provider)),
+                  // list of file berita acara
+                  provider.watch(
+                      (value) => FkFileContent('operational_report', files: value.fileBeritaAcara, provider: provider)),
 
-                // section option
-                FKSection(
-                    title: 'Option (PBJ)',
-                    textButton: 'Upload File Option',
-                    onTap: () async {
-                      final files = await Helper.pickFiles();
-                      notifier.addFileOption(files);
-                    }),
+                  // section option
+                  FKSection(
+                      title: 'Option (PBJ)',
+                      textButton: 'Upload File Option',
+                      onTap: () async {
+                        final files = await Helper.pickFiles();
+                        notifier.addFileOption(files);
+                      }),
 
-                // list of file option
-                provider.watch((value) => FkFileContent('other', files: value.fileOption, provider: provider)),
+                  // list of file option
+                  provider.watch((value) => FkFileContent('other', files: value.fileOption, provider: provider)),
 
-                // amprahan widget
-                ListAmprahanWidget(provider),
+                  // button submit
+                  // PrimaryButton('Simpan / Approve', onTap: () => notifier.onSubmit()).margin(t: 35),
+                ],
+              ),
+            ).lz.ignore(!isST),
 
-                // button tambah no amprahan
-                Textr('Tambah No Amprahan', icon: Icons.add, style: Gfont.bold).onTap(() {
-                  notifier.addAmprahan();
-                }),
+            // amprahan widget
+            ListAmprahanWidget(provider),
 
-                // button submit
-                // PrimaryButton('Simpan / Approve', onTap: () => notifier.onSubmit()).margin(t: 35),
-              ],
-            )
+            // button tambah no amprahan
+            Textr('Tambah No Amprahan', icon: Icons.add, style: Gfont.bold).onTap(() {
+              notifier.addAmprahan();
+            }),
           ],
         ),
-        // bottomNavigationBar: LzButton(
-        //     text: 'Simpan / Approve',
-        //     color: primary,
-        //     textColor: Colors.white,
-        //     onTap: (_) {
-        //       notifier.onSubmit(kegiatan);
-        //     }).theme1(),
       ),
     );
   }
@@ -201,7 +206,7 @@ _showFullModal(context, String path) {
     context: context,
     barrierDismissible: false, // should dialog be dismissed when tapped outside
     barrierLabel: "Modal", // label for barrier
-    transitionDuration: Duration(milliseconds: 500), // how long it takes to popup dialog after button click
+    transitionDuration: const Duration(milliseconds: 500), // how long it takes to popup dialog after button click
     pageBuilder: (_, __, ___) {
       // your widget implementation
       return Scaffold(
@@ -209,30 +214,30 @@ _showFullModal(context, String path) {
             backgroundColor: Colors.white,
             centerTitle: true,
             leading: IconButton(
-                icon: Icon(
+                icon: const Icon(
                   Icons.close,
                   color: Colors.black,
                 ),
                 onPressed: () {
                   Navigator.pop(context);
                 }),
-            title: Text(
+            title: const Text(
               "Document Pdf",
               style: TextStyle(color: Colors.black87, fontFamily: 'Overpass', fontSize: 20),
             ),
             elevation: 0.0),
         backgroundColor: Colors.white,
         body: Container(
-          padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-          decoration: BoxDecoration(
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+          decoration: const BoxDecoration(
             border: Border(
               top: BorderSide(
-                color: const Color(0xfff8f8f8),
+                color: Color(0xfff8f8f8),
                 width: 1,
               ),
             ),
           ),
-          child: SingleChildScrollView(
+          child: const SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

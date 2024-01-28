@@ -38,6 +38,7 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
   Future getData() async {
     try {
       LzToast.overlay('Mengambil data amprahan...');
+
       final res = await kegiatanApi.getAmprahanFiles(kegiatan.id!);
       final data = res.data?['data'] ?? {};
 
@@ -98,8 +99,6 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
       }
 
       state = state.copyWith(amprahans: amprahans);
-
-      logg(data, limit: 5000);
     } catch (e, s) {
       Errors.check(e, s);
     } finally {
@@ -129,7 +128,6 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
       }
 
       tempFiles[type] = [...tempFiles[type] ?? [], ...res.data['data']];
-      logg(tempFiles);
 
       return res.status;
     } catch (e, s) {
@@ -139,6 +137,8 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
   }
 
   void addFileSK(List<File> files) async {
+    if (files.isEmpty) return;
+
     LzToast.overlay('Mengunggah file SK');
     final ok = await uploadFiles('sk', files);
     LzToast.dismiss();
@@ -149,6 +149,7 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
   }
 
   void addFileBeritaAcara(List<File> files) async {
+    if (files.isEmpty) return;
     LzToast.overlay('Mengunggah file berita acara');
     final ok = await uploadFiles('operational_report', files);
     LzToast.dismiss();
@@ -159,6 +160,7 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
   }
 
   void addFileOption(List<File> files) async {
+    if (files.isEmpty) return;
     LzToast.overlay('Mengunggah file option');
     final ok = await uploadFiles('other', files);
     LzToast.dismiss();
@@ -360,8 +362,6 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
           LzToast.success('Berhasil menambahkan data amprahan');
         }
       }
-
-      logg(payload);
     } catch (e, s) {
       Errors.check(e, s);
     } finally {

@@ -21,4 +21,8 @@ class KegiatanApi extends Fetchly {
   Future<ResHandler> deleteAmprahan(String id) async => await delete('amprahan/$id');
 
   Future<ResHandler> deleteActivity(String id) async => await delete('activities/$id');
+
+  Future<ResHandler> searchActivity(String keyword, List date, int page) async {
+    return await get('activities', {'name': keyword, 'between': date.toString(), 'page': page});
+  }
 }

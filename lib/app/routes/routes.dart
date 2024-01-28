@@ -29,11 +29,13 @@ final GoRouter router = GoRouter(
     //     builder: (_, GoRouterState state) => FormDetailTataKelola(kegiatan: state.extra as Kegiatan)),
 
     // management tata kelola
-    Route.set(
-        Paths.formKegiatan,
-        (state) => FormKegiatanScreen(
-              kegiatan: state.extra as Kegiatan,
-            )),
+    Route.set(Paths.formKegiatan, (state) {
+      Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
+      return FormKegiatanScreen(
+        kegiatan: extra['kegiatan'] as Kegiatan,
+        user: extra['user'] as User,
+      );
+    }),
 
     Route.set(Paths.allActivities, (state) => const AllActivitiesScreen()),
   ],

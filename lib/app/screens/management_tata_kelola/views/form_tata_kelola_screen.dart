@@ -11,6 +11,7 @@ import 'package:todo_app/app/providers/activity/form_activity_provider.dart';
 import 'package:todo_app/app/routes/paths.dart';
 import 'package:todo_app/app/widgets/custom_appbar.dart';
 
+import '../../../data/service/local/auth.dart';
 import '../../../widgets/custom_textfield.dart';
 
 class FormTataKelola extends ConsumerWidget {
@@ -54,8 +55,12 @@ class FormTataKelola extends ConsumerWidget {
             ),
             actions: [
               Icon(Ti.clipboardCheck, key: ikey)
-                  .onPressed(() {
-                    context.push(Paths.formKegiatan, extra: data);
+                  .onPressed(() async {
+                    final user = await Auth.user();
+
+                    if (context.mounted && user.id != null) {
+                      context.push(Paths.formKegiatan, extra: {'kegiatan': data, 'user': user});
+                    }
                   })
                   .lz
                   .hide(data == null)
