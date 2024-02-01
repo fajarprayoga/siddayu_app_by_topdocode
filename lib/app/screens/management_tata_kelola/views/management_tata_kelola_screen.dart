@@ -88,39 +88,46 @@ class ManagementTataKelola extends ConsumerWidget {
   }
 }
 
-class ActivityProgress extends StatelessWidget {
+class ActivityProgress extends ConsumerWidget {
   final Kegiatan data;
   const ActivityProgress(this.data, {super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     String name = data.name ?? '-';
     double progress = double.tryParse(data.progress.toString()) ?? 0;
     progress = context.width * (progress / 100);
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: padding),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Textr(name, margin: Ei.only(b: gap)),
-          Stack(
-            children: [
-              Container(
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(color: Colors.amber[100], borderRadius: BorderRadius.circular(10)),
-                height: 21,
-              ),
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 800),
-                width: progress,
-                decoration: BoxDecoration(color: Colors.amber, borderRadius: BorderRadius.circular(10)),
-                height: 20,
-              )
-            ],
-          )
-        ],
+      child: InkWell(
+        onTap: () {
+          context.push(Paths.formManagementTataKelola, extra: data).then((value) {
+            ref.read(activityProvider.notifier).updateActivityProgress();
+          });
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Textr(name, margin: Ei.only(b: gap)),
+            Stack(
+              children: [
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(color: Colors.amber[100], borderRadius: BorderRadius.circular(10)),
+                  height: 21,
+                ),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 800),
+                  width: progress,
+                  decoration: BoxDecoration(color: Colors.amber, borderRadius: BorderRadius.circular(10)),
+                  height: 20,
+                )
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
