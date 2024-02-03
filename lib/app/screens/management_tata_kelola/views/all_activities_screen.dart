@@ -8,6 +8,7 @@ import 'package:todo_app/app/data/models/kegiatan/kegiatan.dart';
 import 'package:todo_app/app/routes/paths.dart';
 import 'package:todo_app/app/widgets/custom_appbar.dart';
 
+import '../../../data/service/local/auth.dart';
 import '../../../providers/kegiatan/activity_provider.dart';
 
 class AllActivitiesScreen extends ConsumerWidget {
@@ -101,8 +102,20 @@ class AllActivitiesScreen extends ConsumerWidget {
                 final ikey = GlobalKey();
 
                 return InkTouch(
-                  onTap: () {
-                    DropX.show(ikey, options: ['Edit', 'Detail', 'Hapus'].options(dangers: [2]), onSelect: (value) {
+                  onTap: () async {
+                    final auth = await Auth.user();
+                    bool isOwned = auth.id == item.createdBy;
+                    List<String> options = [];
+
+                    if (isOwned) {
+                      options = ['Edit', 'Detail', 'Hapus'];
+                    } else {
+                      options = ['Detail'];
+                    }
+
+                    int danger = options.indexOf('Hapus');
+
+                    DropX.show(ikey, options: options.options(dangers: [danger]), onSelect: (value) {
                       if (value.index == 0) {
                         context.push(Paths.formManagementTataKelola, extra: item).then((value) {
                           if (value != null) {
@@ -132,11 +145,12 @@ class AllActivitiesScreen extends ConsumerWidget {
                         children: [
                           Text(item.name ?? ''),
                         ],
-                      ).start,
-                      Icon(
+                      ).start.lz.flexible(),
+                      Iconr(
                         Ti.chevronRight,
                         color: Colors.black45,
                         key: ikey,
+                        margin: Ei.only(l: 15),
                       )
                     ],
                   ).between,

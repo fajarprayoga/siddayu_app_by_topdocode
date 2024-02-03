@@ -12,6 +12,7 @@ class Kegiatan {
   List<SubActivity>? subActivities;
   List<dynamic>? documents;
   int? progress;
+  String? createdBy;
 
   Kegiatan({
     this.id,
@@ -25,6 +26,7 @@ class Kegiatan {
     this.subActivities,
     this.documents,
     this.progress,
+    this.createdBy,
   });
 
   factory Kegiatan.fromJson(Map<String, dynamic> json) => Kegiatan(
@@ -41,6 +43,7 @@ class Kegiatan {
             .toList(),
         documents: json['documents'] as List<dynamic>?,
         progress: json['progress'] as int?,
+        createdBy: json['created_by'] as String?,
       );
 
   Map<String, dynamic> toJson() => {
@@ -55,5 +58,6 @@ class Kegiatan {
         'sub_activities': subActivities?.map((e) => e.toJson()).toList(),
         'documents': documents,
         'progress': progress,
+        'created_by': createdBy,
       };
 }

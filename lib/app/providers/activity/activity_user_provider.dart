@@ -13,24 +13,42 @@ class SubActivity {
   SubActivity({required this.nameController, required this.totalController});
 }
 
-class ActivityUserNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>> with Apis {
+class ActivityDataState {
+  final AsyncValue<List<Kegiatan>> activities;
+  bool isPaginating = false;
+
+  ActivityDataState({this.activities = const AsyncValue.loading(), this.isPaginating = false});
+
+  ActivityDataState copyWith({AsyncValue<List<Kegiatan>>? activities, bool? isPaginating}) {
+    return ActivityDataState(
+        activities: activities ?? this.activities, isPaginating: isPaginating ?? this.isPaginating);
+  }
+}
+
+class ActivityUserNotifier extends StateNotifier<ActivityDataState> with Apis {
   final String userId;
-  ActivityUserNotifier({required this.userId}) : super(const AsyncValue.loading()) {
+  ActivityUserNotifier({required this.userId}) : super(ActivityDataState()) {
     getKegiatan();
   }
 
-  bool isUserLogged = false;
+  bool isUserLogged = false, isPaginate = false, isAllReaches = false;
+  int page = 1, total = 0;
+
   Future getKegiatan() async {
     try {
+      page = 1;
+
       final auth = await Auth.user();
       isUserLogged = auth.id == userId;
-      state = const AsyncValue.loading();
-      final res = await kegiatanApi.getKegiatanByUser(userId);
+      state = state.copyWith(activities: const AsyncValue.loading());
+      final res = await kegiatanApi.getKegiatanByUser(userId, page);
       if (res.status) {
+        total = res.body?['data']?['meta']?['total'] ?? 0;
         List data = res.data['data'] ?? [];
-        state = AsyncValue.data(data.map((e) => Kegiatan.fromJson(e)).toList());
+        state = state.copyWith(activities: AsyncValue.data(data.map((e) => Kegiatan.fromJson(e)).toList()));
+        isAllReaches = data.length >= total;
       } else {
-        state = const AsyncValue.data([]);
+        state = state.copyWith(activities: const AsyncValue.data([]));
       }
     } catch (e, s) {
       Errors.check(e, s);
@@ -38,10 +56,35 @@ class ActivityUserNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>> wit
     }
   }
 
+  void onGetMore() async {
+    try {
+      if (isPaginate) return;
+      if ((state.activities.value ?? []).length >= total) {
+        isAllReaches = true;
+        return;
+      }
+
+      page++;
+      isPaginate = true;
+      state = state.copyWith(isPaginating: true);
+
+      final res = await kegiatanApi.getKegiatanByUser(userId, page);
+      List data = res.data['data'];
+      List<Kegiatan> activities = data.map((e) => Kegiatan.fromJson(e)).toList();
+      state = state.copyWith(activities: AsyncValue.data([...(state.activities.value ?? []), ...activities]));
+    } catch (e, s) {
+      Errors.check(e, s);
+    } finally {
+      await Future.delayed(500.ms);
+      isPaginate = false;
+      state = state.copyWith(isPaginating: false);
+    }
+  }
+
   void addData(Kegiatan data) {
     try {
-      final currentState = state.value ?? [];
-      state = AsyncValue.data([data, ...currentState]);
+      final currentState = state.activities.value ?? [];
+      state = state.copyWith(activities: AsyncValue.data([data, ...currentState]));
     } catch (e, s) {
       Errors.check(e, s);
     }
@@ -49,10 +92,10 @@ class ActivityUserNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>> wit
 
   void updateData(Kegiatan data) {
     try {
-      final currentState = state.value ?? [];
+      final currentState = state.activities.value ?? [];
       final index = currentState.indexWhere((element) => element.id == data.id);
       currentState[index] = data;
-      state = AsyncValue.data(currentState);
+      state = state.copyWith(activities: AsyncValue.data(currentState));
     } catch (e, s) {
       Errors.check(e, s);
     }
@@ -68,12 +111,12 @@ class ActivityUserNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>> wit
       }
 
       // remove data from state
-      final currentState = state.value ?? [];
+      final currentState = state.activities.value ?? [];
       final index = currentState.indexWhere((e) => e.id == id);
       currentState.removeAt(index);
 
       // update state
-      state = AsyncValue.data(currentState);
+      state = state.copyWith(activities: AsyncValue.data(currentState));
     } catch (e, s) {
       Errors.check(e, s);
     } finally {
@@ -83,6 +126,6 @@ class ActivityUserNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>> wit
 }
 
 final activityUserProvider =
-    StateNotifierProvider.autoDispose.family<ActivityUserNotifier, AsyncValue<List<Kegiatan>>, String>((ref, userId) {
+    StateNotifierProvider.autoDispose.family<ActivityUserNotifier, ActivityDataState, String>((ref, userId) {
   return ActivityUserNotifier(userId: userId);
 });

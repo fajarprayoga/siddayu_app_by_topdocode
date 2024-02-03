@@ -16,6 +16,7 @@ class ManagementTataKelola extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userProviderData = ref.watch(userProvider);
+    final activityNotifier = ref.read(activityProvider.notifier);
 
     return Scaffold(
         backgroundColor: Colors.white,
@@ -25,6 +26,12 @@ class ManagementTataKelola extends ConsumerWidget {
             ref.read(activityProvider.notifier).getKegiatan();
           },
           child: LzListView(
+            onScroll: (scroller) {
+              if ((scroller.position.pixels + 100) >= scroller.position.maxScrollExtent) {
+                if (activityNotifier.isPaginate || activityNotifier.isAllReaches) return;
+                activityNotifier.onGetMore();
+              }
+            },
             children: [
               // list of users
               userProviderData.when(
@@ -39,7 +46,6 @@ class ManagementTataKelola extends ConsumerWidget {
                 return state.activities.when(
                     data: (activities) {
                       return Container(
-                        padding: Ei.all(20),
                         margin: Ei.only(t: 15),
                         decoration: BoxDecoration(
                             color: Colors.white, border: Br.all(color: Colors.black38), borderRadius: Br.radius(8)),
@@ -72,9 +78,9 @@ class ManagementTataKelola extends ConsumerWidget {
                                 ),
                               ),
                             ],
-                          ),
+                          ).padding(all: 20),
                           ...activities.generate((item, i) {
-                            return ActivityProgress(item);
+                            return ActivityProgress(item, i);
                           }),
                         ]),
                       );
@@ -82,6 +88,11 @@ class ManagementTataKelola extends ConsumerWidget {
                     error: (error, stackTrace) => Text('Error: $error'),
                     loading: () => LzLoader.bar());
               }),
+
+              // pagination loading
+              activityProvider.watch((state) {
+                return state.isPaginate ? LzLoader.bar() : const SizedBox();
+              })
             ],
           ),
         ));
@@ -90,7 +101,8 @@ class ManagementTataKelola extends ConsumerWidget {
 
 class ActivityProgress extends ConsumerWidget {
   final Kegiatan data;
-  const ActivityProgress(this.data, {super.key});
+  final int index;
+  const ActivityProgress(this.data, this.index, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -99,7 +111,8 @@ class ActivityProgress extends ConsumerWidget {
     progress = context.width * (progress / 100);
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: padding),
+      padding: Ei.all(20),
+      decoration: BoxDecoration(border: Br.only(['t'], except: index == 0)),
       child: InkWell(
         onTap: () {
           context.push(Paths.formManagementTataKelola, extra: data).then((value) {

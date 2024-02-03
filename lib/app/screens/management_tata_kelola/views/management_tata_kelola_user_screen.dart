@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lazyui/lazyui.dart';
+import 'package:todo_app/app/core/extensions/riverpod_extension.dart';
 import 'package:todo_app/app/data/models/kegiatan/kegiatan.dart';
 import 'package:todo_app/app/data/models/user/user.dart';
+import 'package:todo_app/app/data/service/local/auth.dart';
 import 'package:todo_app/app/providers/activity/activity_user_provider.dart';
 import 'package:todo_app/app/routes/paths.dart';
 import 'package:todo_app/app/widgets/custom_appbar.dart';
@@ -22,11 +24,13 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
     final activityProvider = ref.watch(activityUserProvider(id));
     final notifier = ref.read(activityUserProvider(id).notifier);
 
+    final activities = activityProvider.activities;
+
     return Scaffold(
       appBar: AppBar(
         title: const CustomAppbar(title: 'Management Tata Kelola', subtitle: 'Kegiatan'),
       ),
-      body: activityProvider.when(
+      body: activities.when(
           data: (activities) {
             if (activities.isEmpty) {
               return LzNoData(message: 'Tidak ada data', onTap: () => notifier.getKegiatan());
@@ -35,6 +39,12 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
             return Refreshtor(
                 onRefresh: () async => notifier.getKegiatan(),
                 child: LzListView(
+                  onScroll: (scroller) {
+                    if ((scroller.position.pixels + 100) >= scroller.position.maxScrollExtent) {
+                      if (notifier.isPaginate || notifier.isAllReaches) return;
+                      notifier.onGetMore();
+                    }
+                  },
                   children: [
                     // if (notifier.isUserLogged)
                     //   Row(
@@ -58,19 +68,30 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
                         final ikey = GlobalKey();
 
                         return InkTouch(
-                          onTap: () {
-                            DropX.show(ikey, options: ['Edit', 'Detail', 'Hapus'].options(dangers: [2]),
-                                onSelect: (value) {
-                              if (value.index == 0) {
+                          onTap: () async {
+                            final auth = await Auth.user();
+                            bool isOwned = auth.id == item.createdBy;
+                            List<String> options = [];
+
+                            if (isOwned) {
+                              options = ['Edit', 'Detail', 'Hapus'];
+                            } else {
+                              options = ['Detail'];
+                            }
+
+                            int danger = options.indexOf('Hapus');
+
+                            DropX.show(ikey, options: options.options(dangers: [danger]), onSelect: (value) {
+                              if (value.option == 'Edit') {
                                 context.push(Paths.formManagementTataKelola, extra: item).then((value) {
                                   if (value != null) {
                                     value as Map<String, dynamic>;
                                     notifier.updateData(Kegiatan.fromJson(value));
                                   }
                                 });
-                              } else if (value.index == 1) {
+                              } else if (value.option == 'Detail') {
                                 logg('halo');
-                              } else if (value.index == 2) {
+                              } else if (value.option == 'Hapus') {
                                 LzConfirm(
                                   title: 'Hapus Data',
                                   message: 'Apakah anda yakin ingin menghapus data kegiatan ini?',
@@ -100,7 +121,12 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
                           ),
                         );
                       }),
-                    )
+                    ),
+
+                    // pagination loading
+                    activityUserProvider(id).watch((state) {
+                      return state.isPaginating ? LzLoader.bar() : const SizedBox();
+                    })
                   ],
                 ));
           },

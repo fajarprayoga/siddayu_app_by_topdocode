@@ -1,8 +1,9 @@
 part of api;
 
 class KegiatanApi extends Fetchly {
-  Future<ResHandler> getKegiatanByUser(String userId) async => await get('activities?user_id=$userId');
-  Future<ResHandler> getKegiatan() async => await get('activities');
+  Future<ResHandler> getKegiatanByUser(String userId, int page) async =>
+      await get('activities?user_id=$userId&page=$page');
+  Future<ResHandler> getKegiatan(int page) async => await get('activities?page=$page');
   Future<ResHandler> addKegiatan(Map<String, dynamic> data) async => await post('activities', data);
 
   Future<ResHandler> uploadDoc(Map<String, dynamic> data) async =>
