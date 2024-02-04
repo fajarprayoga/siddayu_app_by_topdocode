@@ -16,8 +16,7 @@ import '../widgets/amprahan_widget.dart';
 class FormKegiatanScreen extends ConsumerWidget {
   final Kegiatan kegiatan;
   final User user;
-  const FormKegiatanScreen(
-      {super.key, required this.kegiatan, required this.user});
+  const FormKegiatanScreen({super.key, required this.kegiatan, required this.user});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,7 +29,6 @@ class FormKegiatanScreen extends ConsumerWidget {
 
     final roleName = userRole?.code;
     bool isST = roleName == 'ST';
-    bool isSKU = roleName == 'SKU';
 
     return Wrapper(
       child: Scaffold(
@@ -59,8 +57,7 @@ class FormKegiatanScreen extends ConsumerWidget {
                       }),
 
                   // list of file sk
-                  provider.watch((value) => FkFileContent('sk',
-                      files: value.fileSK, provider: provider)),
+                  provider.watch((value) => FkFileContent('sk', files: value.fileSK, provider: provider)),
 
                   // section berita acara
                   FKSection(
@@ -72,8 +69,8 @@ class FormKegiatanScreen extends ConsumerWidget {
                       }),
 
                   // list of file berita acara
-                  provider.watch((value) => FkFileContent('operational_report',
-                      files: value.fileBeritaAcara, provider: provider)),
+                  provider.watch(
+                      (value) => FkFileContent('operational_report', files: value.fileBeritaAcara, provider: provider)),
 
                   // section option
                   FKSection(
@@ -85,8 +82,7 @@ class FormKegiatanScreen extends ConsumerWidget {
                       }),
 
                   // list of file option
-                  provider.watch((value) => FkFileContent('other',
-                      files: value.fileOption, provider: provider)),
+                  provider.watch((value) => FkFileContent('other', files: value.fileOption, provider: provider)),
 
                   // button submit
                   // PrimaryButton('Simpan / Approve', onTap: () => notifier.onSubmit()).margin(t: 35),
@@ -98,8 +94,7 @@ class FormKegiatanScreen extends ConsumerWidget {
             ListAmprahanWidget(provider, kegiatan),
 
             // button tambah no amprahan
-            Textr('Tambah No Amprahan', icon: Icons.add, style: Gfont.bold)
-                .onTap(() {
+            Textr('Tambah No Amprahan', icon: Icons.add, style: Gfont.bold).onTap(() {
               notifier.addAmprahan();
             }),
           ],
@@ -112,8 +107,7 @@ class FormKegiatanScreen extends ConsumerWidget {
 class FKSection extends StatelessWidget {
   final String title, textButton;
   final Function()? onTap;
-  const FKSection(
-      {super.key, required this.title, required this.textButton, this.onTap});
+  const FKSection({super.key, required this.title, required this.textButton, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -143,13 +137,8 @@ class FkFileContent extends ConsumerWidget {
   final String label;
   final List<File> files;
   final Function(int index)? onRemove;
-  final AutoDisposeStateNotifierProvider<FormKegiatanNotifier,
-      FormKegiatanState> provider;
-  const FkFileContent(this.label,
-      {super.key,
-      this.files = const [],
-      this.onRemove,
-      required this.provider});
+  final AutoDisposeStateNotifierProvider<FormKegiatanNotifier, FormKegiatanState> provider;
+  const FkFileContent(this.label, {super.key, this.files = const [], this.onRemove, required this.provider});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -158,8 +147,7 @@ class FkFileContent extends ConsumerWidget {
     if (files.isEmpty) {
       return Container(
         margin: Ei.only(b: 35),
-        decoration: BoxDecoration(
-            border: Br.all(color: Colors.black38), borderRadius: Br.radius(8)),
+        decoration: BoxDecoration(border: Br.all(color: Colors.black38), borderRadius: Br.radius(8)),
         padding: Ei.sym(v: 7, h: 10),
         width: context.width,
         child: Text('Tidak ada file', style: Gfont.muted),
@@ -168,8 +156,7 @@ class FkFileContent extends ConsumerWidget {
 
     return Container(
       margin: Ei.only(b: 35),
-      decoration: BoxDecoration(
-          border: Br.all(color: Colors.black54), borderRadius: Br.radius(8)),
+      decoration: BoxDecoration(border: Br.all(color: Colors.black54), borderRadius: Br.radius(8)),
       child: Column(
         children: files.generate((file, i) {
           String name = file.path.split('/').last;
@@ -200,9 +187,7 @@ class FkFileContent extends ConsumerWidget {
                       title: 'Hapus File',
                       message: 'Apakah Anda yakin ingin menghapus file ini?',
                       onConfirm: () {
-                        onRemove != null
-                            ? onRemove!.call(i)
-                            : notifier.removeFile(label, i);
+                        onRemove != null ? onRemove!.call(i) : notifier.removeFile(label, i);
                       },
                     ).show(context);
                   })
@@ -221,9 +206,7 @@ _showFullModal(context, String path) {
     context: context,
     barrierDismissible: false, // should dialog be dismissed when tapped outside
     barrierLabel: "Modal", // label for barrier
-    transitionDuration: const Duration(
-        milliseconds:
-            500), // how long it takes to popup dialog after button click
+    transitionDuration: const Duration(milliseconds: 500), // how long it takes to popup dialog after button click
     pageBuilder: (_, __, ___) {
       // your widget implementation
       return Scaffold(
@@ -240,8 +223,7 @@ _showFullModal(context, String path) {
                 }),
             title: const Text(
               "Document Pdf",
-              style: TextStyle(
-                  color: Colors.black87, fontFamily: 'Overpass', fontSize: 20),
+              style: TextStyle(color: Colors.black87, fontFamily: 'Overpass', fontSize: 20),
             ),
             elevation: 0.0),
         backgroundColor: Colors.white,

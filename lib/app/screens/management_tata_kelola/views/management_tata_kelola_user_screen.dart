@@ -5,7 +5,6 @@ import 'package:lazyui/lazyui.dart';
 import 'package:todo_app/app/core/extensions/riverpod_extension.dart';
 import 'package:todo_app/app/data/models/kegiatan/kegiatan.dart';
 import 'package:todo_app/app/data/models/user/user.dart';
-import 'package:todo_app/app/data/service/local/auth.dart';
 import 'package:todo_app/app/providers/activity/activity_user_provider.dart';
 import 'package:todo_app/app/routes/paths.dart';
 import 'package:todo_app/app/widgets/custom_appbar.dart';
@@ -28,23 +27,19 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const CustomAppbar(
-            title: 'Management Tata Kelola', subtitle: 'Kegiatan'),
+        title: const CustomAppbar(title: 'Management Tata Kelola', subtitle: 'Kegiatan'),
       ),
       body: activities.when(
           data: (activities) {
             if (activities.isEmpty) {
-              return LzNoData(
-                  message: 'Tidak ada data',
-                  onTap: () => notifier.getKegiatan());
+              return LzNoData(message: 'Tidak ada data', onTap: () => notifier.getKegiatan());
             }
 
             return Refreshtor(
                 onRefresh: () async => notifier.getKegiatan(),
                 child: LzListView(
                   onScroll: (scroller) {
-                    if ((scroller.position.pixels + 100) >=
-                        scroller.position.maxScrollExtent) {
+                    if ((scroller.position.pixels + 100) >= scroller.position.maxScrollExtent) {
                       if (notifier.isPaginate || notifier.isAllReaches) return;
                       notifier.onGetMore();
                     }
@@ -76,18 +71,12 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
                             List<String> options = ['Edit', 'Detail', 'Hapus'];
                             int danger = options.indexOf('Hapus');
 
-                            DropX.show(ikey,
-                                options: options.options(dangers: [danger]),
-                                onSelect: (value) {
+                            DropX.show(ikey, options: options.options(dangers: [danger]), onSelect: (value) {
                               if (value.option == 'Edit') {
-                                context
-                                    .push(Paths.formManagementTataKelola,
-                                        extra: item)
-                                    .then((value) {
+                                context.push(Paths.formManagementTataKelola, extra: item).then((value) {
                                   if (value != null) {
                                     value as Map<String, dynamic>;
-                                    notifier
-                                        .updateData(Kegiatan.fromJson(value));
+                                    notifier.updateData(Kegiatan.fromJson(value));
                                   }
                                 });
                               } else if (value.option == 'Detail') {
@@ -95,8 +84,7 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
                               } else if (value.option == 'Hapus') {
                                 LzConfirm(
                                   title: 'Hapus Data',
-                                  message:
-                                      'Apakah anda yakin ingin menghapus data kegiatan ini?',
+                                  message: 'Apakah anda yakin ingin menghapus data kegiatan ini?',
                                   onConfirm: () {
                                     notifier.deleteData(item.id!);
                                   },
@@ -127,9 +115,7 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
 
                     // pagination loading
                     activityUserProvider(id).watch((state) {
-                      return state.isPaginating
-                          ? LzLoader.bar()
-                          : const SizedBox();
+                      return state.isPaginating ? LzLoader.bar() : const SizedBox();
                     })
                   ],
                 ));

@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lazyui/lazyui.dart';
 import 'package:todo_app/app/core/extensions/riverpod_extension.dart';
 import 'package:todo_app/app/data/models/kegiatan/kegiatan.dart';
+import 'package:todo_app/app/screens/assets/views/pdf_viewer.dart';
 import 'package:todo_app/app/widgets/custom_appbar.dart';
 
 import '../../../data/models/document.dart';
@@ -33,50 +34,56 @@ class AssetView extends ConsumerWidget {
                 );
               }
 
-              return LzListView(children: [
-                ...notifier.documents.generate((item, i) {
-                  String type = item['type'];
-                  List<Document> documents = item[type] ?? [];
+              return Refreshtor(
+                onRefresh: () async => notifier.getData(),
+                child: LzListView(children: [
+                  ...notifier.documents.generate((item, i) {
+                    String type = item['title'];
+                    List<Document> documents = item['documents'] ?? [];
 
-                  return Column(children: [
-                    Text(type.ucwords, style: Gfont.bold).margin(b: 10),
-                    Wrap(children: [
-                      ...documents.generate((doc, i) {
-                        String url = doc.url ?? '';
-                        String title = doc.title ?? '';
+                    return Column(children: [
+                      Text(type.replaceAll('_', ' ').ucwords, style: Gfont.bold).margin(b: 10),
+                      Wrap(children: [
+                        ...documents.generate((doc, j) {
+                          String url = doc.url ?? '';
+                          String title = doc.title ?? '';
 
-                        bool isPdf = url.isNotEmpty && url.contains('.pdf');
+                          bool isPdf = url.isNotEmpty && url.contains('.pdf');
 
-                        return SizedBox(
-                          width: context.width / 3,
-                          child: InkTouch(
-                            onTap: () {},
-                            border: Br.all(),
-                            radius: Br.radius(5),
-                            padding: Ei.sym(h: 15, v: 25),
-                            color: Colors.white,
-                            child: Column(
-                              children: [
-                                LzImage(
-                                  isPdf ? 'pdf.png' : url,
-                                  width: 50,
-                                  height: 60,
-                                ).margin(b: 10),
-                                Text(
-                                  title,
-                                  style: Gfont.fs14,
-                                  overflow: Tof.ellipsis,
-                                  maxLines: 2,
-                                ),
-                              ],
+                          return SizedBox(
+                            width: (context.width - 40) / 3,
+                            child: InkTouch(
+                              onTap: () {
+                                int index = notifier.pdfs.indexOf(url);
+                                context.bottomSheet(PdfViewer(kegiatan.id!, index: index));
+                              },
+                              border: Br.all(),
+                              radius: Br.radius(5),
+                              padding: Ei.sym(h: 15, v: 25),
+                              color: Colors.white,
+                              margin: Ei.only(l: j == 0 ? 0 : 10),
+                              child: Column(
+                                children: [
+                                  LzImage(
+                                    isPdf ? 'pdf.png' : url,
+                                    width: 50,
+                                    height: 60,
+                                  ).margin(b: 10),
+                                  Text(
+                                    title,
+                                    style: Gfont.fs14,
+                                    overflow: Tof.ellipsis,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      })
-                    ])
-                  ]).start;
-                })
-              ]);
+                          );
+                        })
+                      ])
+                    ]).start.margin(b: 25);
+                  })
+                ]),
+              );
             },
             error: (e, s) => LzNoData(
                   message: '$e, $s',
