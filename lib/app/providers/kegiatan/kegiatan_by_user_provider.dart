@@ -10,12 +10,14 @@ class SubActivity {
   SubActivity({required this.nameController, required this.totalController});
 }
 
-class KegiatanByUserNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>> with Apis {
+class KegiatanByUserNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>>
+    with Apis {
   final String userId;
   final name = TextEditingController();
   final activityDate = TextEditingController();
   final description = TextEditingController();
-  KegiatanByUserNotifier({required this.userId}) : super(const AsyncValue.loading()) {
+  KegiatanByUserNotifier({required this.userId})
+      : super(const AsyncValue.loading()) {
     getKegiatan();
   }
 
@@ -35,7 +37,8 @@ class KegiatanByUserNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>> w
   }
 }
 
-final kegiatanByUserProvider =
-    StateNotifierProvider.autoDispose.family<KegiatanByUserNotifier, AsyncValue<List<Kegiatan>>, String>((ref, userId) {
+final kegiatanByUserProvider = StateNotifierProvider.autoDispose
+    .family<KegiatanByUserNotifier, AsyncValue<List<Kegiatan>>, String>(
+        (ref, userId) {
   return KegiatanByUserNotifier(userId: userId);
 });

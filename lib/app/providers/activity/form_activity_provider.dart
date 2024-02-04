@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lazyui/lazyui.dart';
+import 'package:todo_app/app/core/constants/value.dart';
 import 'package:todo_app/app/data/api/api.dart';
 import 'package:todo_app/app/data/models/kegiatan/kegiatan.dart';
 
@@ -28,7 +29,8 @@ class FormActivityNotifier extends StateNotifier<FormActivityState> with Apis {
 
   void addSubActivity() {
     final data = [...state.subActivities];
-    data.add(SubActivityModel(name: TextEditingController(), total: TextEditingController()));
+    data.add(SubActivityModel(
+        name: TextEditingController(), total: TextEditingController()));
     state = state.copyWith(subActivities: data);
   }
 
@@ -51,7 +53,8 @@ class FormActivityNotifier extends StateNotifier<FormActivityState> with Apis {
 
       for (var e in activities) {
         subActivities.add(SubActivityModel(
-            name: TextEditingController(text: e.name), total: TextEditingController(text: e.totalBudget.toString())));
+            name: TextEditingController(text: e.name),
+            total: TextEditingController(text: e.totalBudget.toString())));
       }
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -88,10 +91,13 @@ class FormActivityNotifier extends StateNotifier<FormActivityState> with Apis {
                 })
             .toList();
 
-        payload['sub_activities'] = subActivities;
+        payload['sub_activities'] =
+            subActivities.map((e) => e.numeric(['total_budget'])).toList();
       }
 
-      LzToast.overlay(activityID == null ? 'Menambahkan kegiatan...' : 'Mengubah kegiatan...');
+      LzToast.overlay(activityID == null
+          ? 'Menambahkan kegiatan...'
+          : 'Mengubah kegiatan...');
 
       if (activityID == null) {
         final res = await kegiatanApi.addKegiatan(payload);
@@ -117,4 +123,5 @@ class FormActivityNotifier extends StateNotifier<FormActivityState> with Apis {
 }
 
 final formActivityProvider =
-    StateNotifierProvider.autoDispose<FormActivityNotifier, FormActivityState>((ref) => FormActivityNotifier());
+    StateNotifierProvider.autoDispose<FormActivityNotifier, FormActivityState>(
+        (ref) => FormActivityNotifier());

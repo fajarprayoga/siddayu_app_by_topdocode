@@ -38,10 +38,12 @@ class Kependudukan extends ConsumerWidget {
                   decoration: BoxDecoration(
                     // Atur warna latar belakang sesuai kebutuhan Anda
                     border: Border.all(
-                      color: Colors.grey, // Atur warna border sesuai kebutuhan Anda
+                      color: Colors
+                          .grey, // Atur warna border sesuai kebutuhan Anda
                       width: 0.8, // Atur lebar border sesuai kebutuhan Anda
                     ),
-                    borderRadius: BorderRadius.circular(8.0), // Atur sudut border sesuai kebutuhan Anda
+                    borderRadius: BorderRadius.circular(
+                        8.0), // Atur sudut border sesuai kebutuhan Anda
                   ),
                   child: Icon(
                     Icons.person,

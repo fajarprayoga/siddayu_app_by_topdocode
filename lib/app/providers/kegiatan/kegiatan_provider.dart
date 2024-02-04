@@ -12,7 +12,8 @@ class SubActivity {
   SubActivity({required this.nameController, required this.totalController});
 }
 
-class KegiatanNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>> with Apis {
+class KegiatanNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>>
+    with Apis {
   KegiatanNotifier() : super(const AsyncValue.loading());
 
   String? authLocal = prefs.getString('auth');
@@ -105,6 +106,7 @@ class KegiatanNotifier extends StateNotifier<AsyncValue<List<Kegiatan>>> with Ap
   }
 }
 
-final kegiatanProvider = StateNotifierProvider<KegiatanNotifier, AsyncValue<List<Kegiatan>>>((ref) {
+final kegiatanProvider =
+    StateNotifierProvider<KegiatanNotifier, AsyncValue<List<Kegiatan>>>((ref) {
   return KegiatanNotifier();
 });

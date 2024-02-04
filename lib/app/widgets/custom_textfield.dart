@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lazyui/lazyui.dart';
 
 class CustomTextfield extends StatelessWidget {
   final String? hint;
   final TextEditingController? controller;
   final TextInputType? keyboard;
-  const CustomTextfield({super.key, this.hint, this.controller, this.keyboard});
+  final List<TextInputFormatter> formatters;
+  const CustomTextfield(
+      {super.key,
+      this.hint,
+      this.controller,
+      this.keyboard,
+      this.formatters = const []});
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +22,7 @@ class CustomTextfield extends StatelessWidget {
         hint: hint,
         controller: controller,
         keyboard: keyboard,
+        formatters: formatters,
         border: Br.all(color: Colors.black38),
       ),
     ).lz.clip(all: 5);
@@ -28,7 +36,13 @@ class CustomTextfield2 extends StatelessWidget {
   final Function()? onTap;
   final IconData? suffixIcon;
   const CustomTextfield2(
-      {super.key, this.label, this.hint, this.controller, this.keyboard, this.onTap, this.suffixIcon});
+      {super.key,
+      this.label,
+      this.hint,
+      this.controller,
+      this.keyboard,
+      this.onTap,
+      this.suffixIcon});
 
   @override
   Widget build(BuildContext context) {

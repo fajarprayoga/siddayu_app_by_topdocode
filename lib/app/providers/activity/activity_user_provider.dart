@@ -17,11 +17,15 @@ class ActivityDataState {
   final AsyncValue<List<Kegiatan>> activities;
   bool isPaginating = false;
 
-  ActivityDataState({this.activities = const AsyncValue.loading(), this.isPaginating = false});
+  ActivityDataState(
+      {this.activities = const AsyncValue.loading(),
+      this.isPaginating = false});
 
-  ActivityDataState copyWith({AsyncValue<List<Kegiatan>>? activities, bool? isPaginating}) {
+  ActivityDataState copyWith(
+      {AsyncValue<List<Kegiatan>>? activities, bool? isPaginating}) {
     return ActivityDataState(
-        activities: activities ?? this.activities, isPaginating: isPaginating ?? this.isPaginating);
+        activities: activities ?? this.activities,
+        isPaginating: isPaginating ?? this.isPaginating);
   }
 }
 
@@ -45,7 +49,9 @@ class ActivityUserNotifier extends StateNotifier<ActivityDataState> with Apis {
       if (res.status) {
         total = res.body?['data']?['meta']?['total'] ?? 0;
         List data = res.data['data'] ?? [];
-        state = state.copyWith(activities: AsyncValue.data(data.map((e) => Kegiatan.fromJson(e)).toList()));
+        state = state.copyWith(
+            activities: AsyncValue.data(
+                data.map((e) => Kegiatan.fromJson(e)).toList()));
         isAllReaches = data.length >= total;
       } else {
         state = state.copyWith(activities: const AsyncValue.data([]));
@@ -70,8 +76,11 @@ class ActivityUserNotifier extends StateNotifier<ActivityDataState> with Apis {
 
       final res = await kegiatanApi.getKegiatanByUser(userId, page);
       List data = res.data['data'];
-      List<Kegiatan> activities = data.map((e) => Kegiatan.fromJson(e)).toList();
-      state = state.copyWith(activities: AsyncValue.data([...(state.activities.value ?? []), ...activities]));
+      List<Kegiatan> activities =
+          data.map((e) => Kegiatan.fromJson(e)).toList();
+      state = state.copyWith(
+          activities: AsyncValue.data(
+              [...(state.activities.value ?? []), ...activities]));
     } catch (e, s) {
       Errors.check(e, s);
     } finally {
@@ -84,7 +93,8 @@ class ActivityUserNotifier extends StateNotifier<ActivityDataState> with Apis {
   void addData(Kegiatan data) {
     try {
       final currentState = state.activities.value ?? [];
-      state = state.copyWith(activities: AsyncValue.data([data, ...currentState]));
+      state =
+          state.copyWith(activities: AsyncValue.data([data, ...currentState]));
     } catch (e, s) {
       Errors.check(e, s);
     }
@@ -125,7 +135,7 @@ class ActivityUserNotifier extends StateNotifier<ActivityDataState> with Apis {
   }
 }
 
-final activityUserProvider =
-    StateNotifierProvider.autoDispose.family<ActivityUserNotifier, ActivityDataState, String>((ref, userId) {
+final activityUserProvider = StateNotifierProvider.autoDispose
+    .family<ActivityUserNotifier, ActivityDataState, String>((ref, userId) {
   return ActivityUserNotifier(userId: userId);
 });

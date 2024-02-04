@@ -15,10 +15,16 @@ class FormKegiatanState {
   final List<Amprahan> amprahans;
 
   FormKegiatanState(
-      {this.fileSK = const [], this.fileBeritaAcara = const [], this.fileOption = const [], this.amprahans = const []});
+      {this.fileSK = const [],
+      this.fileBeritaAcara = const [],
+      this.fileOption = const [],
+      this.amprahans = const []});
 
   FormKegiatanState copyWith(
-      {List<File>? fileSK, List<File>? fileBeritaAcara, List<File>? fileOption, List<Amprahan>? amprahans}) {
+      {List<File>? fileSK,
+      List<File>? fileBeritaAcara,
+      List<File>? fileOption,
+      List<Amprahan>? amprahans}) {
     return FormKegiatanState(
         fileSK: fileSK ?? this.fileSK,
         fileBeritaAcara: fileBeritaAcara ?? this.fileBeritaAcara,
@@ -51,10 +57,13 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
       tempFiles['sk'] = sk; // untuk menghapus file dengan id
 
       // get and set file berita acara
-      final operationalReport = documents.where((e) => e['type'] == 'operational_report').toList();
-      List<File> fileBeritaAcara = operationalReport.map((e) => File(e['url'])).toList();
+      final operationalReport =
+          documents.where((e) => e['type'] == 'operational_report').toList();
+      List<File> fileBeritaAcara =
+          operationalReport.map((e) => File(e['url'])).toList();
       state = state.copyWith(fileBeritaAcara: fileBeritaAcara);
-      tempFiles['operational_report'] = operationalReport; // untuk menghapus file dengan id
+      tempFiles['operational_report'] =
+          operationalReport; // untuk menghapus file dengan id
 
       // get and set file option
       final other = documents.where((e) => e['type'] == 'other').toList();
@@ -78,12 +87,17 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
         List documents = e['documents'] ?? [];
 
         // get data dokumentasi Kegiatan
-        final activityDocumentation = documents.where((e) => e['type'] == 'activity_documentation').toList();
-        List<File> fileDokumentasiKegiatan = activityDocumentation.map((e) => File(e['url'])).toList();
+        final activityDocumentation = documents
+            .where((e) => e['type'] == 'activity_documentation')
+            .toList();
+        List<File> fileDokumentasiKegiatan =
+            activityDocumentation.map((e) => File(e['url'])).toList();
 
         // get data dokumentasi pajak
-        final taxDocumentation = documents.where((e) => e['type'] == 'tax_documentation').toList();
-        List<File> fileDokumentasiPajak = taxDocumentation.map((e) => File(e['url'])).toList();
+        final taxDocumentation =
+            documents.where((e) => e['type'] == 'tax_documentation').toList();
+        List<File> fileDokumentasiPajak =
+            taxDocumentation.map((e) => File(e['url'])).toList();
 
         amprahans.add(Amprahan(
           id: e['id'].toString(),
@@ -106,7 +120,11 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
     }
   }
 
-  Map<String, List> tempFiles = {'sk': [], 'operational_report': [], 'other': []};
+  Map<String, List> tempFiles = {
+    'sk': [],
+    'operational_report': [],
+    'other': []
+  };
 
   Future<bool> uploadFiles(String type, List<File> files) async {
     try {
@@ -324,10 +342,13 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
       // get amprahan by index
       final amprahan = state.amprahans[index];
 
-      LzToast.overlay(amprahan.id == null ? 'Menambahkan data amprahan...' : 'Mengubah data amprahan...');
+      LzToast.overlay(amprahan.id == null
+          ? 'Menambahkan data amprahan...'
+          : 'Mengubah data amprahan...');
 
       // get activity doc files
-      final activityFiles = await fileToMultipart(amprahan.fileDokumentasiKegiatan);
+      final activityFiles =
+          await fileToMultipart(amprahan.fileDokumentasiKegiatan);
       final taxFiles = await fileToMultipart(amprahan.fileDokumentasiPajak);
 
       // make payload
@@ -370,7 +391,7 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
   }
 }
 
-final formKegiatanProvider =
-    StateNotifierProvider.autoDispose.family<FormKegiatanNotifier, FormKegiatanState, Kegiatan>((ref, kegiatan) {
+final formKegiatanProvider = StateNotifierProvider.autoDispose
+    .family<FormKegiatanNotifier, FormKegiatanState, Kegiatan>((ref, kegiatan) {
   return FormKegiatanNotifier(kegiatan);
 });

@@ -22,13 +22,18 @@ class HomePage extends ConsumerWidget {
       drawer: Drawer(
         backgroundColor: Colors.white,
         shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(topRight: Radius.circular(15), bottomRight: Radius.circular(0))),
+            borderRadius: BorderRadius.only(
+                topRight: Radius.circular(15),
+                bottomRight: Radius.circular(0))),
         child: Container(
           decoration: const BoxDecoration(
-              gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [
-            Color.fromRGBO(235, 244, 245, 1),
-            Color.fromRGBO(254, 253, 253, 1),
-          ])),
+              gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                Color.fromRGBO(235, 244, 245, 1),
+                Color.fromRGBO(254, 253, 253, 1),
+              ])),
           child: ListView(
             padding: EdgeInsets.zero,
             physics: BounceScroll(),
@@ -82,7 +87,8 @@ class HomePage extends ConsumerWidget {
                       // logout
                       LzConfirm(
                         title: 'Logout',
-                        message: 'Apakah Anda yakin ingin keluar dari aplikasi ini?',
+                        message:
+                            'Apakah Anda yakin ingin keluar dari aplikasi ini?',
                         onConfirm: () {
                           notifier.logout();
 

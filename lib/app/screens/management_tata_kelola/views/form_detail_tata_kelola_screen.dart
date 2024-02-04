@@ -15,7 +15,8 @@ class FormDetailTataKelola extends ConsumerStatefulWidget {
   }) : super(key: key);
 
   @override
-  ConsumerState<FormDetailTataKelola> createState() => _FormDetailTataKelolaState();
+  ConsumerState<FormDetailTataKelola> createState() =>
+      _FormDetailTataKelolaState();
 }
 
 class _FormDetailTataKelolaState extends ConsumerState<FormDetailTataKelola> {
@@ -24,8 +25,10 @@ class _FormDetailTataKelolaState extends ConsumerState<FormDetailTataKelola> {
 
   @override
   Widget build(BuildContext context) {
-    final activityProvider = ref.watch(activityDetailProvider(widget.kegiatan.id));
-    final notifier = ref.read(activityDetailProvider(widget.kegiatan.id).notifier);
+    final activityProvider =
+        ref.watch(activityDetailProvider(widget.kegiatan.id));
+    final notifier =
+        ref.read(activityDetailProvider(widget.kegiatan.id).notifier);
 
     return SafeArea(
       child: Scaffold(
@@ -64,7 +67,8 @@ class _FormDetailTataKelolaState extends ConsumerState<FormDetailTataKelola> {
                             // context.push(Paths.formPertanggungJawaban);
                             // context.push(Paths.formPertanggungJawaban, extra: widget.kegiatan);
 
-                            context.push(Paths.formKegiatan, extra: widget.kegiatan);
+                            context.push(Paths.formKegiatan,
+                                extra: widget.kegiatan);
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -98,7 +102,8 @@ class _FormDetailTataKelolaState extends ConsumerState<FormDetailTataKelola> {
                       ),
 
                       Column(
-                        children: List.generate(notifier.subActivities.length, (i) {
+                        children:
+                            List.generate(notifier.subActivities.length, (i) {
                           return subKegiatan(notifier.subActivities[i]);
                         }),
                       ),
@@ -135,7 +140,9 @@ class _FormDetailTataKelolaState extends ConsumerState<FormDetailTataKelola> {
                         },
                         icon: const Icon(Icons.add),
                         label: const Text('Tambah Sub Kegiatan'),
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black),
                       ),
                       const SizedBox(
                         height: gap + 10,
@@ -143,7 +150,8 @@ class _FormDetailTataKelolaState extends ConsumerState<FormDetailTataKelola> {
                       InkWell(
                         onTap: () async {
                           // await notifier.(widget.kegiatan.id);
-                          final result = await notifier.updateActivity(widget.kegiatan.id);
+                          final result =
+                              await notifier.updateActivity(widget.kegiatan.id);
 
                           if (result != null && context.mounted) {
                             context.pop(result);
@@ -336,8 +344,10 @@ class FormFieldCustom extends StatelessWidget {
     if (picked != null && picked != DateTime.now()) {
       // Handle the selected date value
       DateTime localPicked = picked.toLocal(); // Convert to local time
-      String formattedDate = localPicked.toString().split(' ')[0]; // Get only the date part
-      controller?.text = formattedDate; // Update the text field with the formatted date
+      String formattedDate =
+          localPicked.toString().split(' ')[0]; // Get only the date part
+      controller?.text =
+          formattedDate; // Update the text field with the formatted date
     }
   }
 
@@ -377,7 +387,8 @@ class FormFieldCustom extends StatelessWidget {
                 ),
                 filled: true,
                 fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: padding),
+                contentPadding: const EdgeInsets.symmetric(
+                    vertical: 15.0, horizontal: padding),
                 prefixIcon: icon != null ? Icon(icon) : null,
               ),
               maxLines: null,

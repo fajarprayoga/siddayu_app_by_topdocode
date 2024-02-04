@@ -3,7 +3,8 @@ class Paths {
   static const String login = '/login';
   static const String formTodo = '/form-todo';
   static const String managementTataKelola = '/management-tata-kelola';
-  static const String managementTataKelolaDetail = '/management-tata-kelola-detail';
+  static const String managementTataKelolaDetail =
+      '/management-tata-kelola-detail';
   // static String managementTataKelolaDetail(String? id) {
   //   if (id != null && id.isNotEmpty) {
   //     return '/management-tata-kelola-detail/:$id';
@@ -18,4 +19,5 @@ class Paths {
   // management tata kelola
   static const String formKegiatan = '/form-kegiatan';
   static const String allActivities = '/all-activities';
+  static const String asset = '/asset';
 }

@@ -31,10 +31,12 @@ class AllActivitiesScreen extends ConsumerWidget {
             data: ThemeData.light().copyWith(
               primaryColor: primary,
               colorScheme: const ColorScheme.light(primary: primary),
-              buttonTheme: const ButtonThemeData(textTheme: ButtonTextTheme.primary),
+              buttonTheme:
+                  const ButtonThemeData(textTheme: ButtonTextTheme.primary),
               textButtonTheme: TextButtonThemeData(
                   style: TextButton.styleFrom(
-                      foregroundColor: Colors.white, textStyle: Gfont.bold.copyWith(letterSpacing: 2))),
+                      foregroundColor: Colors.white,
+                      textStyle: Gfont.bold.copyWith(letterSpacing: 2))),
             ),
             child: child ?? const SizedBox(),
           );
@@ -58,7 +60,8 @@ class AllActivitiesScreen extends ConsumerWidget {
           notifier.doSearch();
         },
         onScroll: (scroller) {
-          if ((scroller.position.pixels + 100) >= scroller.position.maxScrollExtent) {
+          if ((scroller.position.pixels + 100) >=
+              scroller.position.maxScrollExtent) {
             notifier.onGetMore();
           }
         },
@@ -90,7 +93,9 @@ class AllActivitiesScreen extends ConsumerWidget {
             margin: Ei.only(b: 25),
             child: allActivityProvider.watch((state) {
               return Textr(
-                state.date == null ? 'Silakan pilih tanggal kegiatan.' : notifier.getDate,
+                state.date == null
+                    ? 'Silakan pilih tanggal kegiatan.'
+                    : notifier.getDate,
                 style: Gfont.muted,
                 icon: Ti.calendarEvent,
               );
@@ -103,32 +108,28 @@ class AllActivitiesScreen extends ConsumerWidget {
 
                 return InkTouch(
                   onTap: () async {
-                    final auth = await Auth.user();
-                    bool isOwned = auth.id == item.createdBy;
-                    List<String> options = [];
-
-                    if (isOwned) {
-                      options = ['Edit', 'Detail', 'Hapus'];
-                    } else {
-                      options = ['Detail'];
-                    }
-
+                    List<String> options = ['Edit', 'Detail', 'Hapus'];
                     int danger = options.indexOf('Hapus');
 
-                    DropX.show(ikey, options: options.options(dangers: [danger]), onSelect: (value) {
+                    DropX.show(ikey,
+                        options: options.options(dangers: [danger]),
+                        onSelect: (value) {
                       if (value.index == 0) {
-                        context.push(Paths.formManagementTataKelola, extra: item).then((value) {
+                        context
+                            .push(Paths.formManagementTataKelola, extra: item)
+                            .then((value) {
                           if (value != null) {
                             value as Map<String, dynamic>;
                             notifier.updateData(Kegiatan.fromJson(value));
                           }
                         });
                       } else if (value.index == 1) {
-                        logg('halo');
+                        context.push(Paths.asset, extra: item);
                       } else if (value.index == 2) {
                         LzConfirm(
                           title: 'Hapus Data',
-                          message: 'Apakah anda yakin ingin menghapus data kegiatan ini?',
+                          message:
+                              'Apakah anda yakin ingin menghapus data kegiatan ini?',
                           onConfirm: () {
                             notifier.deleteData(item.id!);
                           },

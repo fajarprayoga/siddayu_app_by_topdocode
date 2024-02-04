@@ -10,9 +10,11 @@ class ActivityState {
   final List<Kegiatan> activities;
   bool isPaginating = false;
 
-  ActivityState({this.date, this.activities = const [], this.isPaginating = false});
+  ActivityState(
+      {this.date, this.activities = const [], this.isPaginating = false});
 
-  ActivityState copyWith({DateTimeRange? date, List<Kegiatan>? activities, bool? isPaginating}) {
+  ActivityState copyWith(
+      {DateTimeRange? date, List<Kegiatan>? activities, bool? isPaginating}) {
     return ActivityState(
         date: date ?? this.date,
         activities: activities ?? this.activities,
@@ -33,7 +35,8 @@ class ActivityNotifier extends StateNotifier<ActivityState> with Apis {
     }
   }
 
-  DateTimeRange get dateRange => state.date ?? DateTimeRange(start: DateTime.now(), end: DateTime.now());
+  DateTimeRange get dateRange =>
+      state.date ?? DateTimeRange(start: DateTime.now(), end: DateTime.now());
 
   void setDate(DateTimeRange? date) {
     state = state.copyWith(date: date);
@@ -50,10 +53,14 @@ class ActivityNotifier extends StateNotifier<ActivityState> with Apis {
 
       LzToast.overlay('Mencari kegiatan...');
 
-      final dates = ['${state.date?.start.format('yyyy')}', '${state.date?.end.format('yyyy')}'];
+      final dates = [
+        '${state.date?.start.format('yyyy')}',
+        '${state.date?.end.format('yyyy')}'
+      ];
       final res = await kegiatanApi.searchActivity(keyword.text, dates, page);
       List data = res.data['data'];
-      state = state.copyWith(activities: data.map((e) => Kegiatan.fromJson(e)).toList());
+      state = state.copyWith(
+          activities: data.map((e) => Kegiatan.fromJson(e)).toList());
       total = res.data?['meta']?['total'] ?? 0;
     } catch (e, s) {
       Errors.check(e, s);
@@ -70,10 +77,16 @@ class ActivityNotifier extends StateNotifier<ActivityState> with Apis {
       state = state.copyWith(isPaginating: true);
 
       page++;
-      final dates = ['${state.date?.start.format('yyyy')}', '${state.date?.end.format('yyyy')}'];
+      final dates = [
+        '${state.date?.start.format('yyyy')}',
+        '${state.date?.end.format('yyyy')}'
+      ];
       final res = await kegiatanApi.searchActivity(keyword.text, dates, page);
       List data = res.data['data'];
-      state = state.copyWith(activities: [...state.activities, ...data.map((e) => Kegiatan.fromJson(e)).toList()]);
+      state = state.copyWith(activities: [
+        ...state.activities,
+        ...data.map((e) => Kegiatan.fromJson(e)).toList()
+      ]);
     } catch (e, s) {
       Errors.check(e, s);
     } finally {
@@ -116,6 +129,7 @@ class ActivityNotifier extends StateNotifier<ActivityState> with Apis {
   }
 }
 
-final allActivityProvider = StateNotifierProvider.autoDispose<ActivityNotifier, ActivityState>((ref) {
+final allActivityProvider =
+    StateNotifierProvider.autoDispose<ActivityNotifier, ActivityState>((ref) {
   return ActivityNotifier();
 });

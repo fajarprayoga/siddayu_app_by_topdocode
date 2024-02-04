@@ -10,9 +10,15 @@ class ActivityState {
   bool isUpdating = false;
   bool isPaginate = false;
 
-  ActivityState({this.activities = const AsyncValue.loading(), this.isUpdating = false, this.isPaginate = false});
+  ActivityState(
+      {this.activities = const AsyncValue.loading(),
+      this.isUpdating = false,
+      this.isPaginate = false});
 
-  ActivityState copyWith({AsyncValue<List<Kegiatan>>? activities, bool? isUpdating, bool? isPaginate}) {
+  ActivityState copyWith(
+      {AsyncValue<List<Kegiatan>>? activities,
+      bool? isUpdating,
+      bool? isPaginate}) {
     return ActivityState(
         activities: activities ?? this.activities,
         isUpdating: isUpdating ?? this.isUpdating,
@@ -39,7 +45,9 @@ class ActivityNotifier extends StateNotifier<ActivityState> with Apis {
       if (res.status) {
         total = res.body?['data']?['meta']?['total'] ?? 0;
         List data = res.data['data'] ?? [];
-        state = state.copyWith(activities: AsyncValue.data(data.map((e) => Kegiatan.fromJson(e)).toList()));
+        state = state.copyWith(
+            activities: AsyncValue.data(
+                data.map((e) => Kegiatan.fromJson(e)).toList()));
         isAllReaches = data.length >= total;
       }
     } catch (e, s) {
@@ -64,8 +72,10 @@ class ActivityNotifier extends StateNotifier<ActivityState> with Apis {
       if (res.status) {
         List data = res.data['data'] ?? [];
         state = state.copyWith(
-            activities:
-                AsyncValue.data([...state.activities.value ?? [], ...data.map((e) => Kegiatan.fromJson(e)).toList()]));
+            activities: AsyncValue.data([
+          ...state.activities.value ?? [],
+          ...data.map((e) => Kegiatan.fromJson(e)).toList()
+        ]));
       }
     } catch (e, s) {
       Errors.check(e, s);
@@ -82,7 +92,9 @@ class ActivityNotifier extends StateNotifier<ActivityState> with Apis {
       final res = await kegiatanApi.getKegiatan(page);
       if (res.status) {
         List data = res.data['data'] ?? [];
-        state = state.copyWith(activities: AsyncValue.data(data.map((e) => Kegiatan.fromJson(e)).toList()));
+        state = state.copyWith(
+            activities: AsyncValue.data(
+                data.map((e) => Kegiatan.fromJson(e)).toList()));
       }
     } catch (e, s) {
       Errors.check(e, s);
@@ -93,6 +105,7 @@ class ActivityNotifier extends StateNotifier<ActivityState> with Apis {
   }
 }
 
-final activityProvider = StateNotifierProvider<ActivityNotifier, ActivityState>((ref) {
+final activityProvider =
+    StateNotifierProvider<ActivityNotifier, ActivityState>((ref) {
   return ActivityNotifier();
 });

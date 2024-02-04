@@ -27,8 +27,10 @@ class ManagementTataKelola extends ConsumerWidget {
           },
           child: LzListView(
             onScroll: (scroller) {
-              if ((scroller.position.pixels + 100) >= scroller.position.maxScrollExtent) {
-                if (activityNotifier.isPaginate || activityNotifier.isAllReaches) return;
+              if ((scroller.position.pixels + 100) >=
+                  scroller.position.maxScrollExtent) {
+                if (activityNotifier.isPaginate ||
+                    activityNotifier.isAllReaches) return;
                 activityNotifier.onGetMore();
               }
             },
@@ -37,7 +39,8 @@ class ManagementTataKelola extends ConsumerWidget {
               userProviderData.when(
                   data: (users) => StaffBoxWidget(users),
                   error: (e, s) => Center(child: Text('Error: $e $s')),
-                  loading: () => StaffBoxWidget(const [], loadingMode: LoadingMode(6))),
+                  loading: () =>
+                      StaffBoxWidget(const [], loadingMode: LoadingMode(6))),
 
               // list of activities
               activityProvider.watch((state) {
@@ -48,7 +51,9 @@ class ManagementTataKelola extends ConsumerWidget {
                       return Container(
                         margin: Ei.only(t: 15),
                         decoration: BoxDecoration(
-                            color: Colors.white, border: Br.all(color: Colors.black38), borderRadius: Br.radius(8)),
+                            color: Colors.white,
+                            border: Br.all(color: Colors.black38),
+                            borderRadius: Br.radius(8)),
                         child: Column(children: [
                           Row(
                             mainAxisAlignment: Maa.spaceBetween,
@@ -59,13 +64,20 @@ class ManagementTataKelola extends ConsumerWidget {
                                     'Progress Kegiatan',
                                     style: Gfont.bold,
                                   ),
-                                  if (isUpdating) Text('Updating...', style: Gfont.fs14).lz.blink()
+                                  if (isUpdating)
+                                    Text('Updating...', style: Gfont.fs14)
+                                        .lz
+                                        .blink()
                                 ],
                               ).start,
                               InkTouch(
                                 onTap: () {
-                                  context.push(Paths.allActivities).then((value) {
-                                    ref.read(activityProvider.notifier).updateActivityProgress();
+                                  context
+                                      .push(Paths.allActivities)
+                                      .then((value) {
+                                    ref
+                                        .read(activityProvider.notifier)
+                                        .updateActivityProgress();
                                   });
                                 },
                                 padding: Ei.sym(v: 10, h: 20),
@@ -115,7 +127,9 @@ class ActivityProgress extends ConsumerWidget {
       decoration: BoxDecoration(border: Br.only(['t'], except: index == 0)),
       child: InkWell(
         onTap: () {
-          context.push(Paths.formManagementTataKelola, extra: data).then((value) {
+          context
+              .push(Paths.formManagementTataKelola, extra: data)
+              .then((value) {
             ref.read(activityProvider.notifier).updateActivityProgress();
           });
         },
@@ -128,13 +142,17 @@ class ActivityProgress extends ConsumerWidget {
               children: [
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(color: Colors.amber[100], borderRadius: BorderRadius.circular(10)),
+                  decoration: BoxDecoration(
+                      color: Colors.amber[100],
+                      borderRadius: BorderRadius.circular(10)),
                   height: 21,
                 ),
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 800),
                   width: progress,
-                  decoration: BoxDecoration(color: Colors.amber, borderRadius: BorderRadius.circular(10)),
+                  decoration: BoxDecoration(
+                      color: Colors.amber,
+                      borderRadius: BorderRadius.circular(10)),
                   height: 20,
                 )
               ],
@@ -165,7 +183,10 @@ class StaffBoxWidget extends ConsumerWidget {
         runSpacing: 10,
         alignment: WrapAlignment.start,
         crossAxisAlignment: WrapCrossAlignment.center,
-        children: (isLoadingMode ? loadingMode!.length.generate((item) => User()) : users).generate((item, i) {
+        children: (isLoadingMode
+                ? loadingMode!.length.generate((item) => User())
+                : users)
+            .generate((item, i) {
           String name = item.name ?? '-';
           double width = (context.width / 2) - 25;
 
@@ -178,7 +199,9 @@ class StaffBoxWidget extends ConsumerWidget {
 
           return InkTouch(
             onTap: () {
-              context.push(Paths.managementTataKelolaDetail, extra: item).then((value) {
+              context
+                  .push(Paths.managementTataKelolaDetail, extra: item)
+                  .then((value) {
                 ref.read(activityProvider.notifier).updateActivityProgress();
               });
             },
@@ -190,7 +213,9 @@ class StaffBoxWidget extends ConsumerWidget {
               child: Row(
                 mainAxisSize: Mas.min,
                 children: [
-                  LzImage(item.profilePicture ?? 'user.jpeg', size: 50, radius: 100).margin(r: 10),
+                  LzImage(item.profilePicture ?? 'user.jpeg',
+                          size: 50, radius: 100)
+                      .margin(r: 10),
                   Text(name.ucwords).lz.flexible()
                 ],
               ),

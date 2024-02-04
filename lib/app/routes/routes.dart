@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:todo_app/app/data/models/kegiatan/kegiatan.dart';
 import 'package:todo_app/app/data/models/user/user.dart';
 import 'package:todo_app/app/data/service/local/storage.dart';
+import 'package:todo_app/app/screens/assets/views/asset_view.dart';
 import 'package:todo_app/app/screens/home/views/home_page.dart';
 import 'package:todo_app/app/screens/login/login_view.dart';
 import 'package:todo_app/app/screens/management_tata_kelola/views/all_activities_screen.dart';
@@ -15,11 +16,14 @@ import 'paths.dart';
 
 final GoRouter router = GoRouter(
   routes: <RouteBase>[
-    Route.set(Paths.home, (state) => const HomePage(), redirect: (_) => _redirect()),
+    Route.set(Paths.home, (state) => const HomePage(),
+        redirect: (_) => _redirect()),
     Route.set(Paths.login, (state) => const LoginView()),
     Route.set(Paths.formTodo, (state) => const ManagementTataKelola()),
-    Route.set(Paths.managementTataKelolaDetail, (state) => ManagementTataKelolaDetail(data: state.extra as User)),
-    Route.set(Paths.formManagementTataKelola, (state) => FormTataKelola(data: state.extra as Kegiatan?)),
+    Route.set(Paths.managementTataKelolaDetail,
+        (state) => ManagementTataKelolaDetail(data: state.extra as User)),
+    Route.set(Paths.formManagementTataKelola,
+        (state) => FormTataKelola(data: state.extra as Kegiatan?)),
 
     // GoRoute(
     //     path: Paths.formPertanggungJawaban,
@@ -38,6 +42,11 @@ final GoRouter router = GoRouter(
     }),
 
     Route.set(Paths.allActivities, (state) => const AllActivitiesScreen()),
+    Route.set(
+        Paths.asset,
+        (state) => AssetView(
+              kegiatan: state.extra as Kegiatan,
+            )),
   ],
 );
 

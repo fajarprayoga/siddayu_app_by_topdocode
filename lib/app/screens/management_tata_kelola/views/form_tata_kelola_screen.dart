@@ -35,7 +35,8 @@ class FormTataKelola extends ConsumerWidget {
         Target(
             key: ikey,
             title: 'Pertanggung Jawaban',
-            description: 'Klik icon ini untuk melihat atau menambahkan pertanggung jawaban.')
+            description:
+                'Klik icon ini untuk melihat atau menambahkan pertanggung jawaban.')
       ],
       showOnInit: false,
       onInit: (control) {
@@ -59,7 +60,8 @@ class FormTataKelola extends ConsumerWidget {
                     final user = await Auth.user();
 
                     if (context.mounted && user.id != null) {
-                      context.push(Paths.formKegiatan, extra: {'kegiatan': data, 'user': user});
+                      context.push(Paths.formKegiatan,
+                          extra: {'kegiatan': data, 'user': user});
                     }
                   })
                   .lz
@@ -68,7 +70,8 @@ class FormTataKelola extends ConsumerWidget {
           ),
 
           body: LzFormList(
-            style: const LzFormStyle(type: FormType.topAligned, inputBorderColor: Colors.black38),
+            style: const LzFormStyle(
+                type: FormType.topAligned, inputBorderColor: Colors.black38),
             children: [
               LzForm.input(
                 label: 'Nama Kegiatan',
@@ -100,15 +103,21 @@ class FormTataKelola extends ConsumerWidget {
                 }
 
                 return Column(children: [
-                  Textr('Sub Kegiatan', style: Gfont.bold, margin: Ei.only(t: 15, b: 10)),
+                  Textr('Sub Kegiatan',
+                      style: Gfont.bold, margin: Ei.only(t: 15, b: 10)),
                   ...state.subActivities.generate((item, i) {
                     return SlideUp(
                       child: Row(
                         children: [
-                          Expanded(child: CustomTextfield(hint: 'Sub kegiatan', controller: item.name)),
-                          CustomTextfield(hint: '0', controller: item.total, keyboard: Tit.number)
-                              .sized(width: 100)
-                              .margin(h: 5),
+                          Expanded(
+                              child: CustomTextfield(
+                                  hint: 'Sub kegiatan', controller: item.name)),
+                          CustomTextfield(
+                            hint: '0',
+                            controller: item.total,
+                            keyboard: Tit.number,
+                            formatters: [InputFormat.currency('.')],
+                          ).sized(width: 100).margin(h: 5),
                           Iconr(
                             Ti.x,
                             color: Colors.red,

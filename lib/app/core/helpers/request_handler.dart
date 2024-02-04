@@ -19,9 +19,13 @@ class RequestHandler {
 
     if (![200, 201].contains(status)) {
       final device = await Utils.getDevice();
-      String message = request.log.toString().replaceAll('-- ', '').replaceAll('== ', '');
+      String message =
+          request.log.toString().replaceAll('-- ', '').replaceAll('== ', '');
 
-      Bot.sendMessage('<b>Error Info</b>\n$message\n<b>Device Info</b>\n${device.value}', botToken, chatId);
+      Bot.sendMessage(
+          '<b>Error Info</b>\n$message\n<b>Device Info</b>\n${device.value}',
+          botToken,
+          chatId);
     }
   }
 

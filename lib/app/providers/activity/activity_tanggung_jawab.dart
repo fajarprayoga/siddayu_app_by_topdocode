@@ -7,7 +7,8 @@ import 'package:todo_app/app/core/helpers/toast.dart';
 import 'package:todo_app/app/data/api/api.dart';
 import 'package:todo_app/app/data/models/kegiatan.dart';
 
-class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>> with Apis {
+class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>>
+    with Apis {
   final String? activityId;
   final name = TextEditingController();
   final activityDate = TextEditingController();
@@ -23,7 +24,8 @@ class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>> w
   List<Map<String, List<Map<String, dynamic>>>> fileListAmprahan = [];
 
   List subActivities = [];
-  ActivtyTanggungjawabNotifier({this.activityId}) : super(const AsyncValue.loading()) {
+  ActivtyTanggungjawabNotifier({this.activityId})
+      : super(const AsyncValue.loading()) {
     if (activityId != '') getActivity();
   }
 
@@ -160,6 +162,7 @@ class ActivtyTanggungjawabNotifier extends StateNotifier<AsyncValue<Kegiatan>> w
 }
 
 final activitTanggungJawabProvider = StateNotifierProvider.autoDispose
-    .family<ActivtyTanggungjawabNotifier, AsyncValue<Kegiatan>, String>((ref, activityId) {
+    .family<ActivtyTanggungjawabNotifier, AsyncValue<Kegiatan>, String>(
+        (ref, activityId) {
   return ActivtyTanggungjawabNotifier(activityId: activityId);
 });

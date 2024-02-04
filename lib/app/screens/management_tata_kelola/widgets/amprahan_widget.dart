@@ -4,6 +4,7 @@ import 'package:lazyui/lazyui.dart';
 import 'package:todo_app/app/core/constants/value.dart';
 import 'package:todo_app/app/core/extensions/riverpod_extension.dart';
 import 'package:todo_app/app/core/helpers/utils.dart';
+import 'package:todo_app/app/data/models/kegiatan/kegiatan.dart';
 import 'package:todo_app/app/providers/kegiatan/form_kegiatan_provider.dart';
 
 import '../../../data/models/amprahan.dart';
@@ -12,14 +13,18 @@ import '../../../widgets/custom_textfield.dart';
 import '../views/form_kegiatan_screen.dart';
 
 class ListAmprahanWidget extends ConsumerWidget {
-  final AutoDisposeStateNotifierProvider<FormKegiatanNotifier, FormKegiatanState> provider;
-  const ListAmprahanWidget(this.provider, {super.key});
+  final AutoDisposeStateNotifierProvider<FormKegiatanNotifier,
+      FormKegiatanState> provider;
+  final Kegiatan kegiatan;
+  const ListAmprahanWidget(this.provider, this.kegiatan, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return provider.watchX((value, notifier) => Column(
-          children: value.amprahans.generate((item, i) =>
-              SlideUp(delay: (i + 1) * 100, child: AmprahanWidget(notifier, item, i, provider).margin(b: 25))),
+          children: value.amprahans.generate((item, i) => SlideUp(
+              delay: (i + 1) * 100,
+              child: AmprahanWidget(notifier, item, kegiatan, i, provider)
+                  .margin(b: 25))),
         ));
   }
 }
@@ -27,9 +32,13 @@ class ListAmprahanWidget extends ConsumerWidget {
 class AmprahanWidget extends StatelessWidget {
   final FormKegiatanNotifier notifier;
   final Amprahan amprahan;
+  final Kegiatan kegiatan;
   final int index;
-  final AutoDisposeStateNotifierProvider<FormKegiatanNotifier, FormKegiatanState> provider;
-  const AmprahanWidget(this.notifier, this.amprahan, this.index, this.provider, {super.key});
+  final AutoDisposeStateNotifierProvider<FormKegiatanNotifier,
+      FormKegiatanState> provider;
+  const AmprahanWidget(
+      this.notifier, this.amprahan, this.kegiatan, this.index, this.provider,
+      {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +50,7 @@ class AmprahanWidget extends StatelessWidget {
           final roleName = userRole?.code;
 
           bool isSKU = roleName == 'SKU';
+          bool isOwner = user?.id == kegiatan.createdBy;
 
           return Column(
             children: [
@@ -58,7 +68,9 @@ class AmprahanWidget extends StatelessWidget {
                 padding: Ei.all(15),
                 margin: Ei.only(t: 10),
                 decoration: BoxDecoration(
-                    color: Colors.white, border: Br.all(color: Colors.black45), borderRadius: Br.radius(8)),
+                    color: Colors.white,
+                    border: Br.all(color: Colors.black45),
+                    borderRadius: Br.radius(8)),
                 child: Column(
                   crossAxisAlignment: Caa.start,
                   children: [
@@ -79,7 +91,9 @@ class AmprahanWidget extends StatelessWidget {
                         }).disabled(!isSKU),
 
                     // list of file dokumentasi kegiatan
-                    FkFileContent('doc_kegiatan', files: amprahan.fileDokumentasiKegiatan, onRemove: (i) {
+                    FkFileContent('doc_kegiatan',
+                            files: amprahan.fileDokumentasiKegiatan,
+                            onRemove: (i) {
                       notifier.removeFileAmprahan('doc_kegiatan', i, index);
                     }, provider: provider)
                         .disabled(!isSKU),
@@ -137,7 +151,8 @@ class AmprahanWidget extends StatelessWidget {
                         }).disabled(!isSKU),
 
                     // list of file pajak
-                    FkFileContent('pajak', files: amprahan.fileDokumentasiPajak, onRemove: (i) {
+                    FkFileContent('pajak', files: amprahan.fileDokumentasiPajak,
+                            onRemove: (i) {
                       notifier.removeFileAmprahan('pajak', i, index);
                     }, provider: provider)
                         .disabled(!isSKU),
@@ -152,7 +167,7 @@ class AmprahanWidget extends StatelessWidget {
                 ),
               ),
             ],
-          );
+          ).disabled(!isOwner && !isSKU);
         });
   }
 }
