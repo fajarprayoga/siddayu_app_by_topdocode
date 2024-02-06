@@ -375,6 +375,7 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
       // get activity doc files
       final activityFiles = await fileToMultipart(amprahan.fileDokumentasiKegiatan);
       final taxFiles = await fileToMultipart(amprahan.fileDokumentasiPajak);
+      final taxReceipt = await fileToMultipart(amprahan.fileBuktiPajak);
 
       // make payload
       Map<String, dynamic> payload = {
@@ -393,6 +394,10 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
 
       for (var i = 0; i < taxFiles.length; i++) {
         payload['tax_documentation[$i]'] = taxFiles[i];
+      }
+
+      for (var i = 0; i < taxReceipt.length; i++) {
+        payload['tax_receipt[$i]'] = taxReceipt[i];
       }
 
       if (amprahan.id != null) {
