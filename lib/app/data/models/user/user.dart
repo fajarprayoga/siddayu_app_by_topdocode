@@ -7,7 +7,7 @@ class User {
   String? email;
   Role? role;
   Position? position;
-  dynamic profilePicture;
+  dynamic? profilePicture;
   DateTime? createdAt;
   DateTime? updatedAt;
 
@@ -26,19 +26,11 @@ class User {
         id: json['id'] as String?,
         name: json['name'] as String?,
         email: json['email'] as String?,
-        role: json['role'] == null
-            ? null
-            : Role.fromJson(json['role'] as Map<String, dynamic>),
-        position: json['position'] == null
-            ? null
-            : Position.fromJson(json['position'] as Map<String, dynamic>),
+        role: json['role'] == null ? null : Role.fromJson(json['role'] as Map<String, dynamic>),
+        position: json['position'] == null ? null : Position.fromJson(json['position'] as Map<String, dynamic>),
         profilePicture: json['profile_picture'] as dynamic,
-        createdAt: json['created_at'] == null
-            ? null
-            : DateTime.parse(json['created_at'] as String),
-        updatedAt: json['updated_at'] == null
-            ? null
-            : DateTime.parse(json['updated_at'] as String),
+        createdAt: json['created_at'] == null ? null : DateTime.parse(json['created_at'] as String),
+        updatedAt: json['updated_at'] == null ? null : DateTime.parse(json['updated_at'] as String),
       );
 
   Map<String, dynamic> toJson() => {

@@ -13,8 +13,7 @@ import '../../../widgets/custom_textfield.dart';
 import '../views/form_kegiatan_screen.dart';
 
 class ListAmprahanWidget extends ConsumerWidget {
-  final AutoDisposeStateNotifierProvider<FormKegiatanNotifier,
-      FormKegiatanState> provider;
+  final AutoDisposeStateNotifierProvider<FormKegiatanNotifier, FormKegiatanState> provider;
   final Kegiatan kegiatan;
   const ListAmprahanWidget(this.provider, this.kegiatan, {super.key});
 
@@ -22,9 +21,7 @@ class ListAmprahanWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return provider.watchX((value, notifier) => Column(
           children: value.amprahans.generate((item, i) => SlideUp(
-              delay: (i + 1) * 100,
-              child: AmprahanWidget(notifier, item, kegiatan, i, provider)
-                  .margin(b: 25))),
+              delay: (i + 1) * 100, child: AmprahanWidget(notifier, item, kegiatan, i, provider).margin(b: 25))),
         ));
   }
 }
@@ -34,11 +31,8 @@ class AmprahanWidget extends StatelessWidget {
   final Amprahan amprahan;
   final Kegiatan kegiatan;
   final int index;
-  final AutoDisposeStateNotifierProvider<FormKegiatanNotifier,
-      FormKegiatanState> provider;
-  const AmprahanWidget(
-      this.notifier, this.amprahan, this.kegiatan, this.index, this.provider,
-      {super.key});
+  final AutoDisposeStateNotifierProvider<FormKegiatanNotifier, FormKegiatanState> provider;
+  const AmprahanWidget(this.notifier, this.amprahan, this.kegiatan, this.index, this.provider, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -68,9 +62,7 @@ class AmprahanWidget extends StatelessWidget {
                 padding: Ei.all(15),
                 margin: Ei.only(t: 10),
                 decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Br.all(color: Colors.black45),
-                    borderRadius: Br.radius(8)),
+                    color: Colors.white, border: Br.all(color: Colors.black45), borderRadius: Br.radius(8)),
                 child: Column(
                   crossAxisAlignment: Caa.start,
                   children: [
@@ -79,7 +71,7 @@ class AmprahanWidget extends StatelessWidget {
                       hint: '2465768798900',
                       keyboard: Tit.number,
                       controller: amprahan.noAmprahan,
-                    ).margin(b: 15),
+                    ).margin(b: 15).disabled(isSKU),
 
                     // file section
                     FKSection(
@@ -88,12 +80,10 @@ class AmprahanWidget extends StatelessWidget {
                         onTap: () async {
                           final files = await Helper.pickFiles();
                           notifier.addFileDokumentasiKegiatan(files, index);
-                        }).disabled(!isSKU),
+                        }).disabled(isSKU),
 
                     // list of file dokumentasi kegiatan
-                    FkFileContent('doc_kegiatan',
-                            files: amprahan.fileDokumentasiKegiatan,
-                            onRemove: (i) {
+                    FkFileContent('doc_kegiatan', files: amprahan.fileDokumentasiKegiatan, onRemove: (i) {
                       notifier.removeFileAmprahan('doc_kegiatan', i, index);
                     }, provider: provider)
                         .disabled(!isSKU),
@@ -103,13 +93,13 @@ class AmprahanWidget extends StatelessWidget {
                       hint: 'Masukkan total realisasi anggaran',
                       keyboard: Tit.number,
                       controller: amprahan.totalRealisasiAnggaran,
-                    ).margin(b: 15),
+                    ).margin(b: 15).disabled(isSKU),
 
                     CustomTextfield2(
                       label: 'Sumber Dana',
                       hint: 'Masukkan sumber dana',
                       controller: amprahan.sumberDana,
-                    ).margin(b: 15),
+                    ).margin(b: 15).disabled(isSKU),
 
                     CustomTextfield2(
                       label: 'Tanggal Amprahan',
@@ -143,6 +133,10 @@ class AmprahanWidget extends StatelessWidget {
                           final files = await Helper.pickFiles();
                           notifier.addFileDokumentasiPajak(files, index);
                         }).disabled(!isSKU),
+                    FkFileContent('pajak', files: amprahan.fileDokumentasiPajak, onRemove: (i) {
+                      notifier.removeFileAmprahan('pajak', i, index);
+                    }, provider: provider)
+                        .disabled(!isSKU),
 
                     CustomCheckbox(
                         value: amprahan.isPajak,
@@ -150,10 +144,18 @@ class AmprahanWidget extends StatelessWidget {
                           notifier.checkPajak(!amprahan.isPajak, index);
                         }).disabled(!isSKU),
 
+                    // pajak
+                    FKSection(
+                        title: 'Bukti Transfer Pajak',
+                        textButton: 'Upload File Bukti Transfer Pajak',
+                        onTap: () async {
+                          final files = await Helper.pickFiles();
+                          notifier.addFileBuktiPajak(files, index);
+                        }).disabled(!isSKU),
+
                     // list of file pajak
-                    FkFileContent('pajak', files: amprahan.fileDokumentasiPajak,
-                            onRemove: (i) {
-                      notifier.removeFileAmprahan('pajak', i, index);
+                    FkFileContent('tax_receipt', files: amprahan.fileBuktiPajak, onRemove: (i) {
+                      notifier.removeFileAmprahan('tax_receipt', i, index);
                     }, provider: provider)
                         .disabled(!isSKU),
 

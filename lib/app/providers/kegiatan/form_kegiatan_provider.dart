@@ -11,23 +11,27 @@ import '../../data/models/amprahan.dart';
 class FormKegiatanState {
   final List<File> fileSK;
   final List<File> fileBeritaAcara;
+  final List<File> fileSuratPerjanjian;
   final List<File> fileOption;
   final List<Amprahan> amprahans;
 
   FormKegiatanState(
       {this.fileSK = const [],
       this.fileBeritaAcara = const [],
+      this.fileSuratPerjanjian = const [],
       this.fileOption = const [],
       this.amprahans = const []});
 
   FormKegiatanState copyWith(
       {List<File>? fileSK,
       List<File>? fileBeritaAcara,
+      List<File>? fileSuratPerjanjian,
       List<File>? fileOption,
       List<Amprahan>? amprahans}) {
     return FormKegiatanState(
         fileSK: fileSK ?? this.fileSK,
         fileBeritaAcara: fileBeritaAcara ?? this.fileBeritaAcara,
+        fileSuratPerjanjian: fileSuratPerjanjian ?? this.fileSuratPerjanjian,
         fileOption: fileOption ?? this.fileOption,
         amprahans: amprahans ?? this.amprahans);
   }
@@ -57,13 +61,16 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
       tempFiles['sk'] = sk; // untuk menghapus file dengan id
 
       // get and set file berita acara
-      final operationalReport =
-          documents.where((e) => e['type'] == 'operational_report').toList();
-      List<File> fileBeritaAcara =
-          operationalReport.map((e) => File(e['url'])).toList();
+      final operationalReport = documents.where((e) => e['type'] == 'operational_report').toList();
+      List<File> fileBeritaAcara = operationalReport.map((e) => File(e['url'])).toList();
       state = state.copyWith(fileBeritaAcara: fileBeritaAcara);
-      tempFiles['operational_report'] =
-          operationalReport; // untuk menghapus file dengan id
+      tempFiles['operational_report'] = operationalReport; // untuk menghapus file dengan id
+
+      // get and set file surat perjanjian
+      final letterOfAgreement = documents.where((e) => e['type'] == 'letter_of_agreement').toList();
+      List<File> fileSuratPerjanjian = letterOfAgreement.map((e) => File(e['url'])).toList();
+      state = state.copyWith(fileSuratPerjanjian: fileSuratPerjanjian);
+      tempFiles['letter_of_agreement'] = letterOfAgreement; // untuk menghapus file dengan id
 
       // get and set file option
       final other = documents.where((e) => e['type'] == 'other').toList();
@@ -87,22 +94,22 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
         List documents = e['documents'] ?? [];
 
         // get data dokumentasi Kegiatan
-        final activityDocumentation = documents
-            .where((e) => e['type'] == 'activity_documentation')
-            .toList();
-        List<File> fileDokumentasiKegiatan =
-            activityDocumentation.map((e) => File(e['url'])).toList();
+        final activityDocumentation = documents.where((e) => e['type'] == 'activity_documentation').toList();
+        List<File> fileDokumentasiKegiatan = activityDocumentation.map((e) => File(e['url'])).toList();
 
         // get data dokumentasi pajak
-        final taxDocumentation =
-            documents.where((e) => e['type'] == 'tax_documentation').toList();
-        List<File> fileDokumentasiPajak =
-            taxDocumentation.map((e) => File(e['url'])).toList();
+        final taxDocumentation = documents.where((e) => e['type'] == 'tax_documentation').toList();
+        List<File> fileDokumentasiPajak = taxDocumentation.map((e) => File(e['url'])).toList();
+
+        // get data file bukti pajak
+        final taxReceipt = documents.where((e) => e['type'] == 'tax_receipt').toList();
+        List<File> fileBuktiPajak = taxReceipt.map((e) => File(e['url'])).toList();
 
         amprahans.add(Amprahan(
           id: e['id'].toString(),
           noAmprahan: e['amprahan_number'].toString().tec,
           fileDokumentasiKegiatan: fileDokumentasiKegiatan,
+          fileBuktiPajak: fileBuktiPajak,
           totalRealisasiAnggaran: e['total_budget_realisation'].toString().tec,
           sumberDana: e['budget_source'].toString().tec,
           fileDokumentasiPajak: fileDokumentasiPajak,
@@ -120,11 +127,7 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
     }
   }
 
-  Map<String, List> tempFiles = {
-    'sk': [],
-    'operational_report': [],
-    'other': []
-  };
+  Map<String, List> tempFiles = {'sk': [], 'operational_report': [], 'letter_of_agreement': [], 'other': []};
 
   Future<bool> uploadFiles(String type, List<File> files) async {
     try {
@@ -177,6 +180,17 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
     }
   }
 
+  void addSuratPerjanjian(List<File> files) async {
+    if (files.isEmpty) return;
+    LzToast.overlay('Mengunggah file surat perjanjian kerjasama');
+    final ok = await uploadFiles('letter_of_agreement', files);
+    LzToast.dismiss();
+
+    if (ok) {
+      state = state.copyWith(fileSuratPerjanjian: files);
+    }
+  }
+
   void addFileOption(List<File> files) async {
     if (files.isEmpty) return;
     LzToast.overlay('Mengunggah file option');
@@ -214,6 +228,12 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
             tempFiles['operational_report']?.removeAt(index);
             state = state.copyWith(fileBeritaAcara: files);
             break;
+          case 'letter_of_agreement':
+            List<File> files = state.fileSuratPerjanjian;
+            files.removeAt(index);
+            tempFiles['letter_of_agreement']?.removeAt(index);
+            state = state.copyWith(fileSuratPerjanjian: files);
+            break;
           case 'other':
             List<File> files = state.fileOption;
             files.removeAt(index);
@@ -235,6 +255,7 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
     amprahans.add(Amprahan(
         noAmprahan: TextEditingController(),
         fileDokumentasiKegiatan: [],
+        fileBuktiPajak: [],
         totalRealisasiAnggaran: TextEditingController(),
         sumberDana: TextEditingController(),
         fileDokumentasiPajak: [],
@@ -269,6 +290,13 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
   void addFileDokumentasiPajak(List<File> files, int index) {
     List<Amprahan> amprahans = [...state.amprahans];
     amprahans[index].fileDokumentasiPajak = files;
+
+    state = state.copyWith(amprahans: amprahans);
+  }
+
+  void addFileBuktiPajak(List<File> files, int index) {
+    List<Amprahan> amprahans = [...state.amprahans];
+    amprahans[index].fileBuktiPajak = files;
 
     state = state.copyWith(amprahans: amprahans);
   }
@@ -342,13 +370,10 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
       // get amprahan by index
       final amprahan = state.amprahans[index];
 
-      LzToast.overlay(amprahan.id == null
-          ? 'Menambahkan data amprahan...'
-          : 'Mengubah data amprahan...');
+      LzToast.overlay(amprahan.id == null ? 'Menambahkan data amprahan...' : 'Mengubah data amprahan...');
 
       // get activity doc files
-      final activityFiles =
-          await fileToMultipart(amprahan.fileDokumentasiKegiatan);
+      final activityFiles = await fileToMultipart(amprahan.fileDokumentasiKegiatan);
       final taxFiles = await fileToMultipart(amprahan.fileDokumentasiPajak);
 
       // make payload
@@ -391,7 +416,7 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
   }
 }
 
-final formKegiatanProvider = StateNotifierProvider.autoDispose
-    .family<FormKegiatanNotifier, FormKegiatanState, Kegiatan>((ref, kegiatan) {
+final formKegiatanProvider =
+    StateNotifierProvider.autoDispose.family<FormKegiatanNotifier, FormKegiatanState, Kegiatan>((ref, kegiatan) {
   return FormKegiatanNotifier(kegiatan);
 });

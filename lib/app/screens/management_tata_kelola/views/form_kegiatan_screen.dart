@@ -68,9 +68,21 @@ class FormKegiatanScreen extends ConsumerWidget {
                         notifier.addFileBeritaAcara(files);
                       }),
 
-                  // list of file berita acara
+                  // Surat perjanjian
                   provider.watch(
                       (value) => FkFileContent('operational_report', files: value.fileBeritaAcara, provider: provider)),
+                  // section berita acara
+                  FKSection(
+                      title: 'Surat Perjanjian Kerjasama',
+                      textButton: 'Upload File Kerjasama',
+                      onTap: () async {
+                        final files = await Helper.pickFiles();
+                        notifier.addSuratPerjanjian(files);
+                      }),
+
+                  // list of file berita acara
+                  provider.watch((value) =>
+                      FkFileContent('letter_of_agreement', files: value.fileSuratPerjanjian, provider: provider)),
 
                   // section option
                   FKSection(
