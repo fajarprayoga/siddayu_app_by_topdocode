@@ -33,9 +33,9 @@ class FormKegiatanScreen extends ConsumerWidget {
     return Wrapper(
       child: Scaffold(
         appBar: AppBar(
-          title: const CustomAppbar(
+          title: CustomAppbar(
             title: 'Management Tata Kelola',
-            subtitle: 'Kegiatan / Detail / Kegiatan 1',
+            subtitle: 'Detail / ${kegiatan.name}',
           ),
         ),
         body: LzListView(
@@ -59,7 +59,20 @@ class FormKegiatanScreen extends ConsumerWidget {
                   // list of file sk
                   provider.watch((value) => FkFileContent('sk', files: value.fileSK, provider: provider)),
 
-                  // section berita acara
+                  // Surat Pewrjanjian kerjasama
+                  FKSection(
+                      title: 'Surat Perjanjian Kerjasama',
+                      textButton: 'Upload File Surat Perjanjian',
+                      onTap: () async {
+                        final files = await Helper.pickFiles();
+                        notifier.addFileSuratPerjanjian(files);
+                      }),
+
+                  // list of file berita acara
+                  provider.watch((value) =>
+                      FkFileContent('letter_of_agreement', files: value.fileSuratPerjanjian, provider: provider)),
+
+                  // other
                   FKSection(
                       title: 'Berita Acara',
                       textButton: 'Upload File Berita Acara',
@@ -77,7 +90,7 @@ class FormKegiatanScreen extends ConsumerWidget {
                       textButton: 'Upload File Kerjasama',
                       onTap: () async {
                         final files = await Helper.pickFiles();
-                        notifier.addSuratPerjanjian(files);
+                        notifier.addFileSuratPerjanjian(files);
                       }),
 
                   // list of file berita acara
@@ -165,6 +178,8 @@ class FkFileContent extends ConsumerWidget {
         child: Text('Tidak ada file', style: Gfont.muted),
       );
     }
+
+    logg("gggiii $files");
 
     return Container(
       margin: Ei.only(b: 35),

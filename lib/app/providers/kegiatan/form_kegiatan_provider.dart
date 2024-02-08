@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:fetchly/fetchly.dart';
@@ -18,15 +19,15 @@ class FormKegiatanState {
   FormKegiatanState(
       {this.fileSK = const [],
       this.fileBeritaAcara = const [],
-      this.fileSuratPerjanjian = const [],
       this.fileOption = const [],
-      this.amprahans = const []});
+      this.amprahans = const [],
+      this.fileSuratPerjanjian = const []});
 
   FormKegiatanState copyWith(
       {List<File>? fileSK,
       List<File>? fileBeritaAcara,
-      List<File>? fileSuratPerjanjian,
       List<File>? fileOption,
+      List<File>? fileSuratPerjanjian,
       List<Amprahan>? amprahans}) {
     return FormKegiatanState(
         fileSK: fileSK ?? this.fileSK,
@@ -66,18 +67,18 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
       state = state.copyWith(fileBeritaAcara: fileBeritaAcara);
       tempFiles['operational_report'] = operationalReport; // untuk menghapus file dengan id
 
-      // get and set file surat perjanjian
-      final letterOfAgreement = documents.where((e) => e['type'] == 'letter_of_agreement').toList();
-      List<File> fileSuratPerjanjian = letterOfAgreement.map((e) => File(e['url'])).toList();
+      // get and set surat perjanjian kerjasama
+      final letterOfAggrement = documents.where((e) => e['type'] == 'letter_of_agreement').toList();
+      List<File> fileSuratPerjanjian = letterOfAggrement.map((e) => File(e['url'])).toList();
       state = state.copyWith(fileSuratPerjanjian: fileSuratPerjanjian);
-      tempFiles['letter_of_agreement'] = letterOfAgreement; // untuk menghapus file dengan id
+      tempFiles['letter_of_agreement'] = letterOfAggrement; // untuk menghapus file dengan id
 
       // get and set file option
       final other = documents.where((e) => e['type'] == 'other').toList();
       List<File> fileOption = other.map((e) => File(e['url'])).toList();
       state = state.copyWith(fileOption: fileOption);
       tempFiles['other'] = other; // untuk menghapus file dengan id
-
+      logg("fileSK $fileOption");
       getAmprahan();
     } catch (e, s) {
       Errors.check(e, s);
@@ -96,7 +97,6 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
         // get data dokumentasi Kegiatan
         final activityDocumentation = documents.where((e) => e['type'] == 'activity_documentation').toList();
         List<File> fileDokumentasiKegiatan = activityDocumentation.map((e) => File(e['url'])).toList();
-
         // get data dokumentasi pajak
         final taxDocumentation = documents.where((e) => e['type'] == 'tax_documentation').toList();
         List<File> fileDokumentasiPajak = taxDocumentation.map((e) => File(e['url'])).toList();
@@ -141,12 +141,13 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
       for (var i = 0; i < mfiles.length; i++) {
         payload['files[$i]'] = mfiles[i];
       }
-
       final res = await kegiatanApi.uploadDoc(payload);
 
       if (!res.status) {
         LzToast.error(res.message ?? 'Gagal mengunggah file');
       }
+
+      logg([...tempFiles[type] ?? [], ...res.data['data']]);
 
       tempFiles[type] = [...tempFiles[type] ?? [], ...res.data['data']];
 
@@ -180,9 +181,9 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
     }
   }
 
-  void addSuratPerjanjian(List<File> files) async {
+  void addFileSuratPerjanjian(List<File> files) async {
     if (files.isEmpty) return;
-    LzToast.overlay('Mengunggah file surat perjanjian kerjasama');
+    LzToast.overlay('Mengunggah file surat perjanjian');
     final ok = await uploadFiles('letter_of_agreement', files);
     LzToast.dismiss();
 

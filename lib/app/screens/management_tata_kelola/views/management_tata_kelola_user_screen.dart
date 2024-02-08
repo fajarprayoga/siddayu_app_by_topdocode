@@ -45,23 +45,6 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
                     }
                   },
                   children: [
-                    // if (notifier.isUserLogged)
-                    //   Row(
-                    //     children: [
-                    //       PrimaryButton(
-                    //         'Tambah Kegiatan',
-                    //         icon: Ti.plus,
-                    //         onTap: () {
-                    //           context.push(Paths.formManagementTataKelola).then((value) {
-                    //             value as Map<String, dynamic>;
-                    //             notifier.addData(Kegiatan.fromJson(value));
-                    //           });
-                    //         },
-                    //       ),
-                    //     ],
-                    //   ).end,
-
-                    // list of activities
                     Column(
                       children: activities.generate((item, i) {
                         final ikey = GlobalKey();
@@ -98,6 +81,7 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
                           child: Row(
                             mainAxisAlignment: Maa.spaceBetween,
                             children: [
+                              // Textr(item.createdBy ?? ''),
                               Textr(
                                 (item.name ?? '-').ucwords,
                                 icon: Ti.list,
@@ -142,92 +126,3 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
     );
   }
 }
-
-// class ListKegiatan extends StatelessWidget {
-//   final Kegiatan item;
-//   final ActivityUserNotifier notifier;
-//   const ListKegiatan({Key? key, required this.item, required this.notifier}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       height: 60,
-//       margin: const EdgeInsets.symmetric(vertical: marginVertical),
-//       padding: const EdgeInsets.all(padding),
-//       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(5)),
-//       child: InkWell(
-//         onTap: () {
-//           context.push(Paths.formManagementTataKelolaDetail, extra: item).then((value) {
-//             value as Map<String, dynamic>;
-//             notifier.updateData(Kegiatan.fromJson(value));
-//           });
-//         },
-//         child: Row(
-//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//           children: [
-//             Expanded(
-//               child: Row(
-//                 children: [
-//                   const Icon(Icons.list),
-//                   const SizedBox(
-//                     width: gap,
-//                   ),
-//                   Flexible(
-//                     child: Text(
-//                       item.name,
-//                       overflow: TextOverflow.ellipsis,
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//             const Icon(
-//               Icons.arrow_right,
-//               color: primary,
-//               size: 24,
-//             )
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// class ButtonAddKegiatan extends StatelessWidget {
-//   final ActivityUserNotifier notifier;
-//   final Function()? onTap;
-
-//   const ButtonAddKegiatan({super.key, required this.notifier, required this.onTap});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       alignment: Alignment.centerRight,
-//       child: InkWell(
-//         onTap: onTap,
-//         child: Container(
-//           padding: const EdgeInsets.symmetric(horizontal: padding, vertical: padding),
-//           decoration: BoxDecoration(
-//             borderRadius: BorderRadius.circular(radius - 10),
-//             color: primary,
-//           ),
-//           child: Row(
-//             mainAxisAlignment: MainAxisAlignment.end,
-//             mainAxisSize: MainAxisSize.min,
-//             children: [
-//               const Icon(
-//                 Icons.add,
-//                 color: Colors.white,
-//               ),
-//               const SizedBox(width: 8),
-//               Text(
-//                 "Tambah Kegiatan",
-//                 style: Gfont.white,
-//               )
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
