@@ -7,7 +7,7 @@ class User {
   String? email;
   Role? role;
   Position? position;
-  dynamic? profilePicture;
+  dynamic profilePicture;
   DateTime? createdAt;
   DateTime? updatedAt;
 

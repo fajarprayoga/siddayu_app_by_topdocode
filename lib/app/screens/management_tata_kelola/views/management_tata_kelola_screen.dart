@@ -128,8 +128,8 @@ class ActivityProgress extends ConsumerWidget {
               children: [
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  decoration:
-                      BoxDecoration(color: Color.fromARGB(255, 185, 216, 231), borderRadius: BorderRadius.circular(10)),
+                  decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 185, 216, 231), borderRadius: BorderRadius.circular(10)),
                   height: 21,
                 ),
                 AnimatedContainer(
@@ -195,7 +195,7 @@ class StaffBoxWidget extends ConsumerWidget {
                   LzImage(item.profilePicture ?? 'user.jpeg', size: 50, radius: 100).margin(r: 10),
                   Text(
                     name.ucwords,
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w400),
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w400),
                   ).lz.flexible()
                 ],
               ),

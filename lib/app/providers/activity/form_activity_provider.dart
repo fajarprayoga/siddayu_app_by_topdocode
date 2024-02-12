@@ -3,6 +3,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lazyui/lazyui.dart';
 import 'package:todo_app/app/data/api/api.dart';
 import 'package:todo_app/app/data/models/kegiatan/kegiatan.dart';
+import 'package:todo_app/app/data/models/user/user.dart';
+import 'package:todo_app/app/data/service/local/auth.dart';
 
 class SubActivityModel {
   final TextEditingController name, total;
@@ -25,6 +27,11 @@ class FormActivityNotifier extends StateNotifier<FormActivityState> with Apis {
   FormActivityNotifier() : super(FormActivityState());
 
   final forms = LzForm.make(['name', 'activity_date', 'description']);
+  User? user;
+
+  void justUpdate() {
+    state = state.copyWith();
+  }
 
   void addSubActivity() {
     final data = [...state.subActivities];
@@ -38,7 +45,13 @@ class FormActivityNotifier extends StateNotifier<FormActivityState> with Apis {
     state = state.copyWith(subActivities: data);
   }
 
-  void initForm(Kegiatan data) {
+  int grandTotal() {
+    return state.subActivities.fold(0, (prev, e) => prev + e.total.text.getNumeric);
+  }
+
+  void initForm(Kegiatan data) async {
+    user = await Auth.user();
+
     try {
       forms.fill({
         'name': data.name,
@@ -51,7 +64,8 @@ class FormActivityNotifier extends StateNotifier<FormActivityState> with Apis {
 
       for (var e in activities) {
         subActivities.add(SubActivityModel(
-            name: TextEditingController(text: e.name), total: TextEditingController(text: e.totalBudget.toString())));
+            name: TextEditingController(text: e.name),
+            total: TextEditingController(text: e.totalBudget.toString().idr(symbol: ''))));
       }
 
       WidgetsBinding.instance.addPostFrameCallback((_) {

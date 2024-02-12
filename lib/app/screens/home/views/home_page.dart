@@ -50,7 +50,7 @@ class HomePage extends ConsumerWidget {
                             child: CircleAvatar(
                               child: auth?.profilePicture != null
                                   ? LzImage(auth?.profilePicture, size: 60, radius: 100)
-                                  : Icon(Ti.user),
+                                  : const Icon(Ti.user),
                             ),
                           ),
                           Textr(

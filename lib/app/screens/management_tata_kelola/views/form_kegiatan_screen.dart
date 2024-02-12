@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lazyui/lazyui.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:todo_app/app/core/extensions/riverpod_extension.dart';
 import 'package:todo_app/app/core/helpers/utils.dart';
 import 'package:todo_app/app/data/models/kegiatan/kegiatan.dart';
@@ -29,6 +30,7 @@ class FormKegiatanScreen extends ConsumerWidget {
 
     final roleName = userRole?.code;
     bool isST = roleName == 'ST';
+    bool isOwner = user.id == kegiatan.createdBy;
 
     return Wrapper(
       child: Scaffold(
@@ -119,9 +121,11 @@ class FormKegiatanScreen extends ConsumerWidget {
             ListAmprahanWidget(provider, kegiatan),
 
             // button tambah no amprahan
-            Textr('Tambah No Amprahan', icon: Icons.add, style: Gfont.bold).onTap(() {
-              notifier.addAmprahan();
-            }),
+
+            if (isOwner)
+              Textr('Tambah No Amprahan', icon: Icons.add, style: Gfont.bold).onTap(() {
+                notifier.addAmprahan();
+              }),
           ],
         ),
       ),
@@ -189,36 +193,39 @@ class FkFileContent extends ConsumerWidget {
           String name = file.path.split('/').last;
           return SlideUp(
             delay: (i + 1) * 100,
-            child: Container(
-              padding: Ei.sym(v: 7, h: 10),
-              decoration: BoxDecoration(
-                border: Br.only(['t'], except: i == 0),
-              ),
-              child: Row(
-                mainAxisAlignment: Maa.spaceBetween,
-                children: [
-                  Flexible(
-                    child: InkWell(
-                      onTap: () => _showFullModal(context, file.toString()),
+            child: InkTouch(
+              onTap: () {
+                context.bottomSheet(PdfViewer(file));
+              },
+              radius: Br.radius(5),
+              child: Container(
+                padding: Ei.sym(v: 7, h: 10),
+                decoration: BoxDecoration(
+                  border: Br.only(['t'], except: i == 0),
+                ),
+                child: Row(
+                  mainAxisAlignment: Maa.spaceBetween,
+                  children: [
+                    Flexible(
                       child: Text(
                         name,
                         overflow: Tof.ellipsis,
                       ),
                     ),
-                  ),
-                  const Icon(
-                    Icons.close,
-                    color: Colors.red,
-                  ).onTap(() {
-                    LzConfirm(
-                      title: 'Hapus File',
-                      message: 'Apakah Anda yakin ingin menghapus file ini?',
-                      onConfirm: () {
-                        onRemove != null ? onRemove!.call(i) : notifier.removeFile(label, i);
-                      },
-                    ).show(context);
-                  })
-                ],
+                    const Icon(
+                      Icons.close,
+                      color: Colors.red,
+                    ).onTap(() {
+                      LzConfirm(
+                        title: 'Hapus File',
+                        message: 'Apakah Anda yakin ingin menghapus file ini?',
+                        onConfirm: () {
+                          onRemove != null ? onRemove!.call(i) : notifier.removeFile(label, i);
+                        },
+                      ).show(context);
+                    })
+                  ],
+                ),
               ),
             ),
           );
@@ -228,68 +235,14 @@ class FkFileContent extends ConsumerWidget {
   }
 }
 
-_showFullModal(context, String path) {
-  showGeneralDialog(
-    context: context,
-    barrierDismissible: false, // should dialog be dismissed when tapped outside
-    barrierLabel: "Modal", // label for barrier
-    transitionDuration: const Duration(milliseconds: 500), // how long it takes to popup dialog after button click
-    pageBuilder: (_, __, ___) {
-      // your widget implementation
-      return Scaffold(
-        appBar: AppBar(
-            backgroundColor: Colors.white,
-            centerTitle: true,
-            leading: IconButton(
-                icon: const Icon(
-                  Icons.close,
-                  color: Colors.black,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                }),
-            title: const Text(
-              "Document Pdf",
-              style: TextStyle(color: Colors.black87, fontFamily: 'Overpass', fontSize: 20),
-            ),
-            elevation: 0.0),
-        backgroundColor: Colors.white,
-        body: Container(
-          padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-          decoration: const BoxDecoration(
-            border: Border(
-              top: BorderSide(
-                color: Color(0xfff8f8f8),
-                width: 1,
-              ),
-            ),
-          ),
-          child: const SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Plugin ped Viewer
-                // PDFView(
-                //   filePath: path,
-                //   enableSwipe: true,
-                //   swipeHorizontal: true,
-                //   autoSpacing: false,
-                //   pageFling: false,
-                //   onError: (error) {
-                //     print(error.toString());
-                //   },
-                //   onPageError: (page, error) {
-                //     print('$page: ${error.toString()}');
-                //   },
-                // ),
-                SizedBox(
-                  height: 10,
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    },
-  );
+class PdfViewer extends StatelessWidget {
+  final dynamic file;
+  const PdfViewer(this.file, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(title: const Text('Document PDF')),
+        body: file is String ? SfPdfViewer.network(file) : SfPdfViewer.file(file));
+  }
 }

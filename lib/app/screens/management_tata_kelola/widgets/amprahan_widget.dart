@@ -44,6 +44,7 @@ class AmprahanWidget extends StatelessWidget {
           final roleName = userRole?.code;
 
           bool isSKU = roleName == 'SKU';
+          bool isSKD = roleName == 'SKD';
           bool isOwner = user?.id == kegiatan.createdBy;
 
           return Column(
@@ -160,7 +161,7 @@ class AmprahanWidget extends StatelessWidget {
                         .disabled(!isSKU),
 
                     LzButton(
-                        text: 'Simpan',
+                        text: isSKD ? 'Approve' : 'Simpan',
                         color: primary,
                         onTap: (_) {
                           notifier.onSubmitAmprahan(index);

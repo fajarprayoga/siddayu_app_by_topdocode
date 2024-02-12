@@ -45,6 +45,8 @@ class Auth with ChangeNotifier, Apis {
         prefs.setString('auth', json.encode(user));
 
         return true;
+      } else {
+        LzToast.show(res.message);
       }
     } catch (e, s) {
       Errors.check(e, s);
