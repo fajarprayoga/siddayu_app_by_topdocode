@@ -47,6 +47,7 @@ class Auth with ChangeNotifier, Apis {
         return true;
       } else {
         LzToast.show(res.message);
+        return false;
       }
     } catch (e, s) {
       Errors.check(e, s);

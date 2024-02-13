@@ -165,7 +165,8 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
     LzToast.dismiss();
 
     if (ok) {
-      state = state.copyWith(fileSK: files);
+      final newFiles = [...state.fileSK, ...files];
+      state = state.copyWith(fileSK: newFiles);
     }
   }
 
@@ -176,7 +177,8 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
     LzToast.dismiss();
 
     if (ok) {
-      state = state.copyWith(fileBeritaAcara: files);
+      final newFiles = [...state.fileBeritaAcara, ...files];
+      state = state.copyWith(fileBeritaAcara: newFiles);
     }
   }
 
@@ -187,7 +189,8 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
     LzToast.dismiss();
 
     if (ok) {
-      state = state.copyWith(fileSuratPerjanjian: files);
+      final newFiles = [...state.fileSuratPerjanjian, ...files];
+      state = state.copyWith(fileSuratPerjanjian: newFiles);
     }
   }
 
@@ -198,7 +201,8 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
     LzToast.dismiss();
 
     if (ok) {
-      state = state.copyWith(fileOption: files);
+      final newFiles = [...state.fileOption, ...files];
+      state = state.copyWith(fileOption: newFiles);
     }
   }
 

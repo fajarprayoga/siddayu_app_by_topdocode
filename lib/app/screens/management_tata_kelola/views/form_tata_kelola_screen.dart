@@ -149,6 +149,10 @@ class FormTataKelola extends ConsumerWidget {
               (state) {
                 bool isSKD = notifier.user?.role?.name == 'SKD';
 
+                if (!isSKD && notifier.user?.id != data?.createdBy) {
+                  return const SizedBox();
+                }
+
                 return LzButton(
                   text: isSKD
                       ? 'Approve'

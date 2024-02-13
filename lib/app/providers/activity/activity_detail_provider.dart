@@ -2,12 +2,10 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lazyui/lazyui.dart';
-import 'package:todo_app/app/core/helpers/toast.dart';
 import 'package:todo_app/app/data/api/api.dart';
 import 'package:todo_app/app/data/models/kegiatan.dart';
 
-class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>>
-    with Apis {
+class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>> with Apis {
   final String? activityId;
   final name = TextEditingController();
   final activityDate = TextEditingController();
@@ -42,8 +40,7 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>>
         subActivities = activities.map((e) {
           return SubActivity2(
             nameController: TextEditingController(text: e['name']),
-            totalController:
-                TextEditingController(text: e['total_budget'].toString()),
+            totalController: TextEditingController(text: e['total_budget'].toString()),
           );
         }).toList();
 
@@ -87,9 +84,9 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>>
         // ignore: use_build_context_synchronously
         context.pop(res.data?['data'] ?? {});
 
-        Toasts.show('Kegiatan berhasil dibuat');
+        LzToast.show('Kegiatan berhasil dibuat');
       } else {
-        Toasts.show(res.message ?? '');
+        LzToast.show(res.message ?? '');
       }
     } catch (e, s) {
       Errors.check(e, s);
@@ -98,9 +95,7 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>>
   }
 
   void addSubActivity() {
-    subActivities.add(SubActivity2(
-        nameController: TextEditingController(),
-        totalController: TextEditingController()));
+    subActivities.add(SubActivity2(nameController: TextEditingController(), totalController: TextEditingController()));
     state = AsyncValue.data(state.value!);
   }
 
@@ -124,7 +119,7 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>>
       final res = await kegiatanApi.updateKegiatan(activityId, fields);
 
       if (res.status) {
-        Toasts.show("update successfully");
+        LzToast.show("update successfully");
         return res.data?['data'] ?? {};
         // update state
       }
@@ -136,8 +131,7 @@ class ActivtyDetailNotifier extends StateNotifier<AsyncValue<Kegiatan>>
   void uploadDoc(BuildContext context) {}
 }
 
-final activityDetailProvider = StateNotifierProvider.autoDispose
-    .family<ActivtyDetailNotifier, AsyncValue<Kegiatan>, String>(
-        (ref, activityId) {
+final activityDetailProvider =
+    StateNotifierProvider.autoDispose.family<ActivtyDetailNotifier, AsyncValue<Kegiatan>, String>((ref, activityId) {
   return ActivtyDetailNotifier(activityId: activityId);
 });

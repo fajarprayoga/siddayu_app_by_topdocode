@@ -150,7 +150,7 @@ class AmprahanWidget extends StatelessWidget {
                         title: 'Bukti Transfer Pajak',
                         textButton: 'Upload File Bukti Transfer Pajak',
                         onTap: () async {
-                          final files = await Helper.pickFiles();
+                          final files = await Helper.pickFiles(['pdf', 'png', 'jpg', 'jpeg']);
                           notifier.addFileBuktiPajak(files, index);
                         }).disabled(!isSKU),
 

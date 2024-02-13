@@ -183,7 +183,7 @@ class FkFileContent extends ConsumerWidget {
       );
     }
 
-    logg("gggiii $files");
+    // logg("gggiii $files");
 
     return Container(
       margin: Ei.only(b: 35),
@@ -195,7 +195,7 @@ class FkFileContent extends ConsumerWidget {
             delay: (i + 1) * 100,
             child: InkTouch(
               onTap: () {
-                context.bottomSheet(PdfViewer(file));
+                context.bottomSheet(FileViewer(file));
               },
               radius: Br.radius(5),
               child: Container(
@@ -235,14 +235,30 @@ class FkFileContent extends ConsumerWidget {
   }
 }
 
-class PdfViewer extends StatelessWidget {
-  final dynamic file;
-  const PdfViewer(this.file, {super.key});
+class FileViewer extends StatelessWidget {
+  final File file;
+  const FileViewer(this.file, {super.key});
 
   @override
   Widget build(BuildContext context) {
+    bool isUrl = false, isPdfUrl = false;
+    bool isImg = false, isImageUrl = false;
+
+    isUrl = file.path.startsWith('http');
+    isImg = file.path.endsWith('.png') || file.path.endsWith('.jpg') || file.path.endsWith('.jpeg');
+
+    isPdfUrl = isUrl && file.path.endsWith('.pdf');
+    isImageUrl = isUrl && isImg;
+
     return Scaffold(
-        appBar: AppBar(title: const Text('Document PDF')),
-        body: file is String ? SfPdfViewer.network(file) : SfPdfViewer.file(file));
+        appBar: AppBar(title: const Text('File Viewer')),
+        body: Center(
+            child: isPdfUrl
+                ? SfPdfViewer.network(file.path)
+                : isImageUrl
+                    ? LzImage(file.path)
+                    : isImg && !isImageUrl
+                        ? Image.file(file)
+                        : SfPdfViewer.file(file)));
   }
 }

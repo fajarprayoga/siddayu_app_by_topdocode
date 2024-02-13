@@ -31,7 +31,7 @@
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Explain why your app uses music</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Explain why your app uses photo library</string>
+	<string>This app requires access to your photo library to upload image.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>
