@@ -6,6 +6,7 @@ class Amprahan {
   String? id;
   TextEditingController noAmprahan;
   List<File> fileDokumentasiKegiatan;
+  List<File> fileDokumentasiAmprahan;
   TextEditingController totalRealisasiAnggaran;
   TextEditingController sumberDana;
   List<File> fileDokumentasiPajak;
@@ -18,6 +19,7 @@ class Amprahan {
     this.id,
     required this.noAmprahan,
     required this.fileDokumentasiKegiatan,
+    required this.fileDokumentasiAmprahan,
     required this.totalRealisasiAnggaran,
     required this.sumberDana,
     required this.fileDokumentasiPajak,

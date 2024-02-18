@@ -51,7 +51,7 @@ class FormKegiatanScreen extends ConsumerWidget {
                 crossAxisAlignment: Caa.start,
                 children: [
                   FKSection(
-                      title: 'SK',
+                      title: 'Surat Keputusan Prebekel',
                       textButton: 'Upload File SK',
                       onTap: () async {
                         final files = await Helper.pickFiles();
@@ -60,6 +60,30 @@ class FormKegiatanScreen extends ConsumerWidget {
 
                   // list of file sk
                   provider.watch((value) => FkFileContent('sk', files: value.fileSK, provider: provider)),
+                  FKSection(
+                      title: 'File Pendukung',
+                      textButton: 'Upload File Pendukung',
+                      onTap: () async {
+                        final files = await Helper.pickFiles();
+                        notifier.addFileSupport(files);
+                      }),
+
+                  // list of file sk
+                  provider.watch((value) => FkFileContent('support', files: value.fileSupport, provider: provider)),
+
+                  // other
+                  FKSection(
+                      title: 'Berita Acara',
+                      textButton: 'Upload File Berita Acara',
+                      onTap: () async {
+                        final files = await Helper.pickFiles();
+                        notifier.addFileBeritaAcara(files);
+                      }),
+
+                  // Surat perjanjian
+                  provider.watch(
+                      (value) => FkFileContent('operational_report', files: value.fileBeritaAcara, provider: provider)),
+                  // section berita acar
 
                   // Surat Pewrjanjian kerjasama
                   FKSection(
@@ -74,34 +98,9 @@ class FormKegiatanScreen extends ConsumerWidget {
                   provider.watch((value) =>
                       FkFileContent('letter_of_agreement', files: value.fileSuratPerjanjian, provider: provider)),
 
-                  // other
-                  FKSection(
-                      title: 'Berita Acara',
-                      textButton: 'Upload File Berita Acara',
-                      onTap: () async {
-                        final files = await Helper.pickFiles();
-                        notifier.addFileBeritaAcara(files);
-                      }),
-
-                  // Surat perjanjian
-                  provider.watch(
-                      (value) => FkFileContent('operational_report', files: value.fileBeritaAcara, provider: provider)),
-                  // section berita acara
-                  FKSection(
-                      title: 'Surat Perjanjian Kerjasama',
-                      textButton: 'Upload File Kerjasama',
-                      onTap: () async {
-                        final files = await Helper.pickFiles();
-                        notifier.addFileSuratPerjanjian(files);
-                      }),
-
-                  // list of file berita acara
-                  provider.watch((value) =>
-                      FkFileContent('letter_of_agreement', files: value.fileSuratPerjanjian, provider: provider)),
-
                   // section option
                   FKSection(
-                      title: 'Option (PBJ)',
+                      title: 'Pengadaan Barang dan Jasa',
                       textButton: 'Upload File Option',
                       onTap: () async {
                         final files = await Helper.pickFiles();

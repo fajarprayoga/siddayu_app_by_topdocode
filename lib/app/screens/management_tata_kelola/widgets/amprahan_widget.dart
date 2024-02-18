@@ -74,7 +74,32 @@ class AmprahanWidget extends StatelessWidget {
                       controller: amprahan.noAmprahan,
                     ).margin(b: 15).disabled(isSKU),
 
+                    CustomTextfield2(
+                      label: 'Tanggal Amprahan',
+                      hint: 'Inputkan tanggal amprahan',
+                      suffixIcon: Ti.calendar,
+                      controller: amprahan.amprahanDate,
+                      onTap: () {
+                        LzPicker.datePicker(context).then((value) {
+                          amprahan.amprahanDate.text = value.format();
+                        });
+                      },
+                    ).margin(b: 15),
                     // file section
+                    FKSection(
+                        title: 'Dokumentasi Amprahan',
+                        textButton: 'Upload File Dokumentasi Amprahan',
+                        onTap: () async {
+                          final files = await Helper.pickFiles();
+                          notifier.addFileDokumentasiAmprahan(files, index);
+                        }).disabled(isSKU),
+
+                    // list of file dokumentasi kegiatan
+                    FkFileContent('amprahan_documentation', files: amprahan.fileDokumentasiAmprahan, onRemove: (i) {
+                      notifier.removeFileAmprahan('amprahan_documentation', i, index);
+                    }, provider: provider)
+                        .disabled(isSKU),
+
                     FKSection(
                         title: 'Dokumentasi Kegiatan',
                         textButton: 'Upload File Dokumentasi Kegiatan',
@@ -87,7 +112,7 @@ class AmprahanWidget extends StatelessWidget {
                     FkFileContent('doc_kegiatan', files: amprahan.fileDokumentasiKegiatan, onRemove: (i) {
                       notifier.removeFileAmprahan('doc_kegiatan', i, index);
                     }, provider: provider)
-                        .disabled(!isSKU),
+                        .disabled(isSKU),
 
                     CustomTextfield2(
                       label: 'Total Realisasi Anggaran',
@@ -103,18 +128,6 @@ class AmprahanWidget extends StatelessWidget {
                     ).margin(b: 15).disabled(isSKU),
 
                     CustomTextfield2(
-                      label: 'Tanggal Amprahan',
-                      hint: 'Inputkan tanggal amprahan',
-                      suffixIcon: Ti.calendar,
-                      controller: amprahan.amprahanDate,
-                      onTap: () {
-                        LzPicker.datePicker(context).then((value) {
-                          amprahan.amprahanDate.text = value.format();
-                        });
-                      },
-                    ).margin(b: 15),
-
-                    CustomTextfield2(
                       label: 'Tanggal Pencaiaran',
                       hint: 'Inputkan tanggal pencaiaran',
                       suffixIcon: Ti.calendar,
@@ -124,21 +137,9 @@ class AmprahanWidget extends StatelessWidget {
                           amprahan.disbuermentDate.text = value.format();
                         });
                       },
-                    ).margin(b: 15),
+                    ).margin(b: 15).disabled(!isSKU),
 
-                    // pajak
-                    FKSection(
-                        title: 'Pajak',
-                        textButton: 'Upload File Dokumentasi Pajak',
-                        onTap: () async {
-                          final files = await Helper.pickFiles();
-                          notifier.addFileDokumentasiPajak(files, index);
-                        }).disabled(!isSKU),
-                    FkFileContent('pajak', files: amprahan.fileDokumentasiPajak, onRemove: (i) {
-                      notifier.removeFileAmprahan('pajak', i, index);
-                    }, provider: provider)
-                        .disabled(!isSKU),
-
+                    Text("Dokumentasi Pajak"),
                     CustomCheckbox(
                         value: amprahan.isPajak,
                         onTap: () {
@@ -157,6 +158,19 @@ class AmprahanWidget extends StatelessWidget {
                     // list of file pajak
                     FkFileContent('tax_receipt', files: amprahan.fileBuktiPajak, onRemove: (i) {
                       notifier.removeFileAmprahan('tax_receipt', i, index);
+                    }, provider: provider)
+                        .disabled(!isSKU),
+
+                    // pajak
+                    FKSection(
+                        title: 'Bukti Pajak',
+                        textButton: 'Upload File Dokumentasi Pajak',
+                        onTap: () async {
+                          final files = await Helper.pickFiles();
+                          notifier.addFileDokumentasiPajak(files, index);
+                        }).disabled(!isSKU),
+                    FkFileContent('pajak', files: amprahan.fileDokumentasiPajak, onRemove: (i) {
+                      notifier.removeFileAmprahan('pajak', i, index);
                     }, provider: provider)
                         .disabled(!isSKU),
 
