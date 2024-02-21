@@ -36,21 +36,26 @@ class AppStateNotifier extends StateNotifier<AppState> {
     prefs.remove('token');
     prefs.remove('auth');
   }
+
+  void setState() {
+    state = state.copyWith(date: DateTime.now());
+  }
 }
 
 class AppState {
   final int page;
+  final DateTime date = DateTime.now();
 
-  AppState({this.page = 0});
+  AppState({this.page = 0, DateTime? date});
 
-  AppState copyWith({int? page}) {
+  AppState copyWith({int? page, DateTime? date}) {
     return AppState(
       page: page ?? this.page,
+      date: date ?? this.date,
     );
   }
 }
 
-final appStateProvider =
-    StateNotifierProvider.autoDispose<AppStateNotifier, AppState>((ref) {
+final appStateProvider = StateNotifierProvider.autoDispose<AppStateNotifier, AppState>((ref) {
   return AppStateNotifier(ref);
 });

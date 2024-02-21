@@ -16,6 +16,9 @@ class LoginView extends ConsumerWidget {
     final forms = notifier.forms;
 
     // set or unset form value
+    // krkeuangan_test@siddayu.org
+    // sekertaris_desa_test@siddayu.org
+    // kasipem_test@siddayu.org
     forms.fill({'email': 'Kasipem@siddayu.org', 'password': 'password'});
 
     return Wrapper(
@@ -31,8 +34,7 @@ class LoginView extends ConsumerWidget {
               // form title
               Column(
                 children: [
-                  Text('Sistem Informasi Digital Desa Ayunan',
-                      style: Gfont.fs16.bold, textAlign: Ta.center),
+                  Text('Sistem Informasi Digital Desa Ayunan', style: Gfont.fs16.bold, textAlign: Ta.center),
                   Textr('Silakan login untuk menggunakan aplikasi SIDDAYU.',
                       textAlign: TextAlign.center, margin: Ei.only(t: 5)),
                 ],
@@ -43,10 +45,7 @@ class LoginView extends ConsumerWidget {
                 type: FormType.underlined,
                 children: [
                   LzForm.input(hint: 'Enter your email', model: forms['email']),
-                  LzForm.input(
-                      hint: 'Enter your password',
-                      obsecureToggle: true,
-                      model: forms['password']),
+                  LzForm.input(hint: 'Enter your password', obsecureToggle: true, model: forms['password']),
                 ],
               ),
 
@@ -64,9 +63,7 @@ class LoginView extends ConsumerWidget {
                 },
               ),
 
-              Text('v${App.version} - ${App.build}',
-                      style: Gfont.fs14.muted, textAlign: Ta.center)
-                  .margin(t: 15)
+              Text('v${App.version} - ${App.build}', style: Gfont.fs14.muted, textAlign: Ta.center).margin(t: 15)
             ],
           ),
         ),

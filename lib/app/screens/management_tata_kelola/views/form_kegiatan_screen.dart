@@ -59,7 +59,8 @@ class FormKegiatanScreen extends ConsumerWidget {
                       }),
 
                   // list of file sk
-                  provider.watch((value) => FkFileContent('sk', files: value.fileSK, provider: provider)),
+                  provider.watch(
+                      (value) => FkFileContent('sk', files: value.fileSK, provider: provider, removable: isOwner)),
 
                   // Surat Pewrjanjian kerjasama
                   FKSection(
@@ -71,8 +72,12 @@ class FormKegiatanScreen extends ConsumerWidget {
                       }),
 
                   // list of file berita acara
-                  provider.watch((value) =>
-                      FkFileContent('letter_of_agreement', files: value.fileSuratPerjanjian, provider: provider)),
+                  provider.watch((value) => FkFileContent(
+                        'letter_of_agreement',
+                        files: value.fileSuratPerjanjian,
+                        provider: provider,
+                        removable: isOwner,
+                      )),
 
                   // other
                   FKSection(
@@ -84,8 +89,8 @@ class FormKegiatanScreen extends ConsumerWidget {
                       }),
 
                   // Surat perjanjian
-                  provider.watch(
-                      (value) => FkFileContent('operational_report', files: value.fileBeritaAcara, provider: provider)),
+                  provider.watch((value) => FkFileContent('operational_report',
+                      files: value.fileBeritaAcara, provider: provider, removable: isOwner)),
                   // section berita acara
                   FKSection(
                       title: 'Surat Perjanjian Kerjasama',
@@ -96,8 +101,8 @@ class FormKegiatanScreen extends ConsumerWidget {
                       }),
 
                   // list of file berita acara
-                  provider.watch((value) =>
-                      FkFileContent('letter_of_agreement', files: value.fileSuratPerjanjian, provider: provider)),
+                  provider.watch((value) => FkFileContent('letter_of_agreement',
+                      files: value.fileSuratPerjanjian, provider: provider, removable: isOwner)),
 
                   // section option
                   FKSection(
@@ -109,7 +114,8 @@ class FormKegiatanScreen extends ConsumerWidget {
                       }),
 
                   // list of file option
-                  provider.watch((value) => FkFileContent('other', files: value.fileOption, provider: provider)),
+                  provider.watch((value) =>
+                      FkFileContent('other', files: value.fileOption, provider: provider, removable: isOwner)),
 
                   // button submit
                   // PrimaryButton('Simpan / Approve', onTap: () => notifier.onSubmit()).margin(t: 35),
@@ -165,9 +171,17 @@ class FKSection extends StatelessWidget {
 class FkFileContent extends ConsumerWidget {
   final String label;
   final List<File> files;
+  final List<String> filesName;
   final Function(int index)? onRemove;
   final AutoDisposeStateNotifierProvider<FormKegiatanNotifier, FormKegiatanState> provider;
-  const FkFileContent(this.label, {super.key, this.files = const [], this.onRemove, required this.provider});
+  final bool removable;
+  const FkFileContent(this.label,
+      {super.key,
+      this.files = const [],
+      this.filesName = const [],
+      this.onRemove,
+      required this.provider,
+      this.removable = true});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -183,14 +197,22 @@ class FkFileContent extends ConsumerWidget {
       );
     }
 
-    // logg("gggiii $files");
-
     return Container(
       margin: Ei.only(b: 35),
       decoration: BoxDecoration(border: Br.all(color: Colors.black54), borderRadius: Br.radius(8)),
       child: Column(
         children: files.generate((file, i) {
-          String name = file.path.split('/').last;
+          final files = notifier.tempFiles[label] ?? [];
+          String name = files.isEmpty ? '-' : files[i]['title'] ?? file.path.split('/').last;
+
+          if (files.isEmpty) {
+            name = file.path.split('/').last;
+
+            if (filesName.isNotEmpty) {
+              name = filesName[i];
+            }
+          }
+
           return SlideUp(
             delay: (i + 1) * 100,
             child: InkTouch(
@@ -212,18 +234,19 @@ class FkFileContent extends ConsumerWidget {
                         overflow: Tof.ellipsis,
                       ),
                     ),
-                    const Icon(
-                      Icons.close,
-                      color: Colors.red,
-                    ).onTap(() {
-                      LzConfirm(
-                        title: 'Hapus File',
-                        message: 'Apakah Anda yakin ingin menghapus file ini?',
-                        onConfirm: () {
-                          onRemove != null ? onRemove!.call(i) : notifier.removeFile(label, i);
-                        },
-                      ).show(context);
-                    })
+                    if (removable)
+                      const Icon(
+                        Icons.close,
+                        color: Colors.red,
+                      ).onTap(() {
+                        LzConfirm(
+                          title: 'Hapus File',
+                          message: 'Apakah Anda yakin ingin menghapus file ini?',
+                          onConfirm: () {
+                            onRemove != null ? onRemove!.call(i) : notifier.removeFile(label, i);
+                          },
+                        ).show(context);
+                      })
                   ],
                 ),
               ),

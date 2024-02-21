@@ -66,85 +66,97 @@ class FormTataKelola extends ConsumerWidget {
                     .hide(data == null)
               ],
             ),
-            body: LzFormList(
-              style: const LzFormStyle(type: FormType.topAligned, inputBorderColor: Colors.black38),
-              children: [
-                LzForm.input(
-                  label: 'Nama Kegiatan',
-                  hint: 'Masukan nama kegiatan',
-                  model: forms['name'],
-                ),
-                LzForm.input(
-                    label: 'Tanggal Kegiatan',
-                    hint: 'Masukan tanggal kegiatan',
-                    suffixIcon: Ti.calendar,
-                    model: forms['activity_date'],
-                    onTap: (control) {
-                      LzPicker.datePicker(context, initialDate: control.text.toDate()).then((value) {
-                        control.text = value.format('dd-MM-yyyy');
-                      });
-                    }),
-                LzForm.input(
-                  label: 'Deskripsi Kegiatan',
-                  hint: 'Masukan deskripsi kegiatan',
-                  maxLines: 5,
-                  maxLength: 500,
-                  model: forms['description'],
-                ),
+            body: formActivityProvider.watch((state) {
+              bool isOwner = notifier.user?.id == data?.createdBy;
 
-                // sub activities
-                formActivityProvider.watch((state) {
-                  if (state.subActivities.isEmpty) {
-                    return const SizedBox();
-                  }
+              return LzFormList(
+                style: const LzFormStyle(type: FormType.topAligned, inputBorderColor: Colors.black38),
+                children: [
+                  LzForm.input(
+                      label: 'Nama Kegiatan', hint: 'Masukan nama kegiatan', model: forms['name'], disabled: !isOwner),
+                  LzForm.input(
+                      label: 'Tanggal Kegiatan',
+                      hint: 'Masukan tanggal kegiatan',
+                      suffixIcon: Ti.calendar,
+                      model: forms['activity_date'],
+                      disabled: !isOwner,
+                      onTap: (control) {
+                        LzPicker.datePicker(context, initialDate: control.text.toDate()).then((value) {
+                          control.text = value.format('dd-MM-yyyy');
+                        });
+                      }),
+                  LzForm.input(
+                    label: 'Deskripsi Kegiatan',
+                    hint: 'Masukan deskripsi kegiatan',
+                    maxLines: 5,
+                    maxLength: 500,
+                    model: forms['description'],
+                    disabled: !isOwner,
+                  ),
 
-                  return Column(children: [
-                    Textr('Sub Kegiatan', style: Gfont.bold, margin: Ei.only(t: 15, b: 10)),
-                    ...state.subActivities.generate((item, i) {
-                      return SlideUp(
-                        child: Row(
-                          children: [
-                            Expanded(child: CustomTextfield(hint: 'Sub kegiatan', controller: item.name)),
-                            CustomTextfield(
-                              hint: '0',
-                              controller: item.total,
-                              keyboard: Tit.number,
-                              formatters: [InputFormat.currency('.')],
-                              onFocus: (value) {
-                                if (!value) {
-                                  notifier.justUpdate();
-                                }
-                              },
-                            ).sized(width: 100).margin(h: 5),
-                            Iconr(
-                              Ti.x,
-                              color: Colors.red,
-                              padding: Ei.only(l: 5, v: 10),
-                            ).onTap(() {
-                              notifier.removeSubActivity(i);
-                            }),
-                          ],
-                        ).margin(b: 5),
-                      );
-                    }),
-                    Row(
-                      children: [
-                        Text(
-                          'Total: ${notifier.grandTotal().idr()}',
-                          style: Gfont.bold,
-                        ).margin(v: 10),
-                      ],
-                    ).end
-                  ]).start;
-                }),
-                Textr(
-                  'Tambah Sub Kegiatan',
-                  icon: Ti.plus,
-                  style: Gfont.bold,
-                  padding: Ei.sym(v: 10),
-                ).onTap(() => notifier.addSubActivity())
-              ],
-            ),
+                  // sub activities
+                  formActivityProvider.watch((state) {
+                    if (state.subActivities.isEmpty) {
+                      return const SizedBox();
+                    }
+
+                    return Column(children: [
+                      Textr('Sub Kegiatan', style: Gfont.bold, margin: Ei.only(t: 15, b: 10)),
+                      ...state.subActivities.generate((item, i) {
+                        return SlideUp(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  child: CustomTextfield(
+                                hint: 'Sub kegiatan',
+                                controller: item.name,
+                                disabled: !isOwner,
+                              )),
+                              CustomTextfield(
+                                hint: '0',
+                                controller: item.total,
+                                keyboard: Tit.number,
+                                formatters: [InputFormat.currency('.')],
+                                disabled: !isOwner,
+                                onFocus: (value) {
+                                  if (!value) {
+                                    notifier.justUpdate();
+                                  }
+                                },
+                              ).sized(width: 100).margin(l: 5),
+                              if (isOwner)
+                                Iconr(
+                                  Ti.x,
+                                  color: Colors.red,
+                                  padding: Ei.only(l: 5, v: 10),
+                                ).onTap(() {
+                                  notifier.removeSubActivity(i);
+                                }),
+                            ],
+                          ).margin(b: 5),
+                        );
+                      }),
+                      Row(
+                        children: [
+                          Text(
+                            'Total: ${notifier.grandTotal().idr()}',
+                            style: Gfont.bold,
+                          ).margin(v: 10),
+                        ],
+                      ).end
+                    ]).start;
+                  }),
+
+                  if (isOwner)
+                    Textr(
+                      'Tambah Sub Kegiatan',
+                      icon: Ti.plus,
+                      style: Gfont.bold,
+                      padding: Ei.sym(v: 10),
+                    ).onTap(() => notifier.addSubActivity())
+                ],
+              );
+            }),
             bottomNavigationBar: formActivityProvider.watch(
               (state) {
                 bool isSKD = notifier.user?.role?.name == 'SKD';
@@ -162,7 +174,7 @@ class FormTataKelola extends ConsumerWidget {
                   color: primary,
                   textColor: Colors.white,
                   onTap: (_) async {
-                    final res = await notifier.onSubmit(data?.id);
+                    final res = await notifier.onSubmit(data?.id, isSKD);
                     if (res != null && context.mounted) {
                       context.pop(res?['data'] ?? {});
                     }
