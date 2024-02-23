@@ -15,10 +15,12 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    GlobalKey<ScaffoldState> drawer = GlobalKey<ScaffoldState>();
     final notifier = ref.read(appStateProvider.notifier);
 
     // final User user;
     return Scaffold(
+      key: drawer,
       drawer: Drawer(
         backgroundColor: Colors.white,
         shape: const RoundedRectangleBorder(
@@ -34,39 +36,41 @@ class HomePage extends ConsumerWidget {
             physics: BounceScroll(),
             children: <Widget>[
               Container(
-                width: context.width,
-                padding: Ei.only(t: context.viewPadding.top + 20, others: 20),
-                child: FutureBuilder(
-                    future: Auth.user(),
-                    builder: (_, snap) {
-                      final auth = snap.data;
-                      String name = auth?.name ?? '-';
-                      String email = auth?.email ?? '-';
-                      return Column(
-                        children: [
-                          SizedBox(
-                            width: 60,
-                            height: 60,
-                            child: CircleAvatar(
-                              child: auth?.profilePicture != null
-                                  ? LzImage(auth?.profilePicture, size: 60, radius: 100)
-                                  : const Icon(Ti.user),
-                            ),
-                          ),
-                          Textr(
-                            name,
-                            overflow: Tof.ellipsis,
-                            margin: Ei.only(t: 15),
-                          ),
-                          Text(
-                            email,
-                            overflow: Tof.ellipsis,
-                            style: Gfont.muted,
-                          ),
-                        ],
-                      ).start;
-                    }),
-              ),
+                  width: context.width,
+                  padding: Ei.only(t: context.viewPadding.top + 20, others: 20),
+                  child: appStateProvider.watch(
+                    (state) => FutureBuilder(
+                        future: Auth.user(),
+                        builder: (_, snap) {
+                          final auth = snap.data;
+                          String name = auth?.name ?? '-';
+                          String email = auth?.email ?? '-';
+
+                          return Column(
+                            children: [
+                              SizedBox(
+                                width: 60,
+                                height: 60,
+                                child: CircleAvatar(
+                                  child: auth?.profilePicture != null
+                                      ? LzImage(auth?.profilePicture, size: 60, radius: 100)
+                                      : const Icon(Ti.user),
+                                ),
+                              ),
+                              Textr(
+                                name,
+                                overflow: Tof.ellipsis,
+                                margin: Ei.only(t: 15),
+                              ),
+                              Text(
+                                email,
+                                overflow: Tof.ellipsis,
+                                style: Gfont.muted,
+                              ),
+                            ],
+                          ).start;
+                        }),
+                  )),
 
               // List Generate Menu
               ...List.generate(pages.length, (i) {
@@ -103,16 +107,24 @@ class HomePage extends ConsumerWidget {
           ),
         ),
       ),
-      appBar: AppBar(title: appStateProvider.watch(
-        (state) {
-          String title = pages[state.page]['title'];
+      appBar: AppBar(
+        title: appStateProvider.watch(
+          (state) {
+            String title = pages[state.page]['title'];
 
-          return Text(
-            title,
-            style: Gfont.fs18.bold,
-          );
-        },
-      )),
+            return Text(
+              title,
+              style: Gfont.fs18.bold,
+            );
+          },
+        ),
+        leading: IconButton(
+            icon: const Icon(Ti.menu2),
+            onPressed: () {
+              drawer.currentState?.openDrawer();
+              notifier.setState();
+            }),
+      ),
       body: appStateProvider.watch((state) => pages[state.page]['page']),
     );
   }

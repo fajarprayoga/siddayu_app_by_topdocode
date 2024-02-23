@@ -109,7 +109,9 @@ class AmprahanWidget extends StatelessWidget {
                         }).disabled(isSKU),
 
                     // list of file dokumentasi kegiatan
-                    FkFileContent('doc_kegiatan', files: amprahan.fileDokumentasiKegiatan, onRemove: (i) {
+                    FkFileContent('doc_kegiatan',
+                            files: amprahan.fileDokumentasiKegiatan,
+                            filesName: amprahan.fileDokumentasiKegiatanName, onRemove: (i) {
                       notifier.removeFileAmprahan('doc_kegiatan', i, index);
                     }, provider: provider)
                         .disabled(isSKU),
@@ -118,6 +120,7 @@ class AmprahanWidget extends StatelessWidget {
                       label: 'Total Realisasi Anggaran',
                       hint: 'Masukkan total realisasi anggaran',
                       keyboard: Tit.number,
+                      formatters: [InputFormat.currency('.')],
                       controller: amprahan.totalRealisasiAnggaran,
                     ).margin(b: 15).disabled(isSKU),
 
@@ -139,6 +142,21 @@ class AmprahanWidget extends StatelessWidget {
                       },
                     ).margin(b: 15).disabled(!isSKU),
 
+                    // pajak
+                    FKSection(
+                        title: 'Pajak',
+                        textButton: 'Upload File Dokumentasi Pajak',
+                        onTap: () async {
+                          final files = await Helper.pickFiles();
+                          notifier.addFileDokumentasiPajak(files, index);
+                        }).disabled(!isSKU),
+                    FkFileContent('pajak',
+                            files: amprahan.fileDokumentasiPajak,
+                            filesName: amprahan.fileDokumentasiPajakName, onRemove: (i) {
+                      notifier.removeFileAmprahan('pajak', i, index);
+                    }, provider: provider)
+                        .disabled(!isSKU),
+
                     Text("Dokumentasi Pajak"),
                     CustomCheckbox(
                         value: amprahan.isPajak,
@@ -156,7 +174,8 @@ class AmprahanWidget extends StatelessWidget {
                         }).disabled(!isSKU),
 
                     // list of file pajak
-                    FkFileContent('tax_receipt', files: amprahan.fileBuktiPajak, onRemove: (i) {
+                    FkFileContent('tax_receipt', files: amprahan.fileBuktiPajak, filesName: amprahan.fileBuktiPajakName,
+                            onRemove: (i) {
                       notifier.removeFileAmprahan('tax_receipt', i, index);
                     }, provider: provider)
                         .disabled(!isSKU),
@@ -184,7 +203,7 @@ class AmprahanWidget extends StatelessWidget {
                 ),
               ),
             ],
-          ).disabled(!isOwner && !isSKU);
+          ).disabled(!isOwner && !isSKU && !isSKD);
         });
   }
 }

@@ -8,19 +8,27 @@ class CustomTextfield extends StatelessWidget {
   final TextInputType? keyboard;
   final List<TextInputFormatter> formatters;
   final dynamic Function(bool)? onFocus;
+  final bool disabled;
   const CustomTextfield(
-      {super.key, this.hint, this.controller, this.keyboard, this.formatters = const [], this.onFocus});
+      {super.key,
+      this.hint,
+      this.controller,
+      this.keyboard,
+      this.formatters = const [],
+      this.onFocus,
+      this.disabled = false});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: disabled ? 'f1f1f1'.hex : Colors.white,
       child: LzTextField1(
         hint: hint,
         controller: controller,
         keyboard: keyboard,
         formatters: formatters,
         onFocus: onFocus,
+        enabled: !disabled,
         border: Br.all(color: Colors.black38),
       ),
     ).lz.clip(all: 5);
@@ -33,8 +41,17 @@ class CustomTextfield2 extends StatelessWidget {
   final TextInputType? keyboard;
   final Function()? onTap;
   final IconData? suffixIcon;
+  final List<TextInputFormatter> formatters;
+
   const CustomTextfield2(
-      {super.key, this.label, this.hint, this.controller, this.keyboard, this.onTap, this.suffixIcon});
+      {super.key,
+      this.label,
+      this.hint,
+      this.controller,
+      this.keyboard,
+      this.onTap,
+      this.suffixIcon,
+      this.formatters = const []});
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +72,7 @@ class CustomTextfield2 extends StatelessWidget {
                     controller: controller,
                     keyboard: keyboard,
                     enabled: onTap == null,
+                    formatters: formatters,
                   ),
                 ),
                 if (onTap != null)

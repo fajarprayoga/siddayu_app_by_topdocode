@@ -16,7 +16,10 @@ class LoginView extends ConsumerWidget {
     final forms = notifier.forms;
 
     // set or unset form value
-    forms.fill({'email': 'kasipem@siddayu.org', 'password': 'password'});
+    // krkeuangan_test@siddayu.org
+    // sekertaris_desa_test@siddayu.org
+    // kasipem_test@siddayu.org
+    forms.fill({'email': 'Kasipem@siddayu.org', 'password': 'password'});
 
     return Wrapper(
       child: Scaffold(

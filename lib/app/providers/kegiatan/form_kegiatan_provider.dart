@@ -109,23 +109,31 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
 
         final amprahanDocumentation = documents.where((e) => e['type'] == 'amprahan_documentation').toList();
         List<File> fileDokumentasiAmprahan = amprahanDocumentation.map((e) => File(e['url'])).toList();
+
+        List<String> fileDokumentasiKegiatanName = activityDocumentation.map((e) => e['title']).toList().cast();
+
         // get data dokumentasi pajak
         final taxDocumentation = documents.where((e) => e['type'] == 'tax_documentation').toList();
         List<File> fileDokumentasiPajak = taxDocumentation.map((e) => File(e['url'])).toList();
+        List<String> fileDokumentasiPajakName = taxDocumentation.map((e) => e['title']).toList().cast();
 
         // get data file bukti pajak
         final taxReceipt = documents.where((e) => e['type'] == 'tax_receipt').toList();
         List<File> fileBuktiPajak = taxReceipt.map((e) => File(e['url'])).toList();
+        List<String> fileBuktiPajakName = taxReceipt.map((e) => e['title']).toList().cast();
 
         amprahans.add(Amprahan(
           id: e['id'].toString(),
           noAmprahan: e['amprahan_number'].toString().tec,
           fileDokumentasiKegiatan: fileDokumentasiKegiatan,
           fileDokumentasiAmprahan: fileDokumentasiAmprahan,
+          fileDokumentasiKegiatanName: fileDokumentasiKegiatanName,
           fileBuktiPajak: fileBuktiPajak,
-          totalRealisasiAnggaran: e['total_budget_realisation'].toString().tec,
+          fileBuktiPajakName: fileBuktiPajakName,
+          totalRealisasiAnggaran: e['total_budget_realisation'].toString().idr(symbol: '').tec,
           sumberDana: e['budget_source'].toString().tec,
           fileDokumentasiPajak: fileDokumentasiPajak,
+          fileDokumentasiPajakName: fileDokumentasiPajakName,
           amprahanDate: e['amprahan_date'].toString().tec,
           disbuermentDate: e['disbuerment_date'].toString().tec,
           isPajak: e['pajak'] == 1,
@@ -159,8 +167,6 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
       if (!res.status) {
         LzToast.error(res.message ?? 'Gagal mengunggah file');
       }
-
-      logg([...tempFiles[type] ?? [], ...res.data['data']]);
 
       tempFiles[type] = [...tempFiles[type] ?? [], ...res.data['data']];
 
@@ -287,10 +293,13 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
         noAmprahan: TextEditingController(),
         fileDokumentasiKegiatan: [],
         fileDokumentasiAmprahan: [],
+        fileDokumentasiKegiatanName: [],
         fileBuktiPajak: [],
+        fileBuktiPajakName: [],
         totalRealisasiAnggaran: TextEditingController(),
         sumberDana: TextEditingController(),
         fileDokumentasiPajak: [],
+        fileDokumentasiPajakName: [],
         amprahanDate: ''.tec,
         disbuermentDate: ''.tec,
         isPajak: false));
@@ -314,7 +323,8 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
 
   void addFileDokumentasiKegiatan(List<File> files, int index) {
     List<Amprahan> amprahans = [...state.amprahans];
-    amprahans[index].fileDokumentasiKegiatan = files;
+    amprahans[index].fileDokumentasiKegiatan.addAll(files);
+    amprahans[index].fileDokumentasiKegiatanName.addAll(files.map((e) => e.path.split('/').last).toList());
 
     state = state.copyWith(amprahans: amprahans);
   }
@@ -328,14 +338,16 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
 
   void addFileDokumentasiPajak(List<File> files, int index) {
     List<Amprahan> amprahans = [...state.amprahans];
-    amprahans[index].fileDokumentasiPajak = files;
+    amprahans[index].fileDokumentasiPajak.addAll(files);
+    amprahans[index].fileDokumentasiPajakName.addAll(files.map((e) => e.path.split('/').last).toList());
 
     state = state.copyWith(amprahans: amprahans);
   }
 
   void addFileBuktiPajak(List<File> files, int index) {
     List<Amprahan> amprahans = [...state.amprahans];
-    amprahans[index].fileBuktiPajak = files;
+    amprahans[index].fileBuktiPajak.addAll(files);
+    amprahans[index].fileBuktiPajakName.addAll(files.map((e) => e.path.split('/').last).toList());
 
     state = state.copyWith(amprahans: amprahans);
   }
@@ -346,13 +358,24 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
       case 'doc_kegiatan':
         List<File> files = amprahans[indexAmprahan].fileDokumentasiKegiatan;
         files.removeAt(index);
+        amprahans[indexAmprahan].fileDokumentasiKegiatanName.removeAt(index);
+
         amprahans[indexAmprahan].fileDokumentasiKegiatan = files;
         state = state.copyWith(amprahans: amprahans);
         break;
       case 'pajak':
         List<File> files = amprahans[indexAmprahan].fileDokumentasiPajak;
         files.removeAt(index);
+        amprahans[indexAmprahan].fileDokumentasiPajakName.removeAt(index);
         amprahans[indexAmprahan].fileDokumentasiPajak = files;
+        state = state.copyWith(amprahans: amprahans);
+        break;
+
+      case 'tax_receipt':
+        List<File> files = amprahans[indexAmprahan].fileBuktiPajak;
+        files.removeAt(index);
+        amprahans[indexAmprahan].fileBuktiPajakName.removeAt(index);
+        amprahans[indexAmprahan].fileBuktiPajak = files;
         state = state.copyWith(amprahans: amprahans);
         break;
       default:
@@ -362,8 +385,10 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
   Future<List<MultipartFile>> fileToMultipart(List<File> files) async {
     List<MultipartFile> multipart = [];
     for (var e in files) {
-      final f = await kegiatanApi.toFile(e.path);
-      multipart.add(f);
+      if (!e.path.toString().contains('http')) {
+        final f = await kegiatanApi.toFile(e.path);
+        multipart.add(f);
+      }
     }
 
     return multipart;
@@ -454,6 +479,7 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
       }
     } catch (e, s) {
       Errors.check(e, s);
+      LzToast.error(e.toString());
     } finally {
       LzToast.dismiss();
     }

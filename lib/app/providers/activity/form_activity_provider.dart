@@ -76,7 +76,7 @@ class FormActivityNotifier extends StateNotifier<FormActivityState> with Apis {
     }
   }
 
-  Future onSubmit([String? activityID]) async {
+  Future onSubmit([String? activityID, bool isSKD = false]) async {
     try {
       final form = forms.validate(
           required: ['*'],
@@ -92,6 +92,10 @@ class FormActivityNotifier extends StateNotifier<FormActivityState> with Apis {
 
       Map<String, dynamic> payload = form.value;
       payload['sub_activities'] = [];
+
+      if (isSKD) {
+        payload['approve'] = true;
+      }
 
       // add sub_activies if not empty
       if (state.subActivities.isNotEmpty) {
