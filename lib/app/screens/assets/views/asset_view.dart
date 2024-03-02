@@ -25,6 +25,12 @@ class AssetView extends ConsumerWidget {
             subtitle: 'Dokumen',
           ),
         ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Ti.download),
+          onPressed: () {
+            notifier.downloadDocuments();
+          },
+        ),
         body: provider.watch((state) => state.documents.when(
             data: (docs) {
               if (docs.isEmpty) {

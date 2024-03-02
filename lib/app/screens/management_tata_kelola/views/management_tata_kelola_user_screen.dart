@@ -51,7 +51,8 @@ class ManagementTataKelolaDetail extends ConsumerWidget {
 
                         return InkTouch(
                           onTap: () async {
-                            List<String> options = ['Edit', 'Detail', 'Hapus'];
+                            List<String> options =
+                                notifier.user?.id == item.createdBy ? ['Edit', 'Detail', 'Hapus'] : ['Edit', 'Detail'];
                             int danger = options.indexOf('Hapus');
 
                             DropX.show(ikey, options: options.options(dangers: [danger]), onSelect: (value) {

@@ -45,107 +45,81 @@ class FormKegiatanScreen extends ConsumerWidget {
             notifier.getData();
           },
           children: [
-            Opacity(
-              opacity: isST ? 1 : 0.5,
-              child: Column(
-                crossAxisAlignment: Caa.start,
-                children: [
-                  FKSection(
-                      title: 'Surat Keputusan Prebekel',
-                      textButton: 'Upload File SK',
-                      onTap: () async {
-                        final files = await Helper.pickFiles();
-                        notifier.addFileSK(files);
-                      }),
-                  provider.watch(
-                      (value) => FkFileContent('sk', files: value.fileSK, provider: provider, removable: isOwner)),
-                  // list of file sk
+            Column(
+              crossAxisAlignment: Caa.start,
+              children: [
+                FKSection(
+                    title: 'SK',
+                    textButton: 'Upload File SK',
+                    onTap: () async {
+                      final files = await Helper.pickFiles();
+                      notifier.addFileSK(files);
+                    }).disabled(!isOwner),
 
-                  provider.watch((value) => FkFileContent('sk', files: value.fileSK, provider: provider)),
-                  FKSection(
-                      title: 'File Pendukung',
-                      textButton: 'Upload File Pendukung',
-                      onTap: () async {
-                        final files = await Helper.pickFiles();
-                        notifier.addFileSupport(files);
-                      }),
+                // list of file sk
+                provider
+                    .watch((value) => FkFileContent('sk', files: value.fileSK, provider: provider, removable: isOwner)),
 
-                  // list of file sk
-                  provider.watch((value) => FkFileContent('support', files: value.fileSupport, provider: provider)),
+                // list of file sk
+                FKSection(
+                    title: 'File Pendukung',
+                    textButton: 'Upload File Pendukung',
+                    onTap: () async {
+                      final files = await Helper.pickFiles();
+                      notifier.addFileSupport(files);
+                    }).disabled(!isOwner),
 
-                  // other
-                  FKSection(
-                      title: 'Berita Acara',
-                      textButton: 'Upload File Berita Acara',
-                      onTap: () async {
-                        final files = await Helper.pickFiles();
-                        notifier.addFileBeritaAcara(files);
-                      }),
+                // list of file sk
+                provider.watch((value) =>
+                    FkFileContent('support', files: value.fileSupport, provider: provider, removable: isOwner)),
 
-                  // Surat perjanjian
-                  provider.watch(
-                      (value) => FkFileContent('operational_report', files: value.fileBeritaAcara, provider: provider)),
-                  // section berita acar
+                // other
+                FKSection(
+                    title: 'Berita Acara',
+                    textButton: 'Upload File Berita Acara',
+                    onTap: () async {
+                      final files = await Helper.pickFiles();
+                      notifier.addFileBeritaAcara(files);
+                    }).disabled(!isOwner),
 
-                  // Surat Pewrjanjian kerjasama
-                  FKSection(
-                      title: 'Surat Perjanjian Kerjasama',
-                      textButton: 'Upload File Surat Perjanjian',
-                      onTap: () async {
-                        final files = await Helper.pickFiles();
-                        notifier.addFileSuratPerjanjian(files);
-                      }),
+                // Surat perjanjian
+                provider.watch((value) => FkFileContent('operational_report',
+                    files: value.fileBeritaAcara, provider: provider, removable: isOwner)),
+                // section berita acar
 
-                  // list of file berita acara
-                  provider.watch((value) => FkFileContent(
-                        'letter_of_agreement',
-                        files: value.fileSuratPerjanjian,
-                        provider: provider,
-                        removable: isOwner,
-                      )),
+                // Surat Pewrjanjian kerjasama
+                FKSection(
+                    title: 'Surat Perjanjian Kerjasama',
+                    textButton: 'Upload File Surat Perjanjian',
+                    onTap: () async {
+                      final files = await Helper.pickFiles();
+                      notifier.addFileSuratPerjanjian(files);
+                    }).disabled(!isOwner),
 
-                  // other
-                  FKSection(
-                      title: 'Berita Acara',
-                      textButton: 'Upload File Berita Acara',
-                      onTap: () async {
-                        final files = await Helper.pickFiles();
-                        notifier.addFileBeritaAcara(files);
-                      }),
+                // list of file berita acara
+                provider.watch((value) => FkFileContent(
+                      'letter_of_agreement',
+                      files: value.fileSuratPerjanjian,
+                      provider: provider,
+                      removable: isOwner,
+                    )),
 
-                  // Surat perjanjian
-                  provider.watch((value) => FkFileContent('operational_report',
-                      files: value.fileBeritaAcara, provider: provider, removable: isOwner)),
-                  // section berita acara
-                  FKSection(
-                      title: 'Surat Perjanjian Kerjasama',
-                      textButton: 'Upload File Kerjasama',
-                      onTap: () async {
-                        final files = await Helper.pickFiles();
-                        notifier.addFileSuratPerjanjian(files);
-                      }),
+                // section option
+                FKSection(
+                    title: 'Option (PBJ)',
+                    textButton: 'Upload File Option',
+                    onTap: () async {
+                      final files = await Helper.pickFiles();
+                      notifier.addFileOption(files);
+                    }).disabled(!isOwner),
 
-                  // list of file berita acara
-                  provider.watch((value) => FkFileContent('letter_of_agreement',
-                      files: value.fileSuratPerjanjian, provider: provider, removable: isOwner)),
+                // list of file option
+                provider.watch(
+                    (value) => FkFileContent('other', files: value.fileOption, provider: provider, removable: isOwner)),
 
-                  // section option
-                  FKSection(
-                      title: 'Pengadaan Barang dan Jasa',
-                      textButton: 'Upload File Option',
-                      onTap: () async {
-                        final files = await Helper.pickFiles();
-                        notifier.addFileOption(files);
-                      }),
-
-                  // list of file option
-                  provider.watch((value) =>
-                      FkFileContent('other', files: value.fileOption, provider: provider, removable: isOwner)),
-
-                  // button submit
-                  // PrimaryButton('Simpan / Approve', onTap: () => notifier.onSubmit()).margin(t: 35),
-                ],
-              ),
+                // button submit
+                // PrimaryButton('Simpan / Approve', onTap: () => notifier.onSubmit()).margin(t: 35),
+              ],
             ).lz.ignore(!isST),
 
             // amprahan widget
@@ -242,14 +216,15 @@ class FkFileContent extends ConsumerWidget {
             delay: (i + 1) * 100,
             child: InkTouch(
               onTap: () {
-                context.bottomSheet(FileViewer(file));
+                // context.bottomSheet(FileViewer(file));
+                logg('asas');
               },
               radius: Br.radius(5),
               child: Container(
                 padding: Ei.sym(v: 7, h: 10),
                 decoration: BoxDecoration(
-                  border: Br.only(['t'], except: i == 0),
-                ),
+                    // border: Br.only(['t'], except: i == 0),
+                    ),
                 child: Row(
                   mainAxisAlignment: Maa.spaceBetween,
                   children: [

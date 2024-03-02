@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lazyui/lazyui.dart' hide MultipartFile;
 import 'package:todo_app/app/data/api/api.dart';
 import 'package:todo_app/app/data/models/kegiatan/kegiatan.dart';
+
 import '../../data/models/amprahan.dart';
 
 class FormKegiatanState {
@@ -62,7 +63,13 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
       final sk = documents.where((e) => e['type'] == 'sk').toList();
       List<File> fileSK = sk.map((e) => File(e['url'])).toList();
       state = state.copyWith(fileSK: fileSK);
-      tempFiles['sk'] = sk; // untuk menghapus file dengan id
+      tempFiles['sk'] = sk;
+
+      // untuk menghapus file dengan support
+      final support = documents.where((e) => e['type'] == 'support').toList();
+      List<File> fileSupport = support.map((e) => File(e['url'])).toList();
+      state = state.copyWith(fileSupport: fileSupport);
+      tempFiles['support'] = support; // untuk menghapus file dengan id
 
       // get and set file support
       final support = documents.where((e) => e['type'] == 'support').toList();
@@ -87,7 +94,6 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
       List<File> fileOption = other.map((e) => File(e['url'])).toList();
       state = state.copyWith(fileOption: fileOption);
       tempFiles['other'] = other; // untuk menghapus file dengan id
-
       getAmprahan();
     } catch (e, s) {
       Errors.check(e, s);
@@ -112,6 +118,10 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
 
         List<String> fileDokumentasiKegiatanName = activityDocumentation.map((e) => e['title']).toList().cast();
 
+        final activityAmprahan = documents.where((e) => e['type'] == 'amprahan_documentation').toList();
+        List<File> fileDokumentasiAmprahan = activityAmprahan.map((e) => File(e['url'])).toList();
+        List<String> fileDokumentasiAmprahanName = activityAmprahan.map((e) => e['title']).toList().cast();
+
         // get data dokumentasi pajak
         final taxDocumentation = documents.where((e) => e['type'] == 'tax_documentation').toList();
         List<File> fileDokumentasiPajak = taxDocumentation.map((e) => File(e['url'])).toList();
@@ -128,6 +138,8 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
           fileDokumentasiKegiatan: fileDokumentasiKegiatan,
           fileDokumentasiAmprahan: fileDokumentasiAmprahan,
           fileDokumentasiKegiatanName: fileDokumentasiKegiatanName,
+          fileDokumentasiAmprahan: fileDokumentasiAmprahan,
+          fileDokumentasiAmprahanName: fileDokumentasiAmprahanName,
           fileBuktiPajak: fileBuktiPajak,
           fileBuktiPajakName: fileBuktiPajakName,
           totalRealisasiAnggaran: e['total_budget_realisation'].toString().idr(symbol: '').tec,
@@ -136,7 +148,7 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
           fileDokumentasiPajakName: fileDokumentasiPajakName,
           amprahanDate: e['amprahan_date'].toString().tec,
           disbuermentDate: e['disbuerment_date'].toString().tec,
-          isPajak: e['pajak'] == 1,
+          isPajak: e['pajak'],
         ));
       }
 
@@ -148,7 +160,13 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
     }
   }
 
-  Map<String, List> tempFiles = {'sk': [], 'operational_report': [], 'letter_of_agreement': [], 'other': []};
+  Map<String, List> tempFiles = {
+    'sk': [],
+    'support': [],
+    'operational_report': [],
+    'letter_of_agreement': [],
+    'other': []
+  };
 
   Future<bool> uploadFiles(String type, List<File> files) async {
     try {
@@ -259,6 +277,12 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
             tempFiles['sk']?.removeAt(index);
             state = state.copyWith(fileSK: files);
             break;
+          case 'support':
+            List<File> files = state.fileSupport;
+            files.removeAt(index);
+            tempFiles['support']?.removeAt(index);
+            state = state.copyWith(fileSupport: files);
+            break;
           case 'operational_report':
             List<File> files = state.fileBeritaAcara;
             files.removeAt(index);
@@ -294,6 +318,8 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
         fileDokumentasiKegiatan: [],
         fileDokumentasiAmprahan: [],
         fileDokumentasiKegiatanName: [],
+        fileDokumentasiAmprahan: [],
+        fileDokumentasiAmprahanName: [],
         fileBuktiPajak: [],
         fileBuktiPajakName: [],
         totalRealisasiAnggaran: TextEditingController(),
@@ -331,7 +357,8 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
 
   void addFileDokumentasiAmprahan(List<File> files, int index) {
     List<Amprahan> amprahans = [...state.amprahans];
-    amprahans[index].fileDokumentasiAmprahan = files;
+    amprahans[index].fileDokumentasiAmprahan.addAll(files);
+    amprahans[index].fileDokumentasiAmprahanName.addAll(files.map((e) => e.path.split('/').last).toList());
 
     state = state.copyWith(amprahans: amprahans);
   }
@@ -359,6 +386,14 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
         List<File> files = amprahans[indexAmprahan].fileDokumentasiKegiatan;
         files.removeAt(index);
         amprahans[indexAmprahan].fileDokumentasiKegiatanName.removeAt(index);
+
+        amprahans[indexAmprahan].fileDokumentasiKegiatan = files;
+        state = state.copyWith(amprahans: amprahans);
+        break;
+      case 'amprahan_documentation':
+        List<File> files = amprahans[indexAmprahan].fileDokumentasiAmprahan;
+        files.removeAt(index);
+        amprahans[indexAmprahan].fileDokumentasiAmprahanName.removeAt(index);
 
         amprahans[indexAmprahan].fileDokumentasiKegiatan = files;
         state = state.copyWith(amprahans: amprahans);
@@ -438,24 +473,31 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
 
       // get activity doc files
       final activityFiles = await fileToMultipart(amprahan.fileDokumentasiKegiatan);
+      final activityAmprahan = await fileToMultipart(amprahan.fileDokumentasiAmprahan);
       final taxFiles = await fileToMultipart(amprahan.fileDokumentasiPajak);
       final taxReceipt = await fileToMultipart(amprahan.fileBuktiPajak);
       logg(amprahan.disbuermentDate.text);
       // make payload
       Map<String, dynamic> payload = {
         'amprahan_number': amprahan.noAmprahan.text,
-        'total_budget_realisation': amprahan.totalRealisasiAnggaran.text,
+        'total_budget_realisation':
+            amprahan.totalRealisasiAnggaran.text.toString().replaceAll('.', '').replaceAll(',', ''),
         'budget_source': amprahan.sumberDana.text,
-        'pajak': amprahan.isPajak.toInt,
+        'pajak': amprahan.isPajak == true ? 1 : 0,
         'amprahan_date': amprahan.amprahanDate.text,
-        'disbuerment_date': amprahan.disbuermentDate.text,
+        'disbuerment_date': amprahan.disbuermentDate.text == 'null' ? null : amprahan.disbuermentDate.text,
         'activity_id': kegiatan.id,
       };
+
+      logg(payload);
 
       for (var i = 0; i < activityFiles.length; i++) {
         payload['activity_documentations[$i]'] = activityFiles[i];
       }
-
+      for (var i = 0; i < activityAmprahan.length; i++) {
+        payload['amprahan_documentation[$i]'] = activityAmprahan[i];
+      }
+      logg(payload);
       for (var i = 0; i < taxFiles.length; i++) {
         payload['tax_documentation[$i]'] = taxFiles[i];
       }
@@ -483,6 +525,17 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
     } finally {
       LzToast.dismiss();
     }
+  }
+
+  List<Option> getListSourceOfFound() {
+    List<Option> listSourceOfFound = [
+      const Option(option: 'ADD', value: 'ADD'),
+      const Option(option: 'PBB', value: 'PBB'),
+      const Option(option: 'DDS', value: 'DDS'),
+      const Option(option: 'BKK', value: 'BKK'),
+      const Option(option: 'DLL', value: 'DDL'),
+    ];
+    return listSourceOfFound;
   }
 }
 
