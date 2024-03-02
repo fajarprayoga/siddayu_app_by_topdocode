@@ -75,7 +75,8 @@ class AmprahanWidget extends StatelessWidget {
                       keyboard: Tit.number,
                       controller: amprahan.noAmprahan,
                     ).margin(b: 15).disabled(!isOwner),
-// tanggal amprahan
+// 
+                    
                     CustomTextfield2(
                       label: 'Tanggal Amprahan',
                       hint: 'Inputkan tanggal amprahan',
@@ -95,7 +96,6 @@ class AmprahanWidget extends StatelessWidget {
                           final files = await Helper.pickFiles();
                           notifier.addFileDokumentasiAmprahan(files, index);
                         }).disabled(!isOwner),
-
                     // list of file dokumentasi kegiatan
                     FkFileContent('amprahan_documentation',
                             files: amprahan.fileDokumentasiAmprahan,
@@ -104,7 +104,20 @@ class AmprahanWidget extends StatelessWidget {
                     }, provider: provider, removable: isOwner)
                         .disabled(!isSKU && !isOwner && !isSKD && !isKD),
 
-                    // doc kegiatan
+                    FKSection(
+                        title: 'Dokumentasi Amprahan',
+                        textButton: 'Upload File Dokumentasi Amprahan',
+                        onTap: () async {
+                          final files = await Helper.pickFiles();
+                          notifier.addFileDokumentasiAmprahan(files, index);
+                        }).disabled(isSKU),
+
+                    // list of file dokumentasi kegiatan
+                    FkFileContent('amprahan_documentation', files: amprahan.fileDokumentasiAmprahan, onRemove: (i) {
+                      notifier.removeFileAmprahan('amprahan_documentation', i, index);
+                    }, provider: provider)
+                        .disabled(isSKU),
+
                     FKSection(
                         title: 'Dokumentasi Kegiatan',
                         textButton: 'Upload File Dokumentasi Kegiatan',
@@ -192,6 +205,7 @@ class AmprahanWidget extends StatelessWidget {
                       notifier.removeFileAmprahan('tax_receipt', i, index);
                     }, removable: isSKU, provider: provider)
                         .disabled(!isSKU && !isOwner && !isSKD && !isKD),
+
                     // pajak
                     FKSection(
                         title: 'Bukti Pajak',
@@ -206,6 +220,7 @@ class AmprahanWidget extends StatelessWidget {
                       notifier.removeFileAmprahan('pajak', i, index);
                     }, removable: isSKU, provider: provider)
                         .disabled(!isSKU && !isOwner && !isSKD && !isKD),
+
                     LzButton(
                         text: isSKD ? 'Approve' : 'Simpan',
                         color: primary,

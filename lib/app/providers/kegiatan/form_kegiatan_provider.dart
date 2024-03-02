@@ -71,6 +71,12 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
       state = state.copyWith(fileSupport: fileSupport);
       tempFiles['support'] = support; // untuk menghapus file dengan id
 
+      // get and set file support
+      final support = documents.where((e) => e['type'] == 'support').toList();
+      List<File> fileSupport = support.map((e) => File(e['url'])).toList();
+      state = state.copyWith(fileSupport: fileSupport);
+      tempFiles['support'] = support; // untuk menghapus file dengan id
+
       // get and set file berita acara
       final operationalReport = documents.where((e) => e['type'] == 'operational_report').toList();
       List<File> fileBeritaAcara = operationalReport.map((e) => File(e['url'])).toList();
@@ -106,6 +112,10 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
         // get data dokumentasi Kegiatan
         final activityDocumentation = documents.where((e) => e['type'] == 'activity_documentation').toList();
         List<File> fileDokumentasiKegiatan = activityDocumentation.map((e) => File(e['url'])).toList();
+
+        final amprahanDocumentation = documents.where((e) => e['type'] == 'amprahan_documentation').toList();
+        List<File> fileDokumentasiAmprahan = amprahanDocumentation.map((e) => File(e['url'])).toList();
+
         List<String> fileDokumentasiKegiatanName = activityDocumentation.map((e) => e['title']).toList().cast();
 
         final activityAmprahan = documents.where((e) => e['type'] == 'amprahan_documentation').toList();
@@ -126,6 +136,7 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
           id: e['id'].toString(),
           noAmprahan: e['amprahan_number'].toString().tec,
           fileDokumentasiKegiatan: fileDokumentasiKegiatan,
+          fileDokumentasiAmprahan: fileDokumentasiAmprahan,
           fileDokumentasiKegiatanName: fileDokumentasiKegiatanName,
           fileDokumentasiAmprahan: fileDokumentasiAmprahan,
           fileDokumentasiAmprahanName: fileDokumentasiAmprahanName,
@@ -305,6 +316,7 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
     amprahans.add(Amprahan(
         noAmprahan: TextEditingController(),
         fileDokumentasiKegiatan: [],
+        fileDokumentasiAmprahan: [],
         fileDokumentasiKegiatanName: [],
         fileDokumentasiAmprahan: [],
         fileDokumentasiAmprahanName: [],
@@ -464,7 +476,7 @@ class FormKegiatanNotifier extends StateNotifier<FormKegiatanState> with Apis {
       final activityAmprahan = await fileToMultipart(amprahan.fileDokumentasiAmprahan);
       final taxFiles = await fileToMultipart(amprahan.fileDokumentasiPajak);
       final taxReceipt = await fileToMultipart(amprahan.fileBuktiPajak);
-
+      logg(amprahan.disbuermentDate.text);
       // make payload
       Map<String, dynamic> payload = {
         'amprahan_number': amprahan.noAmprahan.text,

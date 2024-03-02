@@ -23,6 +23,7 @@ class Amprahan {
     this.id,
     required this.noAmprahan,
     required this.fileDokumentasiKegiatan,
+    required this.fileDokumentasiAmprahan,
     required this.fileDokumentasiKegiatanName,
     required this.fileDokumentasiAmprahan,
     required this.fileDokumentasiAmprahanName,

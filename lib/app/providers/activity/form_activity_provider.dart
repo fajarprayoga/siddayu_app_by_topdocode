@@ -110,7 +110,6 @@ class FormActivityNotifier extends StateNotifier<FormActivityState> with Apis {
       }
 
       LzToast.overlay(activityID == null ? 'Menambahkan kegiatan...' : 'Mengubah kegiatan...');
-
       if (activityID == null) {
         final res = await kegiatanApi.addKegiatan(payload);
         if (!res.status) {
