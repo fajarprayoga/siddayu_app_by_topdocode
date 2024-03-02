@@ -7,6 +7,8 @@ class Amprahan {
   TextEditingController noAmprahan;
   List<File> fileDokumentasiKegiatan;
   List<String> fileDokumentasiKegiatanName;
+  List<File> fileDokumentasiAmprahan;
+  List<String> fileDokumentasiAmprahanName;
   TextEditingController totalRealisasiAnggaran;
   TextEditingController sumberDana;
   List<File> fileDokumentasiPajak;
@@ -22,6 +24,8 @@ class Amprahan {
     required this.noAmprahan,
     required this.fileDokumentasiKegiatan,
     required this.fileDokumentasiKegiatanName,
+    required this.fileDokumentasiAmprahan,
+    required this.fileDokumentasiAmprahanName,
     required this.totalRealisasiAnggaran,
     required this.sumberDana,
     required this.fileDokumentasiPajak,

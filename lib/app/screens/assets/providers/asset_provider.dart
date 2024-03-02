@@ -1,3 +1,4 @@
+import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lazyui/lazyui.dart';
 import 'package:todo_app/app/data/api/api.dart';
@@ -62,6 +63,17 @@ class AssetNotifier extends StateNotifier<AssetState> with Apis {
     await Future.delayed(100.ms);
     isLoading = false;
     state = state.copyWith(index: index);
+  }
+
+  Future downloadDocuments() async {
+    try {
+      final res = await assetApi.downloadDocuments(activityID);
+      if (res.status) {
+        FileDownloader.downloadFile(url: res.body['url']);
+      }
+    } catch (e, s) {
+      Errors.check(e, s);
+    }
   }
 }
 

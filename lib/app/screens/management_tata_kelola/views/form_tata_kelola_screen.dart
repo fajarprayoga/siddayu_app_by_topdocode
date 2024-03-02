@@ -81,9 +81,11 @@ class FormTataKelola extends ConsumerWidget {
                       model: forms['activity_date'],
                       disabled: !isOwner,
                       onTap: (control) {
-                        LzPicker.datePicker(context, initialDate: control.text.toDate()).then((value) {
-                          control.text = value.format('dd-MM-yyyy');
-                        });
+                        if (isOwner) {
+                          LzPicker.datePicker(context, initialDate: control.text.toDate()).then((value) {
+                            control.text = value.format('dd-MM-yyyy');
+                          });
+                        }
                       }),
                   LzForm.input(
                     label: 'Deskripsi Kegiatan',
@@ -159,7 +161,7 @@ class FormTataKelola extends ConsumerWidget {
             }),
             bottomNavigationBar: formActivityProvider.watch(
               (state) {
-                bool isSKD = notifier.user?.role?.name == 'SKD';
+                bool isSKD = notifier.user?.role?.code == 'SKD';
 
                 if (!isSKD && notifier.user?.id != data?.createdBy) {
                   return const SizedBox();

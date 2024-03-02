@@ -45,6 +45,7 @@ class AmprahanWidget extends StatelessWidget {
 
           bool isSKU = roleName == 'SKU';
           bool isSKD = roleName == 'SKD';
+          bool isKD = roleName == 'KD';
           bool isOwner = user?.id == kegiatan.createdBy;
 
           return Column(
@@ -53,10 +54,11 @@ class AmprahanWidget extends StatelessWidget {
                 mainAxisAlignment: Maa.spaceBetween,
                 children: [
                   Text('Amprahan', style: Gfont.bold),
-                  const Icon(
-                    Icons.close,
-                    color: Colors.red,
-                  ).onTap(() => notifier.removeAmprahan(index))
+                  if (isOwner)
+                    const Icon(
+                      Icons.close,
+                      color: Colors.red,
+                    ).onTap(() => notifier.removeAmprahan(index))
                 ],
               ),
               Container(
@@ -72,39 +74,8 @@ class AmprahanWidget extends StatelessWidget {
                       hint: '2465768798900',
                       keyboard: Tit.number,
                       controller: amprahan.noAmprahan,
-                    ).margin(b: 15).disabled(isSKU),
-
-                    // file section
-                    FKSection(
-                        title: 'Dokumentasi Kegiatan',
-                        textButton: 'Upload File Dokumentasi Kegiatan',
-                        onTap: () async {
-                          final files = await Helper.pickFiles();
-                          notifier.addFileDokumentasiKegiatan(files, index);
-                        }).disabled(isSKU),
-
-                    // list of file dokumentasi kegiatan
-                    FkFileContent('doc_kegiatan',
-                            files: amprahan.fileDokumentasiKegiatan,
-                            filesName: amprahan.fileDokumentasiKegiatanName, onRemove: (i) {
-                      notifier.removeFileAmprahan('doc_kegiatan', i, index);
-                    }, provider: provider)
-                        .disabled(!isSKU),
-
-                    CustomTextfield2(
-                      label: 'Total Realisasi Anggaran',
-                      hint: 'Masukkan total realisasi anggaran',
-                      keyboard: Tit.number,
-                      formatters: [InputFormat.currency('.')],
-                      controller: amprahan.totalRealisasiAnggaran,
-                    ).margin(b: 15).disabled(isSKU),
-
-                    CustomTextfield2(
-                      label: 'Sumber Dana',
-                      hint: 'Masukkan sumber dana',
-                      controller: amprahan.sumberDana,
-                    ).margin(b: 15).disabled(isSKU),
-
+                    ).margin(b: 15).disabled(!isOwner),
+// tanggal amprahan
                     CustomTextfield2(
                       label: 'Tanggal Amprahan',
                       hint: 'Inputkan tanggal amprahan',
@@ -115,7 +86,76 @@ class AmprahanWidget extends StatelessWidget {
                           amprahan.amprahanDate.text = value.format();
                         });
                       },
-                    ).margin(b: 15),
+                    ).margin(b: 15).disabled(!isOwner),
+                    // file amprahan
+                    FKSection(
+                        title: 'File Amprahan',
+                        textButton: 'Upload File Dokumentasi Amprahan',
+                        onTap: () async {
+                          final files = await Helper.pickFiles();
+                          notifier.addFileDokumentasiAmprahan(files, index);
+                        }).disabled(!isOwner),
+
+                    // list of file dokumentasi kegiatan
+                    FkFileContent('amprahan_documentation',
+                            files: amprahan.fileDokumentasiAmprahan,
+                            filesName: amprahan.fileDokumentasiAmprahanName, onRemove: (i) {
+                      notifier.removeFileAmprahan('amprahan_documentation', i, index);
+                    }, provider: provider, removable: isOwner)
+                        .disabled(!isSKU && !isOwner && !isSKD && !isKD),
+
+                    // doc kegiatan
+                    FKSection(
+                        title: 'Dokumentasi Kegiatan',
+                        textButton: 'Upload File Dokumentasi Kegiatan',
+                        onTap: () async {
+                          final files = await Helper.pickFiles();
+                          notifier.addFileDokumentasiKegiatan(files, index);
+                        }).disabled(!isOwner),
+
+                    // list of file dokumentasi kegiatan
+                    FkFileContent('doc_kegiatan',
+                            files: amprahan.fileDokumentasiKegiatan,
+                            filesName: amprahan.fileDokumentasiKegiatanName, onRemove: (i) {
+                      notifier.removeFileAmprahan('doc_kegiatan', i, index);
+                    }, provider: provider, removable: isOwner)
+                        .disabled(!isSKU && !isOwner && !isSKD && !isKD),
+
+                    CustomTextfield2(
+                      label: 'Total Realisasi Anggaran',
+                      hint: 'Masukkan total realisasi anggaran',
+                      keyboard: Tit.number,
+                      formatters: [InputFormat.currency('.')],
+                      controller: amprahan.totalRealisasiAnggaran,
+                    ).margin(b: 15).disabled(!isOwner),
+
+                    CustomTextfield2(
+                      label: 'Sumber Dana',
+                      hint: 'Masukkan sumber dana',
+                      controller: amprahan.sumberDana,
+                    ).margin(b: 15).disabled(!isOwner),
+                    Container(
+                      width: double.infinity,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Textr('Sumber Dana', style: Gfont.bold, margin: Ei.only(b: 8)),
+                          InkTouch(
+                            radius: Br.radius(8),
+                            border: Br.all(color: Colors.black38),
+                            onTap: () {
+                              SelectPicker.show(context,
+                                  maxLines: 2,
+                                  withSearch: true,
+                                  height: context.height / 2,
+                                  options: notifier.getListSourceOfFound(),
+                                  onSelect: (o) {});
+                            },
+                            child: Text('ess'),
+                          )
+                        ],
+                      ),
+                    ).lz.clip(all: 7),
 
                     CustomTextfield2(
                       label: 'Tanggal Pencaiaran',
@@ -127,23 +167,10 @@ class AmprahanWidget extends StatelessWidget {
                           amprahan.disbuermentDate.text = value.format();
                         });
                       },
-                    ).margin(b: 15),
+                    ).margin(b: 15).disabled(!isSKU),
 
-                    // pajak
-                    FKSection(
-                        title: 'Pajak',
-                        textButton: 'Upload File Dokumentasi Pajak',
-                        onTap: () async {
-                          final files = await Helper.pickFiles();
-                          notifier.addFileDokumentasiPajak(files, index);
-                        }).disabled(!isSKU),
-                    FkFileContent('pajak',
-                            files: amprahan.fileDokumentasiPajak,
-                            filesName: amprahan.fileDokumentasiPajakName, onRemove: (i) {
-                      notifier.removeFileAmprahan('pajak', i, index);
-                    }, provider: provider)
-                        .disabled(!isSKU),
-
+// dokuemn pajak
+                    Textr('Dokumentasi Pajak', style: Gfont.bold, margin: Ei.only(b: 8)),
                     CustomCheckbox(
                         value: amprahan.isPajak,
                         onTap: () {
@@ -163,9 +190,22 @@ class AmprahanWidget extends StatelessWidget {
                     FkFileContent('tax_receipt', files: amprahan.fileBuktiPajak, filesName: amprahan.fileBuktiPajakName,
                             onRemove: (i) {
                       notifier.removeFileAmprahan('tax_receipt', i, index);
-                    }, provider: provider)
-                        .disabled(!isSKU),
-
+                    }, removable: isSKU, provider: provider)
+                        .disabled(!isSKU && !isOwner && !isSKD && !isKD),
+                    // pajak
+                    FKSection(
+                        title: 'Bukti Pajak',
+                        textButton: 'Upload File Dokumentasi Pajak',
+                        onTap: () async {
+                          final files = await Helper.pickFiles();
+                          notifier.addFileDokumentasiPajak(files, index);
+                        }).disabled(!isSKU),
+                    FkFileContent('pajak',
+                            files: amprahan.fileDokumentasiPajak,
+                            filesName: amprahan.fileDokumentasiPajakName, onRemove: (i) {
+                      notifier.removeFileAmprahan('pajak', i, index);
+                    }, removable: isSKU, provider: provider)
+                        .disabled(!isSKU && !isOwner && !isSKD && !isKD),
                     LzButton(
                         text: isSKD ? 'Approve' : 'Simpan',
                         color: primary,
